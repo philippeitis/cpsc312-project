@@ -29,6 +29,24 @@ We call ourselves: optional awesome team name.
 
 ## Product Pitch
 
+### Notes
+We want to describe the following:
+A language for kids to learn the principles of computer science and programming without having to remember syntax or keywords. It is flexible in terms of syntax, since it uses NLP, and is very easy to learn due to its flexible. It has graphical feedback, to make kids have fun while learning
+Easy to start:
+- Say hello
+- Draw a cat
+- Put a hat on the cat
+Naturally leads to more complex statements, such as 
+- Say hello if there is a cat
+- Cats are afraid of blue dogs
+- ...
+Then? Displays structure of program and how simple input can be represented using more traditional program style, with fixed syntax
+
+Makes use of Haskell's powerful abstract datatypes to represent this language and provide a flexible interface, functional composition to make applying sequences of effects very simple.
+
+Functional transformations, pattern matching to make going from NLP intermediate representation to programmatic representation very easy and easily support many variations of syntax
+
+### To Replace
 Replace this with a pitch for your project and the problem it solves. This is your vision for what the project
 would like like as a complete product, ready for awesome action. (Yes, awesomeness seems to be a theme.)
 It may be as short as a couple of paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
@@ -48,6 +66,9 @@ Or:
 
 ## Minimal Viable Project
 
+### NOTES:
+Graphical interface running in real time, with a subset of desired functions and supported syntax (eg. Put a cat here ...) and lots of output options such as GUI, videos, or pictures to share.
+### TO REPLACE
 Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
 It may be as short as a few paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
 to read carefully and thoroughly.
@@ -66,7 +87,18 @@ Or:
 > The MVP clearly builds significantly on the language and will lead in interesting and natural ways to learning for the students.
 
 ## Proof of Concept
+### NOTES:
+- Feedback loop, save image to directory each iteration
+- Want to allow simple trees and variations of strings
+- Draw some simple pictures and apply simple effects (blue cats, put cat on top)
+- Focuses on core functionality, demonstrating that pattern matching is a powerful tool for this problem, and provides a good way to extend functionality
+- Key sections:
+- tokenization
+- tree representation
+- transforming tree to graphical structure
+- final image output
 
+## TO REPLACE
 Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
 code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
