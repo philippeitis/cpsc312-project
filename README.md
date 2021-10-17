@@ -20,9 +20,9 @@ This project is in fulfillment of the [CPSC 312 2021W1 project requirements](htt
 
 Our team is:
 
-+ Team Member Name 1 Philippe Solodov: optional awesome nickname 1
-+ Team Member Name 2 Sam Ko: optional awesome nickname 2
-+ If you have a third member: Scott Banducci: optional awesome nickname 3
++ Philippe Solodov (25117292): optional awesome nickname 1
++ Sam Ko (student #?): optional awesome nickname 2
++ Scott Banducci (student #?): optional awesome nickname 3
 + If you have a fourth member: Team Member Name 4 (student # 4): optional awesome nickname 4
 
 We call ourselves: optional awesome team name.
