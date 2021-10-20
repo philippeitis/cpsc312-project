@@ -5,6 +5,7 @@ version:             0.1.0.0
 dependencies:
 - base >= 4.7 && < 5
 - process >= 1.6 && < 1.7
+- gloss >= 1.13
 library:
   source-dirs: src
 
