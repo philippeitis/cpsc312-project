@@ -11,19 +11,22 @@ data Attribute = AColor Color | Size Size
 
 data Individual = Individual [Attribute] Animal Position
 
-newtype World = World [Individual]
+data World = World [Individual] String
 
 defaultWorld :: World
-defaultWorld = World []
+defaultWorld = World [] ""
+
 applyAttribute :: Attribute -> Picture -> Picture
 applyAttribute (AColor color) = Color color
 applyAttribute (Size Default) = Scale 1 1
 
-worldToPicture :: World -> Picture
-worldToPicture (World individuals) = pictures (map individualToPicture individuals)
+worldToPicture :: World -> IO Picture
+worldToPicture (World individuals s) = return (
+        pictures (Scale 0.2 0.2 (Text s) : map individualToPicture individuals)
+    )
 
-updateWorld :: ViewPort -> Float -> World -> World
-updateWorld _ _ world = world
+updateWorld :: Float -> World -> IO World
+updateWorld _ = return
 
 drawCat :: Picture
 drawCat = pictures [

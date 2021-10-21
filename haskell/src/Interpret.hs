@@ -16,6 +16,6 @@ parseAdjective :: Adjective -> Maybe Attribute
 parseAdjective (Adjective JJ "black") = Just (AColor black)
 
 apply :: NLTree -> World -> World
-apply (VerbObject (Verb VB "draw") (Object adjs (Noun NN "cat"))) (World items) =
-    World (Individual (mapMaybe parseAdjective adjs) Cat Center : items)
+apply (VerbObject (Verb VB "draw") (Object adjs (Noun NN "cat"))) (World items s) =
+    World (Individual (mapMaybe parseAdjective adjs) Cat Center : items) s
 apply _ world = world
