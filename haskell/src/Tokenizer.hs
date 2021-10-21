@@ -4,13 +4,14 @@ module Tokenizer
     setupTokenizer
  ) where
 
-import System.Process (createProcess, CreateProcess(std_out), StdStream(CreatePipe), proc, ProcessHandle, waitForProcess)
+import Distribution.System (OS (Linux, OSX, Windows), buildOS)
+import GHC.IO.Handle (Handle, hGetContents)
 import System.Directory (doesDirectoryExist, doesFileExist)
-import GHC.IO.Handle ( Handle, hGetContents )
 import System.Info
-import Distribution.System (OS(Windows, Linux, OSX), buildOS)
+import System.Process (CreateProcess (std_out), ProcessHandle, StdStream (CreatePipe), createProcess, proc,
+                       waitForProcess)
 
-import Tokens(Token, newToken)
+import Tokens (Token, newToken)
 python = "./venv/bin/python"
 
 readTokens :: String -> Maybe [Token]
@@ -20,7 +21,7 @@ readTokenPairs :: [String] -> Maybe [Token]
 readTokenPairs [] = Just []
 readTokenPairs [x] = Nothing
 readTokenPairs (text:tag:rest) = readTokenPairs rest
-    >>= \items -> newToken tag text >>= \token -> Just (token : items)  
+    >>= \items -> newToken tag text >>= \token -> Just (token : items)
 
 readOutput :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO (Maybe [Token])
 readOutput (_, Just stdout, _, _) = hGetContents stdout

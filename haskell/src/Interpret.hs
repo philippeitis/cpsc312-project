@@ -1,10 +1,10 @@
 module Interpret (apply) where
 
+import Data.Maybe (mapMaybe)
 import Graphics.Gloss
-import World
 import NLTree
-import Tokens(Token(..), Tag(..))
-import Data.Maybe(mapMaybe)
+import Tokens (Tag (..), Token (..))
+import World
 
 data Action = Draw
 

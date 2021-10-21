@@ -1,13 +1,13 @@
 module Main where
 
-import Lib
-import Tokenizer(tokenize, setupTokenizer)
-import Interpret(apply)
-import NLTree(parse)
-import World(defaultWorld, worldToPicture, updateWorld, World(..))
+import Data.Maybe (maybe)
 import Graphics.Gloss
-import Data.Maybe(maybe)
-import Graphics.Gloss.Interface.IO.Game(playIO, SpecialKey(..), Key(..), Event(..), KeyState(..))
+import Graphics.Gloss.Interface.IO.Game (Event (..), Key (..), KeyState (..), SpecialKey (..), playIO)
+import Interpret (apply)
+import Lib
+import NLTree (parse)
+import Tokenizer (setupTokenizer, tokenize)
+import World (World (..), defaultWorld, updateWorld, worldToPicture)
 
 window :: Display
 window = InWindow "programz 4 kidz" (500, 500) (24, 24)
@@ -15,13 +15,13 @@ window = InWindow "programz 4 kidz" (500, 500) (24, 24)
 background :: Color
 background = white
 
-maybeOr :: Maybe a -> a -> a 
+maybeOr :: Maybe a -> a -> a
 maybeOr Nothing val = val
 maybeOr (Just val) _ = val
 
 handleEvent :: Event -> World -> IO World
 handleEvent (EventKey (Char c) Up _ _) (World items s) = return (World items (s ++ [c]))
-handleEvent (EventKey (SpecialKey KeyEnter) Up _ _) (World items s) = tokenize s 
+handleEvent (EventKey (SpecialKey KeyEnter) Up _ _) (World items s) = tokenize s
     >>= \tokens -> return (maybeOr (
         tokens >>= parse >>= \tree -> Just (apply tree newWorld)
         ) newWorld)
