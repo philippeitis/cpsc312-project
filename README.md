@@ -98,6 +98,20 @@ Or:
 - transforming tree to graphical structure
 - final image output
 
+Our proof of concept demonstrates an end-to-end pipeline, where we:
+1. take user input
+2. tokenize it using spaCy
+3. parse the resulting tokens into trees
+4. Interpret the tree in terms of program commands, such as draw
+5. Render the resulting tokens to screen
+
+Our proof of concept uses gloss to accept user input, and output the corresponding output. We currently draw user input directly into the viewing area, and once they hit enter, we draw the result of their input to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that if need be, we can be more thorough with the input we take - for instance, allowing someone to select a specific entity on screen using their mouse.
+
+Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful model provided by `spaCy`, makes us confident that our project will not be limited by the language models included.
+
+While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project, actually building out the functionality helped enforce this confidence. While this is currently the weakest part of our project, it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
+
+
 ## TO REPLACE
 Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
