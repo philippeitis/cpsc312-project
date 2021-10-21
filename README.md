@@ -10,7 +10,10 @@ We will post some additional material to include when you reach the final projec
 
 # Insert My Excellent Project Title Here
 
-This will be replaced with a very brief (one paragraph, 2-3 sentences) overview of the project.
+
+As we move further into the digital age, knowing how computer programs work is becoming a more important skill for employment opportunities and understanding the world we live in. Parents are looking for and spending money on educational products that help children learn this essential skill. "C is for Coding" is a fun, interactive way for children to take their first step on this journey in a easy to use, natural language environment.
+
+
 
 Leave the following sentence in so you can easily link back to the requirements and *especially* rubric while editing your project:
 
@@ -20,16 +23,22 @@ This project is in fulfillment of the [CPSC 312 2021W1 project requirements](htt
 
 Our team is:
 
-+ Philippe Solodov (25117292): optional awesome nickname 1
-+ Sam Ko (98263569): optional awesome nickname 2
-+ Scott Banducci (student #?): optional awesome nickname 3
-+ If you have a fourth member: Team Member Name 4 (student # 4): optional awesome nickname 4
++ Philippe Solodov (25117292): SoloDev
++ Sam Ko (98263569): K-O
++ Scott Banducci (student 80557069): Bandersnatch
 
-We call ourselves: optional awesome team name.
+We call ourselves: Pattern Match This.
 
 ## Product Pitch
 
 ### Notes
+
+Billions of dollars a year are spent on extracurricular educational programs and products by parents who want the best for their children. Competition for quality jobs is increasing and the skills necessary to succeed are becoming more technical and technological. So how can devoted parents help give their kids the best chances in this silicon-based world? Empower them with an early, intuitive understanding of computer programming that sets the foundation for future excellence.
+
+"C is for Coding" is a fun, easy-to-use educational aid designed to help young children become familiar with programming. Once a child is able to type at a keyboard, they are ready to start learning on this platform. At it's core is natural language processing that removes the barriers of forcing young kids to learn complicated syntax and numerous keywords. Instead, in this playful environment a child can type in their best attempt at a command. Our system will interpret the intent and provide colorful graphical feedback that they can play with. "Draw cat and dog", "Cat likes Dog" might generate images of the animals and implement rules that if separated they will move to sit beside each other. 
+
+What makes "C is for Coding" unique is not just that it allows for the earliest possible introduction to this world. It also paves the road to a deeper understanding of programming languages. As children become comfortable typing in commands they will construct more complex statements as gentle prompts and hints guide them. "Try using 'if'! :)". Eventually they will gain access to a graphical representation of code similar to what they'll see in high school and exposing them to fixed syntax. The computer equivalent of a children's book, "C is for Coding" will change what you thought possible for the ones you love most. 
+<!-- 
 We want to describe the following:
 A language for kids to learn the principles of computer science and programming without having to remember syntax or keywords. It is flexible in terms of syntax, since it uses NLP, and is very easy to learn due to its flexible. It has graphical feedback, to make kids have fun while learning
 Easy to start:
@@ -44,7 +53,7 @@ Then? Displays structure of program and how simple input can be represented usin
 
 Makes use of Haskell's powerful abstract datatypes to represent this language and provide a flexible interface, functional composition to make applying sequences of effects very simple.
 
-Functional transformations, pattern matching to make going from NLP intermediate representation to programmatic representation very easy and easily support many variations of syntax
+Functional transformations, pattern matching to make going from NLP intermediate representation to programmatic representation very easy and easily support many variations of syntax -->
 
 ### To Replace
 Replace this with a pitch for your project and the problem it solves. This is your vision for what the project
@@ -66,7 +75,23 @@ Or:
 
 ## Minimal Viable Project
 
-### NOTES:
+Our MVP will deliver 3 core features necessary to build the product above:
+
+1) Natural language input
+2) GUI running in real time
+3) Functional composition that can apply sequences of effects
+
+In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, graphical feedback, and sequential actions. 
+
+Natural language: We will makes use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that Haskell can then execute.
+
+GUI: The Gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
+
+Sequences of effects: Using the flexibility of Haskell's function composition and Typeclasses, we will allow for input interpreted as a combinations of commands to correctly execute.
+
+We are excited to learn with one of our group members who has limited experience with natural language programming. They will be an excellent resource getting us started. We hope to all share in learning more about this growing area of Haskell that sees use in companies like Facebook for spam filtering. None of us have built a GUI in Haskell and we're excited to start exploring how Gloss will allow us to do that. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world enviroment.
+
+<!-- ### NOTES:
 Graphical interface running in real time, with a subset of desired functions and supported syntax (eg. Put a cat here ...) and lots of output options such as GUI, videos, or pictures to share.
 ### TO REPLACE
 Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
@@ -84,9 +109,11 @@ Good goals to aim for are from the top two rubric items for proposal grading:
 
 Or:
 
-> The MVP clearly builds significantly on the language and will lead in interesting and natural ways to learning for the students.
+> The MVP clearly builds significantly on the language and will lead in interesting and natural ways to learning for the students. -->
 
 ## Proof of Concept
+
+
 ### NOTES:
 - Feedback loop, save image to directory each iteration
 - Want to allow simple trees and variations of strings
