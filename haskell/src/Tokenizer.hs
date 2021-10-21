@@ -10,8 +10,7 @@ import GHC.IO.Handle ( Handle, hGetContents )
 import System.Info
 import Distribution.System (OS(Windows, Linux, OSX), buildOS)
 
-data Token = Token String String deriving (Show)
-
+import Tokens(Token, newToken)
 python = "./venv/bin/python"
 
 readTokens :: String -> Maybe [Token]
@@ -21,7 +20,7 @@ readTokenPairs :: [String] -> Maybe [Token]
 readTokenPairs [] = Just []
 readTokenPairs [x] = Nothing
 readTokenPairs (text:tag:rest) = readTokenPairs rest
-    >>= (\items -> Just (Token tag text : items))
+    >>= \items -> newToken tag text >>= \token -> Just (token : items)  
 
 readOutput :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO (Maybe [Token])
 readOutput (_, Just stdout, _, _) = hGetContents stdout

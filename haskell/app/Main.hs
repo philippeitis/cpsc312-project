@@ -2,9 +2,11 @@ module Main where
 
 import Lib
 import Tokenizer(tokenize, setupTokenizer)
-
+import Interpret(apply)
+import NLTree(parse)
+import World(defaultWorld, worldToPicture, updateWorld)
 import Graphics.Gloss
-import Graphics.Gloss.Data.ViewPort
+import Data.Maybe(maybe)
 
 window :: Display
 window = InWindow "programz 4 kidz" (500, 500) (24, 24)
@@ -12,15 +14,17 @@ window = InWindow "programz 4 kidz" (500, 500) (24, 24)
 background :: Color
 background = white
 
-data Universe = Empty Float
-
-render :: Universe -> Picture
-render (Empty radius) = circle radius
-
-update :: ViewPort -> Float -> Universe -> Universe
-update _ _ (Empty n) = if n < 80 then Empty (n + 1) else Empty 40
-
+maybeOr :: Maybe a -> a -> a 
+maybeOr Nothing val = val
+maybeOr (Just val) _ = val
 
 main :: IO ()
-main = setupTokenizer >> tokenize "Hello world"
-    >>= print >> simulate window background 60 (Empty 40) render update
+main = setupTokenizer
+    >> tokenize "draw a black cat"
+    >>= \tokens -> simulate
+        window
+        background
+        60
+        (maybeOr (tokens >>= parse >>= \tree -> Just (apply tree defaultWorld)) defaultWorld)
+        worldToPicture
+        updateWorld
