@@ -12,7 +12,10 @@ import System.Process (CreateProcess (std_out), ProcessHandle, StdStream (Create
                        waitForProcess)
 
 import Tokens (Token, newToken)
-python = "./venv/bin/python"
+python = case buildOS of
+    Linux -> "./venv/bin/python"
+    OSX -> "./venv/bin/python"
+    Windows -> "./venv/scripts/python.exe"
 
 readTokens :: String -> Maybe [Token]
 readTokens = readTokenPairs . lines
