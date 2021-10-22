@@ -1,4 +1,4 @@
-# C if for Coding
+# C is for Coding
  
 As we move further into the digital age, knowing how computer programs work is becoming a more important skill for employment opportunities and understanding the world we live in. Parents are looking for and spending money on educational products that help children learn this essential skill. "C is for Coding" is a fun, interactive way for children to take their first step on this journey in an easy to use, natural language environment.
  
