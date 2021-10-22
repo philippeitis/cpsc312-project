@@ -33,9 +33,9 @@ Our MVP will deliver 3 core features necessary to build the product above:
  
 In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, graphical feedback, and sequential actions.
  
-Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that Haskell can then execute.
+Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that we can then interpret.
  
-GUI: The Gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
+GUI: The gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
  
 Sequences of effects: Using the flexibility of Haskell's function composition and Typeclasses, we will allow for input interpreted as a combination of commands to correctly execute.
  
@@ -58,19 +58,18 @@ Additional details of our POC:
  
 Our proof of concept uses Gloss to accept user input, and show the corresponding output. We draw user input directly into the viewing area. When the user presses enter we draw the result to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that we may expand the scope of the input - for instance, allowing someone to select a specific entity on screen using their mouse.
  
-Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful model provided by `spaCy`, makes us confident that our project will not be limited by the language models included.
+Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful English language model provided by `spaCy`, (or even models for other languages) makes us confident that our project will not be limited by the language models included.
  
-While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project, actually building out the functionality helped reinforce this confidence. While this is currently the weakest part of our project, it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
+While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project straightforward, actually building out the functionality helped reinforce this confidence. While this is currently the weakest part of our project, it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
  
-
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models.
+Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s.
 
 You can try drawing various colors of cats in the GUI by typing "draw a `color` cat".
 
-To run the tests, which test smaller portions of the project, and use pretokenized data, use `make haskell-eval` from the project.
+To run the tests, which test smaller portions of the project, and use pretokenized data (so `spaCy` will not be downloaded), use `make haskell-eval` from the project.
 
-Notes:
+Notes (not required to test/run code):
 - Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`, and the top level `Makefile` will copy the correct version to `stack.yaml`. This is required because of https://github.com/commercialhaskell/stack/issues/3369).
 - We bundle freeglut.dll / glut32.dll to run gloss on Windows
 
