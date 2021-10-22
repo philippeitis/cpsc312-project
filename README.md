@@ -45,12 +45,12 @@ We are excited to learn more about natural language programming with a group mem
 ## Proof of Concept
  
 Our POC focuses on the end-to-end pipeline:
-1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/app/Main.hs#L28)
-2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/Tokenizer.hs#L30)
-3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/NLTree.hs#L27)
+1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/app/Main.hs#L28)
+2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/src/Tokenizer.hs#L30)
+3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/src/NLTree.hs#L27)
 4. Parse individual elements into program commands with modifiers such as draw orange [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Parse.hs)
 5. Interpret the commands [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Interpret.hs)
-6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/World.hs#L36) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/app/Main.hs#L51)
+6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/src/World.hs#L36) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/app/Main.hs#L51)
  
 This represents the core functionality of our product: allowing a user to type in a natural language command and showing the results on screen. This is the core "game loop" of our product and building it has given us confidence that we can expand scope of commands and refine presentation to create an outstanding MVP.
  
@@ -81,8 +81,6 @@ Note: We expect to be able to test your code by running `stack test`. Included a
 We should be able to further explore your code's functionality by running `stack ghci`, and you should instruct us on some interesting cases to try.
 
 If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
-
-
 
 ### How to test and run the code: Prolog
 
