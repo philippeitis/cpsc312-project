@@ -1,4 +1,4 @@
-# C if for Coding
+# C is for Coding
  
 As we move further into the digital age, knowing how computer programs work is becoming a more important skill for employment opportunities and understanding the world we live in. Parents are looking for and spending money on educational products that help children learn this essential skill. "C is for Coding" is a fun, interactive way for children to take their first step on this journey in an easy to use, natural language environment.
  
@@ -63,23 +63,17 @@ While we were already confident that Haskell's abstract data types and pattern m
  
 
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence, and hit enter to process the sentence and see what happens.
-You can try drawing various colors of cats using "draw a `color` cat". Running this requires a recent version of Python, and will automatically install `spaCy` plus a language model.
+Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models.
 
-(Note that the )
-Otherwise, you can use `stack test` to test smaller units of functionality which, when combined, create the GUI described above.
+You can try drawing various colors of cats in the GUI by typing "draw a `color` cat".
 
-Setup instructions:
-Unix (Linux/MacOS):
-`mv haskell/stack-unix.yaml haskell/stack.yaml
-cd haskell && stack run`
-(This is required due to unix builds requiring the unix package for directory etc, and stack doesn't provide OS specific extra-deps: https://github.com/commercialhaskell/stack/issues/3369)
+To run the tests, which test smaller portions of the project, and use pretokenized data, use `make haskell-eval` from the project.
 
-Windows
-`cd haskell && stack run`
+Notes:
+- Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`, and the top level `Makefile` will copy the correct version to `stack.yaml`. This is required because of https://github.com/commercialhaskell/stack/issues/3369).
+- We bundle freeglut.dll / glut32.dll to run gloss on Windows
 
-Replace this section with instructions to us for how to test and run your code.
-
+### Previously written
 As it is currently set up, editing works best if you first `cd` into the `haskell` subdirectory and open VS Code on that directory (`code .`). There is a `Makefile` with some helpful aliases, but you can also just use `stack` as normal.
 
 Note: We expect to be able to test your code by running `stack test`. Included among your tests should be some that demonstrate the core functionality of your code. (We will be running `make haskell-eval` from the project root.)
