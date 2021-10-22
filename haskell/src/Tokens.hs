@@ -5,15 +5,20 @@ module Tokens (
     newToken,
 ) where
 
+-- |A tag is a part of speech belonging to a specific word.
+-- This is a subset of the tags that spaCy can produce.
 data Tag = NN | NNS | NNP | NNPS
  | VB | VBP | VBZ |VBN | VBG | VBD
  | JJ | JJR | JJS
  | RB | PRP | DT | IN | CC | MD | TO
  | DOT | COMMA | EXCL | UH
- deriving (Show)
+  deriving(Show, Eq)
 
-data Token = Token Tag String deriving (Show)
+-- |A token is a tag and the underlying raw text.
+data Token = Token Tag String
+  deriving(Show, Eq)
 
+-- |Parses a subset of known spaCy output tags
 newTag :: String -> Maybe Tag
 newTag "NN" = Just NN
 newTag "NNS" = Just NNS
@@ -35,5 +40,6 @@ newTag "IN" = Just IN
 newTag "UH" = Just UH
 newTag _ = Nothing
 
+-- |Produces a new token from a tag followed by text
 newToken :: String -> String -> Maybe Token
 newToken tag word = newTag tag >>= \tag -> Just (Token tag word)
