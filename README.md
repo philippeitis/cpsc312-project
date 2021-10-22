@@ -27,11 +27,11 @@ What makes "C is for Coding" unique is not just that it allows for the earliest 
  
 Our MVP will deliver 3 core features necessary to build the product above:
  
-1) Natural language input
-2) GUI running in real time
-3) Functional composition that can apply sequences of effects
+1. Natural language processing of user input
+2. Real-time GUI
+3. Functional composition for chaining effects
  
-In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, graphical feedback, and sequential actions.
+In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, a limited portion of our desired graphical feedback, and support for a few sequential actions.
  
 Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that we can then interpret.
  
@@ -39,7 +39,7 @@ GUI: The gloss package will enable us to quickly develop a simple, beautiful use
  
 Sequences of effects: Using the flexibility of Haskell's function composition and Typeclasses, we will allow for input interpreted as a combination of commands to correctly execute.
  
-We are excited to learn with one of our group members who has limited experience with natural language programming. They will be an excellent resource getting us started. We hope to all share in learning more about this growing area of Haskell that sees use in companies like Facebook for spam filtering. None of us have built a GUI in Haskell and we're excited to start exploring how Gloss will allow us to do that. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world environment.
+We are excited to learn more about natural language programming with a group member who has experience from previous courses. They will be an excellent resource getting us started. We also hope to share in learning more about using Haskell for natural language processing, with companies like Facebook using it for spam filtering. None of us have built a GUI in Haskell and we're interested to see how gloss will allow us to build one. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world environment.
  
  
 ## Proof of Concept
