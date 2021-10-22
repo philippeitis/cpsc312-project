@@ -50,7 +50,7 @@ handleEvent event world = return world
 
 main :: IO ()
 main = setupTokenizer
-    >>= \tokens -> playIO
+    >> playIO
         window
         background
         60
