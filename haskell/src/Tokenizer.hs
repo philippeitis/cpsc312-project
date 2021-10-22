@@ -4,7 +4,6 @@ module Tokenizer
     setupTokenizer
  ) where
 
-import Distribution.System (OS (Linux, OSX, Windows), buildOS)
 import GHC.IO.Handle (Handle, hGetContents)
 import System.Directory (doesDirectoryExist, doesFileExist)
 import System.Info
@@ -12,10 +11,10 @@ import System.Process (CreateProcess (std_out), ProcessHandle, StdStream (Create
                        waitForProcess)
 
 import Tokens (Token, newToken)
-python = case buildOS of
-    Linux -> "./venv/bin/python"
-    OSX -> "./venv/bin/python"
-    Windows -> "./venv/scripts/python.exe"
+python = case os of
+    "linux" -> "./venv/bin/python"
+    "darwin" -> "./venv/bin/python"
+    "mingw32" -> "./venv/scripts/python.exe"
 
 readTokens :: String -> Maybe [Token]
 readTokens = readTokenPairs . lines

@@ -63,6 +63,20 @@ While we were already confident that Haskell's abstract data types and pattern m
  
 
 ### How to test and run the code: Haskell
+Our proof of concept provides a GUI where you can input a sentence, and hit enter to process the sentence and see what happens.
+You can try drawing various colors of cats using "draw a `color` cat". Running this requires a recent version of Python, and will automatically install `spaCy` plus a language model.
+
+(Note that the )
+Otherwise, you can use `stack test` to test smaller units of functionality which, when combined, create the GUI described above.
+
+Setup instructions:
+Unix (Linux/MacOS):
+`mv haskell/stack-unix.yaml haskell/stack.yaml
+cd haskell && stack run`
+(This is required due to unix builds requiring the unix package for directory etc, and stack doesn't provide OS specific extra-deps: https://github.com/commercialhaskell/stack/issues/3369)
+
+Windows
+`cd haskell && stack run`
 
 Replace this section with instructions to us for how to test and run your code.
 

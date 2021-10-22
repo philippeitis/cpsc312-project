@@ -19,6 +19,10 @@ maybeOr :: Maybe a -> a -> a
 maybeOr Nothing val = val
 maybeOr (Just val) _ = val
 
+popLast :: [a] -> [a]
+popLast [] = []
+popLast items = init items
+
 handleEvent :: Event -> World -> IO World
 handleEvent (EventKey (Char c) Up _ _) (World items s) = return (World items (s ++ [c]))
 handleEvent (EventKey (SpecialKey KeyEnter) Up _ _) (World items s) = tokenize s
@@ -27,6 +31,12 @@ handleEvent (EventKey (SpecialKey KeyEnter) Up _ _) (World items s) = tokenize s
         ) newWorld)
     where newWorld = World items ""
 handleEvent (EventKey (SpecialKey KeySpace) Up _ _) (World items s) = return (World items (s ++ " "))
+handleEvent (EventKey (SpecialKey KeyBackspace) Up _ _) (World items s) = putStrLn "del"
+  >> putStrLn (popLast s)
+  >> return (World items (popLast s))
+handleEvent (EventKey (SpecialKey KeyDelete) Up _ _) (World items s) = putStrLn "del"
+  >> putStrLn (popLast s)
+  >> return (World items (popLast s))
 
 handleEvent event world = return world
 
