@@ -18,8 +18,8 @@ parseAdjective (Adjective JJ "red") = Just (AColor red)
 parseAdjective (Adjective JJ "blue") = Just (AColor blue)
 parseAdjective (Adjective JJ "green") = Just (AColor green)
 parseAdjective (Adjective JJ "orange") = Just (AColor orange)
-
 parseAdjective _ = Nothing
+
 apply :: NLTree -> World -> World
 apply (VerbObject (Verb VB "draw") (Object adjs (Noun NN "cat"))) (World items s) =
     World (Individual (mapMaybe parseAdjective adjs) Cat Center : items) s

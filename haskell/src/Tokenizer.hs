@@ -4,13 +4,14 @@ module Tokenizer
     setupTokenizer
  ) where
 
+import Control.Monad (void)
 import GHC.IO.Handle (Handle, hGetContents)
 import System.Directory (doesDirectoryExist, doesFileExist)
 import System.Info
 import System.Process (CreateProcess (std_out), ProcessHandle, StdStream (CreatePipe), createProcess, proc,
                        waitForProcess)
-
 import Tokens (Token, newToken)
+
 python = case os of
     "linux" -> "./venv/bin/python"
     "darwin" -> "./venv/bin/python"
@@ -43,7 +44,7 @@ installSpacy = createProcess (proc python ["-m", "pip", "install", "-U", "pip", 
     >>= waitForProcessWrapper
 
 waitForProcessWrapper :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO ()
-waitForProcessWrapper (_, _, _, handle) = waitForProcess handle >> return ()
+waitForProcessWrapper (_, _, _, handle) = void (waitForProcess handle)
 
 setupTokenizer :: IO ()
 setupTokenizer = doesDirectoryExist "venv" >>= \isDir -> if isDir then
