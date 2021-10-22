@@ -9,8 +9,8 @@ haskell-run:
 	cd haskell && stack run
 endif
 haskell-eval:
-	cp haskell/stack-win.yaml haskell/stack.yaml
+	copy haskell\stack-win.yaml haskell\stack.yaml
 	cd haskell && make test
 haskell-run:
-	cp haskell/stack-win.yaml haskell/stack.yaml
+	copy haskell\stack-win.yaml haskell\stack.yaml
 	cd haskell && stack run
