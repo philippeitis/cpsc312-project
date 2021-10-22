@@ -27,29 +27,30 @@ What makes "C is for Coding" unique is not just that it allows for the earliest 
  
 Our MVP will deliver 3 core features necessary to build the product above:
  
-1) Natural language input
-2) GUI running in real time
-3) Functional composition that can apply sequences of effects
+1. Natural language processing of user input
+2. Real-time GUI
+3. Functional composition for chaining effects
  
-In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, graphical feedback, and sequential actions.
+In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, a limited portion of our desired graphical feedback, and support for a few sequential actions.
  
-Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that Haskell can then execute.
+Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that we can then interpret.
  
-GUI: The Gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
+GUI: The gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
  
 Sequences of effects: Using the flexibility of Haskell's function composition and Typeclasses, we will allow for input interpreted as a combination of commands to correctly execute.
  
-We are excited to learn with one of our group members who has limited experience with natural language programming. They will be an excellent resource getting us started. We hope to all share in learning more about this growing area of Haskell that sees use in companies like Facebook for spam filtering. None of us have built a GUI in Haskell and we're excited to start exploring how Gloss will allow us to do that. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world environment.
+We are excited to learn more about natural language programming with a group member who has experience from previous courses. They will be an excellent resource getting us started. We also hope to share in learning more about using Haskell for natural language processing, with companies like Facebook using it for spam filtering. None of us have built a GUI in Haskell and we're interested to see how gloss will allow us to build one. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world environment.
  
  
 ## Proof of Concept
  
 Our POC focuses on the end-to-end pipeline:
-1. take user input
-2. tokenize it using spaCy
-3. parse the resulting tokens into trees
-4. Interpret the tree in terms of program commands, such as draw
-5. Render the resulting tokens to screen
+1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/app/Main.hs#L28)
+2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/Tokenizer.hs#L30)
+3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/NLTree.hs#L27)
+4. Parse individual elements into program commands with modifiers such as draw orange [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Parse.hs)
+5. Interpret the commands [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Interpret.hs)
+6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/src/World.hs#L36) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/b9f658e48a6a99c1549db0e97c943e1fce62cc9d/haskell/app/Main.hs#L51)
  
 This represents the core functionality of our product: allowing a user to type in a natural language command and showing the results on screen. This is the core "game loop" of our product and building it has given us confidence that we can expand scope of commands and refine presentation to create an outstanding MVP.
  
@@ -57,19 +58,18 @@ Additional details of our POC:
  
 Our proof of concept uses Gloss to accept user input, and show the corresponding output. We draw user input directly into the viewing area. When the user presses enter we draw the result to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that we may expand the scope of the input - for instance, allowing someone to select a specific entity on screen using their mouse.
  
-Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful model provided by `spaCy`, makes us confident that our project will not be limited by the language models included.
+Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful English language model provided by `spaCy`, (or even models for other languages) makes us confident that our project will not be limited by the language models included.
  
-While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project, actually building out the functionality helped reinforce this confidence. While this is currently the weakest part of our project, it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
+While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project straightforward, actually building out the functionality helped reinforce this confidence. While this is currently the weakest part of our project, it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
  
-
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models.
+Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s.
 
 You can try drawing various colors of cats in the GUI by typing "draw a `color` cat".
 
-To run the tests, which test smaller portions of the project, and use pretokenized data, use `make haskell-eval` from the project.
+To run the tests, which test smaller portions of the project, and use pretokenized data (so `spaCy` will not be downloaded), use `make haskell-eval` from the project.
 
-Notes:
+Notes (not required to test/run code):
 - Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`, and the top level `Makefile` will copy the correct version to `stack.yaml`. This is required because of https://github.com/commercialhaskell/stack/issues/3369).
 - We bundle freeglut.dll / glut32.dll to run gloss on Windows
 
