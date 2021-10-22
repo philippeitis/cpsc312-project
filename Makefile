@@ -7,10 +7,11 @@ haskell-eval:
 haskell-run:
 	cp haskell/stack-unix.yaml haskell/stack.yaml
 	cd haskell && stack run
-endif
+else
 haskell-eval:
 	copy haskell\stack-win.yaml haskell\stack.yaml
 	cd haskell && make test
 haskell-run:
 	copy haskell\stack-win.yaml haskell\stack.yaml
 	cd haskell && stack run
+endif
