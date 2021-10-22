@@ -11,6 +11,9 @@ when:
 - condition: os(linux)
   dependencies:
     - unix >= 2.5
+- condition: os(darwin)
+  dependencies:
+    - unix >= 2.5
 
 library:
   source-dirs: src
