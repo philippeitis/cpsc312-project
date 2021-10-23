@@ -62,9 +62,9 @@ Being able to tokenize the input with the powerful natural language models provi
 While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project straightforward, actually building out the functionality helped reinforce this confidence. This is currently the weakest part of our project, but it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
  
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence and hit Enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note that when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s. 
+Our proof of concept provides a GUI where you can input a sentence and hit Enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note that to run the full demo, a recent version of Python (3.6+) must be installed on the system. `spaCy` will automatically be installed to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s. 
 
-To run the tests, which test smaller portions of the project and use pretokenized data (so `spaCy` will not be downloaded), run `make haskell-eval` from the project.
+To run the tests, which test smaller portions of the project and use pretokenized data (so Python is not required, and `spaCy` will not be downloaded), run `make haskell-eval` from the project.
 
 Using `cd haskell && stack ghci` (but first running `make haskell-eval` to set everything up), you can import the following files:
 - TLDR: using `main`, you can try drawing various colors of cats in the GUI by typing "draw a `attribute` cat" (attributes can be colors or sizes, but not all colors and sizes are supported - try "black", "red", "blue", "green", "orange", "big" and "small"). Cats currently overlap each other, so you will only see one cat of a specific size at a time.
