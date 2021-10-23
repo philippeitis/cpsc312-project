@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Tokenizer
  (
     tokenize,
@@ -23,9 +25,13 @@ readTokenPairs (text:tag:rest) = readTokenPairs rest
     >>= \items -> newToken tag text >>= \token -> Just (token : items)
 
 -- |Reads the stdout handle from createProcess.
+readStdOut :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO (Maybe String)
+readStdOut (_, Just stdout, _, _) = hGetContents stdout >>= \s -> return (Just s)
+readStdOut _ = return Nothing
+
+-- |Reads the stdout handle from createProcess and parses it to tokens.
 readOutput :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO (Maybe [Token])
-readOutput (_, Just stdout, _, _) = hGetContents stdout
-    >>= \x -> return (readTokens x)
+readOutput (_, Just stdout, _, _) = hGetContents stdout >>= \s -> return (readTokens s)
 readOutput _ = return Nothing
 
 -- |Calls out to Python to tokenize using spaCy
@@ -43,6 +49,16 @@ python = case os of
 waitForProcessWrapper :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO ()
 waitForProcessWrapper (_, _, _, handle) = void (waitForProcess handle)
 
+-- |Finds which of python, python3 are the correct python to run
+getCorrectPython :: IO String
+getCorrectPython = createProcess (proc "python" ["--version"]) >>= readStdOut
+  >>= \case
+     Just pythonV -> return (if pythonV > "Python 3."
+      then "python"
+      else "python3")
+     -- Program will crash anyways if it's Python 2.
+     Nothing -> return "python"
+
 -- |Installs spacy into the local venv
 installSpacy :: IO ()
 installSpacy = createProcess (proc python ["-m", "pip", "install", "-U", "pip", "setuptools", "wheel"])
@@ -58,7 +74,8 @@ setupTokenizer :: IO ()
 setupTokenizer = doesDirectoryExist "venv" >>= \isDir -> if isDir then
     putStrLn "Tokenizer already installed"
     else putStrLn "Installing tokenizer"
-        >> createProcess (proc "python3" ["-m", "venv", "./venv"])
+        >> getCorrectPython
+        >>= \py -> createProcess (proc py ["-m", "venv", "./venv"])
         >>= waitForProcessWrapper
         >> putStrLn "Created venv"
         >> installSpacy
