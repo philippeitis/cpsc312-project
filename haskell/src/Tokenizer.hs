@@ -15,13 +15,14 @@ import Tokens (Token, newToken)
 readTokens :: String -> Maybe [Token]
 readTokens = readTokenPairs . lines
 
--- |Reads token pairs from a list with pairs of Text / Tag
+-- |Reads token pairs from a list with pairs of Text / Tag.
 readTokenPairs :: [String] -> Maybe [Token]
 readTokenPairs [] = Just []
 readTokenPairs [x] = Nothing
 readTokenPairs (text:tag:rest) = readTokenPairs rest
     >>= \items -> newToken tag text >>= \token -> Just (token : items)
 
+-- |Reads the stdout handle from createProcess.
 readOutput :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO (Maybe [Token])
 readOutput (_, Just stdout, _, _) = hGetContents stdout
     >>= \x -> return (readTokens x)
@@ -38,7 +39,7 @@ python = case os of
     "darwin" -> "./venv/bin/python"
     "mingw32" -> "./venv/scripts/python.exe"
 
--- |Utility function to wait for the output of createProcess to terminate
+-- |Utility function to wait for the process created by createProcess to terminate
 waitForProcessWrapper :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle) -> IO ()
 waitForProcessWrapper (_, _, _, handle) = void (waitForProcess handle)
 

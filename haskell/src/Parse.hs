@@ -3,14 +3,18 @@ module Parse where
 import Graphics.Gloss
 import NLTree
 import Tokens (Tag (..), Token (..))
-import World (Attribute (..), Size(..))
+import World (Attribute (..), Size (..))
 
 data Action = Draw
 
+-- |Parses the action to a supported command, or returns Nothing if the action
+-- is not supported.
 parseAction :: Verb -> Maybe Action
 parseAction (Verb VB "draw") = Just Draw
 parseAction _ = Nothing
 
+-- |Parses the adjective to an Attribute that can be applied to an individual,
+--  or returns Nothing if the adjective is not supported.
 parseAdjective :: Adjective -> Maybe Attribute
 parseAdjective (Adjective JJ "black") = Just (AColor black)
 parseAdjective (Adjective JJ "red") = Just (AColor red)
