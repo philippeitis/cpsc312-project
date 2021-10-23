@@ -20,7 +20,7 @@ Billions of dollars a year are spent on extracurricular educational programs and
  
 "C is for Coding" is a fun, easy-to-use educational aid designed to help young children become familiar with programming. Once a child is able to type at a keyboard, they are ready to start learning on this platform. At its core is natural language processing that removes the barriers of forcing young kids to learn complicated syntax and numerous keywords. Instead, in this playful environment a child can type in their best attempt at a command. Our system will interpret the intent and provide colorful graphical feedback that they can play with. "Draw cat and dog", "Cat likes Dog" might generate images of the animals and implement rules that if separated they will move to sit beside each other.
  
-What makes "C is for Coding" unique is not just that it allows for the earliest possible introduction to this world. It also paves the road to a deeper understanding of programming languages. As children become comfortable typing in commands they will construct more complex statements as gentle prompts and hints guide them. "Try using 'if'! :)". Eventually they will gain access to a graphical representation of code similar to what they'll see in high school and expose them to fixed syntax. The computer equivalent of a children's book, "C is for Coding" will change what you thought possible for the ones you love most.
+What makes "C is for Coding" unique is not just that it allows for the earliest possible introduction to this world. It also paves the road to a deeper understanding of programming languages. As children become comfortable typing in commands they will construct more complex statements as gentle prompts and hints guide them. "Try using 'if'! :)". Eventually they will gain access to a graphical representation of code similar to what they'll see in high school, using more typical programmatic syntax. The computer equivalent of a children's book, "C is for Coding" will change what you thought possible for the ones you love most.
  
  
 ## Minimal Viable Project
@@ -43,7 +43,6 @@ We are excited to learn more about natural language programming with a group mem
  
  
 ## Proof of Concept
- 
 Our POC focuses on the end-to-end pipeline:
 1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/app/Main.hs#L28)
 2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/src/Tokenizer.hs#L30)
@@ -52,26 +51,34 @@ Our POC focuses on the end-to-end pipeline:
 5. Interpret the commands [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Interpret.hs)
 6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/src/World.hs#L36) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c58e5a72a9dfc24dcafe872cbb9f8d50b2798120/haskell/app/Main.hs#L51)
  
-This represents the core functionality of our product: allowing a user to type in a natural language command and showing the results on screen. This is the core "game loop" of our product and building it has given us confidence that we can expand scope of commands and refine presentation to create an outstanding MVP.
+This represents the core functionality of our product: allowing a user to type in a natural language command and showing the results on screen. This is the core feedback loop of our product and building it has given us confidence that we can expand the scope of commands and refine the presentation to create an outstanding MVP. We believe that this goes above and beyond what was expected for the proof of concept, as it is a complete system which demonstrates what a solution to the problem would look like, even if it is not  complete.
  
 Additional details of our POC:
  
-Our proof of concept uses Gloss to accept user input, and show the corresponding output. We draw user input directly into the viewing area. When the user presses enter we draw the result to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that we may expand the scope of the input - for instance, allowing someone to select a specific entity on screen using their mouse.
+Our proof of concept uses gloss to accept user input, and show the corresponding output. We draw user input directly into the viewing area. When the user presses enter we draw the result to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that we may expand the scope of the input - for instance, allowing someone to select a specific entity on screen using their mouse.
  
 Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful English language model provided by `spaCy`, (or even models for other languages) makes us confident that our project will not be limited by the language models included.
  
 While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project straightforward, actually building out the functionality helped reinforce this confidence. This is currently the weakest part of our project, but it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
  
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence and hit enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s.
+Our proof of concept provides a GUI where you can input a sentence and hit Enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note that when running the full demo, `spaCy` will be downloaded to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s. 
 
-You can try drawing various colors of cats in the GUI by typing "draw a `color` cat".
+Using `stack ghci`, you can import the following files:
+- TLDR: using `main`, you can try drawing various colors of cats in the GUI by typing "draw a <color> cat" (not all cats are supported, and this input is case sensitive). Cats currently overlap each other, so you will only see one cat at a time.
+- `Tokens.hs`: This file contains the token format used throughout the project, and a `Tag` class which enumerates some of the parts-of-speech tags that spacy produces. You can use `newTag` to parse a tag, or `newToken` to parse a tag and String.
+- `Tokenizer.hs`: This file uses `System.Process` to call `spaCy` to tokenize text and extract part-of-speech tags, using the `tokenize` function, which takes a String and produces `IO (Maybe [Token])`. Additionally, it provides `setupTokenizer`, which will automatically set up a virtual environment and install `spaCy` if it is not found.
+- `NLTree.hs` - NLTree refers to natural language tree. This file contains the various datatypes used to represent a series of tokens in a tree format. You can use `parse` to parse the output of `Tokenizer.tokenize`.
+- `Parse.hs` - `Parse.hs` is an extension of `NLTree.hs`, but is separated to allow testing. `Parse.hs` contains additional methods for parsing adjectives and verbs into their intermediate representations. For example, `parseAdjective` can parse `Adjective JJ "black"`, to an Attribute `AColor black`, and `parseAction` parses `Verb VB "draw"` to the action `Draw`. In the future, we would like to support more attributes, such as "tall", and more actions, such as "remove".
+-`World.hs`: This file contains both the world and entity representation. A `World` stores user input, as well a list of entities introduced into the world. It also provides helper methods for interacting with gloss - `worldToPicture` renders the world to gloss's `Picture` class. Other methods, such as `applyAttribute`, will apply an Attribute generated by `parseAdjective` to a target image.
+- `Main.hs`: This provides the event loop used to facilitate user interaction. Calling `main` will set up the tokenizer and open a window with the default environment, which is empty. As the user types, they will see their text appear on screen, and once they hit Enter, and the text will be interpreted. We currently support drawing a limited variety of cats, using the command "draw a <color> cat", where the color is optional, but can be one of black, red, blue, green, or orange.
+
 
 To run the tests, which test smaller portions of the project, and use pretokenized data (so `spaCy` will not be downloaded), use `make haskell-eval` from the project.
 
 Notes (not required to test/run code):
-- Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`, and the top level `Makefile` will copy the correct version to `stack.yaml`. This is required because of https://github.com/commercialhaskell/stack/issues/3369).
-- We bundle freeglut.dll / glut32.dll to run gloss on Windows
+- Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`. The top level `Makefile` will copy the correct version to `stack.yaml`. This is required because stack does not allow os-specific dependencies (https://github.com/commercialhaskell/stack/issues/3369).
+- We bundle freeglut.dll and glut32.dll to run gloss on Windows, in the src directory. 
 
 ### Previously written
 As it is currently set up, editing works best if you first `cd` into the `haskell` subdirectory and open VS Code on that directory (`code .`). There is a `Makefile` with some helpful aliases, but you can also just use `stack` as normal.
