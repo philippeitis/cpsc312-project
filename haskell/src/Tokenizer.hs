@@ -58,7 +58,7 @@ setupTokenizer :: IO ()
 setupTokenizer = doesDirectoryExist "venv" >>= \isDir -> if isDir then
     putStrLn "Tokenizer already installed"
     else putStrLn "Installing tokenizer"
-        >> createProcess (proc "python" ["-m", "venv", "./venv"])
+        >> createProcess (proc "python3" ["-m", "venv", "./venv"])
         >>= waitForProcessWrapper
         >> putStrLn "Created venv"
         >> installSpacy
