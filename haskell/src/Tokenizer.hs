@@ -50,14 +50,11 @@ waitForProcessWrapper :: (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandl
 waitForProcessWrapper (_, _, _, handle) = void (waitForProcess handle)
 
 -- |Finds which of python, python3 are the correct python to run
-getCorrectPython :: IO String
-getCorrectPython = createProcess (proc "python" ["--version"]) >>= readStdOut
-  >>= \case
-     Just pythonV -> return (if pythonV > "Python 3."
-      then "python"
-      else "python3")
-     -- Program will crash anyways if it's Python 2.
-     Nothing -> return "python"
+getCorrectPython :: String
+getCorrectPython = case os of
+    "linux" -> "python3"
+    "darwin" -> "python3"
+    "mingw32" -> "python"
 
 -- |Installs spacy into the local venv
 installSpacy :: IO ()
@@ -74,8 +71,7 @@ setupTokenizer :: IO ()
 setupTokenizer = doesDirectoryExist "venv" >>= \isDir -> if isDir then
     putStrLn "Tokenizer already installed"
     else putStrLn "Installing tokenizer"
-        >> getCorrectPython
-        >>= \py -> createProcess (proc py ["-m", "venv", "./venv"])
+        >> createProcess (proc getCorrectPython ["-m", "venv", "./venv"])
         >>= waitForProcessWrapper
         >> putStrLn "Created venv"
         >> installSpacy
