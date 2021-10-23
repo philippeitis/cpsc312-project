@@ -66,7 +66,7 @@ Our proof of concept provides a GUI where you can input a sentence and hit Enter
 
 To run the tests, which test smaller portions of the project, and use pretokenized data (so `spaCy` will not be downloaded), use `make haskell-eval` from the project.
 
-Using `stack ghci` (but first running `make haskell-eval` to set everything up), you can import the following files:
+Using `cd haskell && stack ghci` (but first running `make haskell-eval` to set everything up), you can import the following files:
 - TLDR: using `main`, you can try drawing various colors of cats in the GUI by typing "draw a <attribute> cat" (attributes can be colors or sizes, but not all colors and sizes are supported - try "black", "red", "blue", "green", "orange", "big" and "small"). Cats currently overlap each other, so you will only see one cat of a specific size at a time.
 - `Tokens.hs`: This file contains the token format used throughout the project, and a `Tag` class which enumerates some of the parts-of-speech tags that spacy produces. You can use `newTag` to parse a tag, or `newToken` to parse a tag and String.
 - `Tokenizer.hs`: This file uses `System.Process` to call `spaCy` to tokenize text and extract part-of-speech tags, using the `tokenize` function, which takes a String and produces `IO (Maybe [Token])`. Additionally, it provides `setupTokenizer`, which will automatically set up a virtual environment and install `spaCy` if it is not found.
