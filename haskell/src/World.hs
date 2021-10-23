@@ -2,7 +2,7 @@ module World where
 
 import Graphics.Gloss
 
-data Size = Default
+data Size = Default | Small | Big
   deriving(Show, Eq)
 
 data Animal = Cat
@@ -29,7 +29,9 @@ defaultWorld = World [] ""
 -- |Applies the attribute to the picture
 applyAttribute :: Attribute -> Picture -> Picture
 applyAttribute (AColor color) = Color color
+applyAttribute (Size Small) = Scale 0.7 0.7
 applyAttribute (Size Default) = Scale 1 1
+applyAttribute (Size Big) = Scale 1.2 1.2
 
 -- |Renders the world
 -- If it contains text, the text is also drawn to screen
