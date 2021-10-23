@@ -86,6 +86,10 @@ We should be able to further explore your code's functionality by running `stack
 
 If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
 
+### External Libraries Used
+- gloss: https://hackage.haskell.org/package/gloss
+- spacy: https://spacy.io/
+
 ### How to test and run the code: Prolog
 
 Replace this section with instructions to us for how to test and run your code.
