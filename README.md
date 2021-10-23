@@ -44,12 +44,12 @@ We are excited to learn more about natural language programming with a group mem
  
 ## Proof of Concept
 Our POC focuses on the end-to-end pipeline:
-1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/21346a744e61b807c29d9d93116df84b39e618ff/haskell/app/Main.hs#L28)
-2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/21346a744e61b807c29d9d93116df84b39e618ff/haskell/src/Tokenizer.hs#L30)
-3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/21346a744e61b807c29d9d93116df84b39e618ff/haskell/src/NLTree.hs#L27)
+1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ac0a30908bdfd941c578f19f17908f73ce6c5fa4/haskell/app/Main.hs#L28)
+2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ac0a30908bdfd941c578f19f17908f73ce6c5fa4/haskell/src/Tokenizer.hs#L31)
+3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ac0a30908bdfd941c578f19f17908f73ce6c5fa4/haskell/src/NLTree.hs#L33)
 4. Parse individual elements into program commands with modifiers such as draw orange [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Parse.hs)
 5. Interpret the commands [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Interpret.hs)
-6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/21346a744e61b807c29d9d93116df84b39e618ff/haskell/src/World.hs#L36) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/21346a744e61b807c29d9d93116df84b39e618ff/haskell/app/Main.hs#L51)
+6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ac0a30908bdfd941c578f19f17908f73ce6c5fa4/haskell/src/World.hs#L51) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ac0a30908bdfd941c578f19f17908f73ce6c5fa4/haskell/app/Main.hs#L51)
  
 This represents the core event loop our product aims to provide: a user types in a command they want to see evaluated, and our product will display the effects of that command. Building this proof of concept has given us confidence that we can expand the scope of commands and refine the presentation to create an outstanding MVP. We believe that this goes above and beyond what was expected for the proof of concept, as it is a complete system which demonstrates what a solution to the problem would look like, and implements a significant portion of our proposed MVP. This project has also been built with extensibility and ease of use as a first priority, and the various components are documented and separated into distinct files, which are detailed below, and in the testing section.
 
