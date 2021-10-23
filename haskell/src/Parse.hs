@@ -6,6 +6,7 @@ import Tokens (Tag (..), Token (..))
 import World (Attribute (..), Size (..))
 
 data Action = Draw
+  deriving(Show, Eq)
 
 -- |Parses the action to a supported command, or returns Nothing if the action
 -- is not supported.
