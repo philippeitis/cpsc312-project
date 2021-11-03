@@ -55,7 +55,7 @@ funcConstraints(_, _, _, _, Score) :- Score = 0.
 % TODO: Make this a breadth-first A* search.
 % TODO: Add path length constraint and/or threshold to this.
 path(InputTypes, OutputTypes, []) :-
-    listSubset(InputTypes, OutputTypes).
+    listSubset(InputTypes, OutputTypes), !.
 
 % try path(["str"], ["None"], Path). (use ; to get more than one path)
 path(InputTypes, OutputTypes, [StartFn|Rest]) :-
@@ -64,3 +64,13 @@ path(InputTypes, OutputTypes, [StartFn|Rest]) :-
     outputs(StartFn, Outputs),
     path(Outputs, OutputTypes, Rest).
 
+pathNoCycles(InputTypes, OutputTypes, Path) :- pathNoCycles(InputTypes, OutputTypes, [], Path).
+
+pathNoCycles(InputTypes, OutputTypes, _Visited, []) :- listSubset(InputTypes, OutputTypes).
+
+pathNoCycles(InputTypes, OutputTypes, Visited, [StartFn|Rest]) :-
+    inputs(StartFn, Inputs),
+    listSubset(InputTypes, Inputs),
+    outputs(StartFn, Outputs),
+    \+member(StartFn, Visited),
+    pathNoCycles(Outputs, OutputTypes, [StartFn|Visited], Rest).
