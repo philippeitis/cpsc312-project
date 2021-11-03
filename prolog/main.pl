@@ -8,8 +8,10 @@ function("print2", ["int"], ["None"], "documentation").
 
 function("increment", ["int"], ["int"], "documentation").
 
+name(Func, Name) :- function(Func, _, _, _), Name=Func.
 inputs(Func, Inputs) :- function(Func, Inputs, _, _).
 outputs(Func, Outputs) :- function(Func, _, Outputs, _).
+docs(Func, Documentation) :- function(Func, _, _, Documentation).
 
 listSubset([], B, YesOrNo) :- YesOrNo=yes.
 listSubset([First|Rest], B, YesOrNo) :-
@@ -34,6 +36,13 @@ inputConstraint(Func, Inputs, Score) :-
     YesOrNo=no,
     Score=0.0.
 
+% TODO: Add outputConstraint function
+% TODO: Add Levenshtein distance:
+% https://en.wikipedia.org/wiki/Levenshtein_distance
+% TODO: Add regex?
+% TODO: Check if documentation / fn name contains a substring
+
+
 funcConstraints(Func, Constraints, Threshold, ScoreOut) :-
     funcConstraints(Func, Constraints, Threshold, 1.0, ScoreOut).
 
@@ -50,6 +59,8 @@ funcConstraints(Func, [], Threshold, ScoreIn, ScoreOut) :-
 funcConstraints(_, _, _, _, Score) :-
     Score = 0.
 
+% TODO: Make this a breadth-first search
+% TODO: Add path length constraint and/or threshold to this.
 path(InputTypes, OutputTypes, []) :-
     listSubset(InputTypes, OutputTypes, yes).
 
@@ -59,3 +70,4 @@ path(InputTypes, OutputTypes, [StartFn|Rest]) :-
     listSubset(InputTypes, Inputs, yes),
     outputs(StartFn, Outputs),
     path(Outputs, OutputTypes, Rest).
+
