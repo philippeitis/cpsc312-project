@@ -70,7 +70,7 @@ funcPath(InputTypes, OutputTypes, TimeToLive, [StartFn|Rest]) :-
     TimeToLiveSub is TimeToLive - 1,
     funcPath(Outputs, OutputTypes, TimeToLiveSub, Rest).
 
-funcPathNoCycles(InputTypes, OutputTypes, Path) :- pathNoCycles(InputTypes, OutputTypes, [], Path).
+funcPathNoCycles(InputTypes, OutputTypes, Path) :- funcPathNoCycles(InputTypes, OutputTypes, [], Path).
 
 funcPathNoCycles(InputTypes, OutputTypes, _Visited, []) :- listSubset(InputTypes, OutputTypes).
 
@@ -79,4 +79,4 @@ funcPathNoCycles(InputTypes, OutputTypes, Visited, [StartFn|Rest]) :-
     listSubset(InputTypes, Inputs),
     outputs(StartFn, Outputs),
     \+member(StartFn, Visited),
-    pathNoCycles(Outputs, OutputTypes, [StartFn|Visited], Rest).
+    funcPathNoCycles(Outputs, OutputTypes, [StartFn|Visited], Rest).
