@@ -63,7 +63,7 @@ funcPath(InputTypes, OutputTypes, TimeToLive, []) :-
     listSubset(InputTypes, OutputTypes), !.
 
 funcPath(InputTypes, OutputTypes, TimeToLive, [StartFn|Rest]) :-
-    TimeToLive >= 0,
+    TimeToLive >= 1,
     inputs(StartFn, Inputs),
     listSubset(InputTypes, Inputs),
     outputs(StartFn, Outputs),
