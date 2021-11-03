@@ -56,7 +56,8 @@ funcConstraints(_, _, _, _, Score) :- Score = 0.
 funcPath(InputTypes, OutputTypes, Path) :-
     funcPath(InputTypes, OutputTypes, 999, Path).
 
-% TODO: Make this a breadth-first A* search.
+% TODO: Make this a breadth-first search which expands highest priority
+% items first (eg. items with highest score) - look @ A*.
 % TODO: Add path length constraint and/or threshold to this.
 funcPath(InputTypes, OutputTypes, TimeToLive, []) :-
     TimeToLive >= 0,
