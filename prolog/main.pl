@@ -52,23 +52,29 @@ funcConstraints(Func, [pair(ConstraintFn, Args)|Rest], Threshold, ScoreIn, Score
 
 funcConstraints(_, _, _, _, Score) :- Score = 0.
 
+% try funcPath(["str"], ["None"], Path). (use ; to get more than one path)
+funcPath(InputTypes, OutputTypes, Path) :-
+    funcPath(InputTypes, OutputTypes, 999, Path).
+
 % TODO: Make this a breadth-first A* search.
 % TODO: Add path length constraint and/or threshold to this.
-path(InputTypes, OutputTypes, []) :-
+funcPath(InputTypes, OutputTypes, TimeToLive, []) :-
+    TimeToLive >= 0,
     listSubset(InputTypes, OutputTypes), !.
 
-% try path(["str"], ["None"], Path). (use ; to get more than one path)
-path(InputTypes, OutputTypes, [StartFn|Rest]) :-
+funcPath(InputTypes, OutputTypes, TimeToLive, [StartFn|Rest]) :-
+    TimeToLive >= 0,
     inputs(StartFn, Inputs),
     listSubset(InputTypes, Inputs),
     outputs(StartFn, Outputs),
-    path(Outputs, OutputTypes, Rest).
+    TimeToLiveSub is TimeToLive - 1,
+    funcPath(Outputs, OutputTypes, TimeToLiveSub, Rest).
 
-pathNoCycles(InputTypes, OutputTypes, Path) :- pathNoCycles(InputTypes, OutputTypes, [], Path).
+funcPathNoCycles(InputTypes, OutputTypes, Path) :- pathNoCycles(InputTypes, OutputTypes, [], Path).
 
-pathNoCycles(InputTypes, OutputTypes, _Visited, []) :- listSubset(InputTypes, OutputTypes).
+funcPathNoCycles(InputTypes, OutputTypes, _Visited, []) :- listSubset(InputTypes, OutputTypes).
 
-pathNoCycles(InputTypes, OutputTypes, Visited, [StartFn|Rest]) :-
+funcPathNoCycles(InputTypes, OutputTypes, Visited, [StartFn|Rest]) :-
     inputs(StartFn, Inputs),
     listSubset(InputTypes, Inputs),
     outputs(StartFn, Outputs),
