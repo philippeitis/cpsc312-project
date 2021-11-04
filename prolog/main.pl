@@ -35,7 +35,12 @@ inputConstraint(Func, Inputs, Score) :-
 
 inputConstraint(_Func, _Inputs, Score) :- Score=0.0.
 
-% TODO: Add outputConstraint function
+outputConstraint(Func, Inputs, Score) :-
+    hasOutput(Func, Inputs),
+    Score=1.0, !.
+
+outputConstraint(_Func, _Inputs, Score) :- Score=0.0.
+
 % TODO: Add Levenshtein distance:
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 % TODO: Add regex?
