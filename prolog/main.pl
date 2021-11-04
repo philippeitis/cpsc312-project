@@ -14,19 +14,6 @@ function("increment", ["int"], ["int"], "The increment function, or inc, or incr
 function("decrement", ["int"], ["int"], "The decrement function or dec, or decr, will take an integer, or int, and decrease its value by 1, or subtract 1 from it and then return the difference.").
 function("sum", ["List[int]"], ["int"], "Sum, or add integers, or add ints, will take in a list of integers or ints, and adds up all of the numerical values in the list. It returns a single integer which is the sum of this addition.").
 
-% Find Function Name
-findFuncName(Func, Prefix, Score) :-
-  name(Func, Name),
-  string_concat(Prefix, _, Suffix),
-  string_concat(_, Suffix, Name).
-
-% Find FuncName in Documentation
-findFuncInDocs(Func, Prefix, Score) :-
-  name(Func, Name),
-  string_concat(Prefix, _, Suffix),
-  string_concat(_, Suffix, Name).
-
-
 name(Func, Name) :- function(Func, _, _, _), Name=Func.
 inputs(Func, Inputs) :- function(Func, Inputs, _, _).
 outputs(Func, Outputs) :- function(Func, _, Outputs, _).
@@ -36,6 +23,24 @@ listSubset([], _).
 listSubset([First|Rest], B) :-
     member(First, B),
     listSubset(Rest, B), !.
+
+substring(Substring, String) :-
+    string_concat(Substring, _, Suffix),
+    string_concat(_, Suffix, Name).
+
+substringConstraint(Substring, String, Score) :-
+  substring(Substring, String),
+  Score = 1.0.
+
+substringConstraint(_, _, Score) :- Score = 0.0.
+
+nameSubstringConstraint(Func, Substring, Score) :-
+    name(Func, Name),
+    substringConstraint(Substring, Name, Score).
+
+docSubstringConstraint(Func, Substring, Score) :-
+    name(Func, Doc),
+    substringConstraint(Substring, Name, Score).
 
 hasInput(Func, TargetInputs) :-
     inputs(Func, Inputs),
