@@ -92,6 +92,18 @@ If you include instructions different from these, be **absolutely sure** that th
 
 ### How to test and run the code: Prolog
 
+## Product Pitch
+Intelligent tool for helping write code, which helps accelerate development by taking into considering the rest of your codebase to help you transform pseudocode into fully functional software
+
+## MVP:
+Types with generics, function types, traits, and functions
+- Supports various text-search methods
+- Provides simple NLP API to return best matches for functions
+## POC:
+- Allow user defined functions
+- Provide simple search system (eg. line by line, ask for input, output, then docs)
+- Supports simple text-based constraints, best-first search, and input/output constraints
+
 Replace this section with instructions to us for how to test and run your code.
 
 Instructions coming soon, but we expect you'll use the [Prolog Unit Testing](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) library for testing and that we'll be able to run your code with `swipl`.
