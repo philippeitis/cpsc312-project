@@ -24,11 +24,10 @@ listSubset([First|Rest], B) :-
     member(First, B),
     listSubset(Rest, B), !.
 
-substringConstraint(Substring, String, Score) :-
-  sub_string(String, _, _, _, Substring),
-  Score = 1.0, !.
-
-substringConstraint(_, _, Score) :- Score = 0.0.
+substringConstraint(Substring, String, 1.0) :-
+    sub_string(String, _, _, _, Substring), !.
+substringConstraint(Substring, String, 0.0) :-
+    \+sub_string(String, _, _, _, Substring).
 
 nameSubstringConstraint(Func, Substring, Score) :-
     name(Func, Name),
@@ -45,23 +44,19 @@ hasOutput(Func, TargetOutputs) :-
     outputs(Func, Outputs),
     listSubset(TargetOutputs, Outputs).
 
-inputConstraint(Func, Inputs, Score) :-
-    hasInput(Func, Inputs),
-    Score=1.0, !.
+inputConstraint(Func, Inputs, 1.0) :-
+    hasInput(Func, Inputs), !.
+inputConstraint(Func, Inputs, 0.0) :-
+    \+hasInput(Func, Inputs).
 
-inputConstraint(_Func, _Inputs, Score) :- Score=0.0.
-
-outputConstraint(Func, Inputs, Score) :-
-    hasOutput(Func, Inputs),
-    Score=1.0, !.
-
-outputConstraint(_Func, _Inputs, Score) :- Score=0.0.
+outputConstraint(Func, Outputs, 1.0) :-
+    hasOutput(Func, Outputs), !.
+outputConstraint(Func, Outputs, 0.0) :- 
+    \+hasOutput(Func, Outputs).
 
 % TODO: Add Levenshtein distance:
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 % TODO: Add regex?
-% TODO: Check if documentation / fn name contains a substring
-
 
 funcConstraints(Func, Constraints, Threshold, ScoreOut) :-
     funcConstraints(Func, Constraints, Threshold, 1.0, ScoreOut).
@@ -76,7 +71,7 @@ funcConstraints(Func, [(ConstraintFn, Args)|Rest], Threshold, ScoreIn, ScoreOut)
     ScoreIn2 is ScoreIn * ThisScore,
     funcConstraints(Func, Rest, Threshold, ScoreIn2, ScoreOut), !.
 
-funcConstraints(_, _, _, _, Score) :- Score = 0.
+funcConstraints(_, _, _, _, 0.0).
 
 pathConstraints(_, _, []).
 
@@ -115,7 +110,7 @@ funcPath(InputTypes, OutputTypes, Visited, PathConstraints, [StartFn|Rest]) :-
 % Path -> Length, membership
 
 % Constraint: Func -> Args -> Score
-cycleConstraint(_, Func, _) :- Func = none.
+cycleConstraint(_, none, _).
 cycleConstraint(Path, Func, _) :-
     \+member(Func, Path).
 
