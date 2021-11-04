@@ -40,7 +40,7 @@ nameSubstringConstraint(Func, Substring, Score) :-
 
 docSubstringConstraint(Func, Substring, Score) :-
     name(Func, Doc),
-    substringConstraint(Substring, Name, Score).
+    substringConstraint(Substring, Doc, Score).
 
 hasInput(Func, TargetInputs) :-
     inputs(Func, Inputs),
