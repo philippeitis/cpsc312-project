@@ -1,6 +1,7 @@
 type("int").
 type("None").
 
+% Function is fnIdentifier, fnInputs, fnOutputs, fnDocs
 function("parseInt", ["str"], ["int"], "documentation").
 function("parseInt2", ["str"], ["int"], "documentation").
 function("print", ["int"], ["None"], "documentation").
@@ -52,32 +53,47 @@ funcConstraints(Func, [pair(ConstraintFn, Args)|Rest], Threshold, ScoreIn, Score
 
 funcConstraints(_, _, _, _, Score) :- Score = 0.
 
+pathConstraints(_, _, []).
+
+pathConstraints(Path, Func, [pair(ConstraintFn, Args)|Rest]) :-
+    call(ConstraintFn, Path, Func, Args),
+    pathConstraints(Path, Func, Rest), !.
+
 % try funcPath(["str"], ["None"], Path). (use ; to get more than one path)
 funcPath(InputTypes, OutputTypes, Path) :-
-    funcPath(InputTypes, OutputTypes, 999, Path).
+    funcPath(InputTypes, OutputTypes, [], [pair(lengthConstraint, 999)], Path).
 
 % TODO: Make this a breadth-first search which expands highest priority
 % items first (eg. items with highest score) - look @ A*.
 % TODO: Add path length constraint and/or threshold to this.
-funcPath(InputTypes, OutputTypes, TimeToLive, []) :-
-    TimeToLive >= 0,
-    listSubset(InputTypes, OutputTypes), !.
 
-funcPath(InputTypes, OutputTypes, TimeToLive, [StartFn|Rest]) :-
-    TimeToLive >= 1,
+funcPathNoCycles(InputTypes, OutputTypes, Path) :-
+    funcPath(InputTypes, OutputTypes, [],  [
+        pair(cycleConstraint, _),
+        pair(lengthConstraint, 999)
+    ], Path).
+
+funcPath(InputTypes, OutputTypes, Visited, PathConstraints, []) :-
+    listSubset(InputTypes, OutputTypes),
+    pathConstraints(Visited, none, PathConstraints).
+
+funcPath(InputTypes, OutputTypes, Visited, PathConstraints, [StartFn|Rest]) :-
     inputs(StartFn, Inputs),
     listSubset(InputTypes, Inputs),
     outputs(StartFn, Outputs),
-    TimeToLiveSub is TimeToLive - 1,
-    funcPath(Outputs, OutputTypes, TimeToLiveSub, Rest).
+    pathConstraints(Visited, StartFn, PathConstraints),
+    funcPath(Outputs, OutputTypes, [StartFn|Visited], PathConstraints, Rest).
 
-funcPathNoCycles(InputTypes, OutputTypes, Path) :- funcPathNoCycles(InputTypes, OutputTypes, [], Path).
+% Contraint *args, Func, Score
+% Constraint -> Score
+% Constraint, Func -> Optional(Constraint)
+% Path -> Length, membership
 
-funcPathNoCycles(InputTypes, OutputTypes, _Visited, []) :- listSubset(InputTypes, OutputTypes).
+% Constraint: Func -> Args -> Score
+cycleConstraint(Path, Func, _) :- Func = none.
+cycleConstraint(Path, Func, _) :-
+    \+member(Func, Path).
 
-funcPathNoCycles(InputTypes, OutputTypes, Visited, [StartFn|Rest]) :-
-    inputs(StartFn, Inputs),
-    listSubset(InputTypes, Inputs),
-    outputs(StartFn, Outputs),
-    \+member(StartFn, Visited),
-    funcPathNoCycles(Outputs, OutputTypes, [StartFn|Visited], Rest).
+lengthConstraint(Path, _, Length) :-
+    length(Path, PathLength),
+    PathLength =< Length.
