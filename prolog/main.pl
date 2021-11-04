@@ -24,13 +24,9 @@ listSubset([First|Rest], B) :-
     member(First, B),
     listSubset(Rest, B), !.
 
-substring(Substring, String) :-
-    string_concat(Substring, _, Suffix),
-    string_concat(_, Suffix, Name).
-
 substringConstraint(Substring, String, Score) :-
-  substring(Substring, String),
-  Score = 1.0.
+  sub_string(String, _, _, _, Substring),
+  Score = 1.0, !.
 
 substringConstraint(_, _, Score) :- Score = 0.0.
 
