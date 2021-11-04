@@ -45,7 +45,7 @@ funcConstraints(_Func, [], Threshold, ScoreIn, ScoreOut) :-
     ScoreIn > Threshold,
     ScoreOut = ScoreIn, !.
 
-funcConstraints(Func, [pair(ConstraintFn, Args)|Rest], Threshold, ScoreIn, ScoreOut) :-
+funcConstraints(Func, [(ConstraintFn, Args)|Rest], Threshold, ScoreIn, ScoreOut) :-
     ScoreIn > Threshold,
     call(ConstraintFn, Func, Args, ThisScore),
     ScoreIn2 is ScoreIn * ThisScore,
@@ -55,13 +55,13 @@ funcConstraints(_, _, _, _, Score) :- Score = 0.
 
 pathConstraints(_, _, []).
 
-pathConstraints(Path, Func, [pair(ConstraintFn, Args)|Rest]) :-
+pathConstraints(Path, Func, [(ConstraintFn, Args)|Rest]) :-
     call(ConstraintFn, Path, Func, Args),
     pathConstraints(Path, Func, Rest), !.
 
 % try funcPath(["str"], ["None"], Path). (use ; to get more than one path)
 funcPath(InputTypes, OutputTypes, Path) :-
-    funcPath(InputTypes, OutputTypes, [], [pair(lengthConstraint, 999)], Path).
+    funcPath(InputTypes, OutputTypes, [], [(lengthConstraint, 999)], Path).
 
 % TODO: Make this a breadth-first search which expands highest priority
 % items first (eg. items with highest score) - look @ A*.
@@ -69,8 +69,8 @@ funcPath(InputTypes, OutputTypes, Path) :-
 
 funcPathNoCycles(InputTypes, OutputTypes, Path) :-
     funcPath(InputTypes, OutputTypes, [],  [
-        pair(cycleConstraint, _),
-        pair(lengthConstraint, 999)
+        (cycleConstraint, _),
+        (lengthConstraint, 999)
     ], Path).
 
 funcPath(InputTypes, OutputTypes, Visited, PathConstraints, []) :-
@@ -90,7 +90,7 @@ funcPath(InputTypes, OutputTypes, Visited, PathConstraints, [StartFn|Rest]) :-
 % Path -> Length, membership
 
 % Constraint: Func -> Args -> Score
-cycleConstraint(Path, Func, _) :- Func = none.
+cycleConstraint(_, Func, _) :- Func = none.
 cycleConstraint(Path, Func, _) :-
     \+member(Func, Path).
 
