@@ -2,6 +2,10 @@ type("int").
 type("None").
 
 % Function is fnIdentifier, fnInputs, fnOutputs, fnDocs
+% fnIdentifier: Currently function name, but we might use an unique identifier
+% fnInputs: List of function arguments,
+% fnOutputs: List of function outputs,
+% fnDocs: User documentation for function
 function("parseInt", ["str"], ["int"], "documentation").
 function("parseInt2", ["str"], ["int"], "documentation").
 function("print", ["int"], ["None"], "documentation").
