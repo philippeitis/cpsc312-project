@@ -24,18 +24,21 @@ listSubset([First|Rest], B) :-
     member(First, B),
     listSubset(Rest, B), !.
 
-substringConstraint(Substring, String, 1.0) :-
+noConstraint(_, _, 0.0, (noConstraint, _)).
+
+substringConstraint(Substring, String, 1.0, _, (noConstraint, _)) :-
     sub_string(String, _, _, _, Substring), !.
-substringConstraint(Substring, String, 0.0) :-
+substringConstraint(Substring, String, 0.0, ConstraintFn, (ConstraintFn, Substring)) :-
     \+sub_string(String, _, _, _, Substring).
 
-nameSubstringConstraint(Func, Substring, Score) :-
+nameSubstringConstraint(Func, Substring, Score, NewConstraint) :-
     name(Func, Name),
-    substringConstraint(Substring, Name, Score).
+    substringConstraint(Substring, Name, Score, nameSubstringConstraint, NewConstraint).
 
-docSubstringConstraint(Func, Substring, Score) :-
+docSubstringConstraint(Func, Substring, Score, NewConstraint) :-
     docs(Func, Doc),
-    substringConstraint(Substring, Doc, Score).
+    substringConstraint(Substring, Doc, Score, docSubstringConstraint, NewConstraint).
+
 
 hasInput(Func, TargetInputs) :-
     inputs(Func, Inputs),
@@ -44,34 +47,38 @@ hasOutput(Func, TargetOutputs) :-
     outputs(Func, Outputs),
     listSubset(TargetOutputs, Outputs).
 
-inputConstraint(Func, Inputs, 1.0) :-
-    hasInput(Func, Inputs), !.
-inputConstraint(Func, Inputs, 0.0) :-
-    \+hasInput(Func, Inputs).
+inputConstraint(Func, Inputs, 0.0, NewConstraint) :-
+    hasInput(Func, Inputs),
+    outputs(Func, Outputs),
+    NewConstraint = (inputConstraint, Outputs).
 
-outputConstraint(Func, Outputs, 1.0) :-
-    hasOutput(Func, Outputs), !.
-outputConstraint(Func, Outputs, 0.0) :- 
-    \+hasOutput(Func, Outputs).
+outputConstraint(Func, Outputs, 0.0, NewConstraint) :-
+    hasOutput(Func, Outputs),
+    NewConstraint = (noConstraint, _), !.
+outputConstraint(Func, Outputs, 0.0, NewConstraint) :- 
+    \+hasOutput(Func, Outputs),
+    NewConstraint = (outputConstraint, Outputs).
 
 % TODO: Add Levenshtein distance:
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 % TODO: Add regex?
 
-funcConstraints(Func, Constraints, Threshold, ScoreOut) :-
-    funcConstraints(Func, Constraints, Threshold, 1.0, ScoreOut).
+funcConstraints(Func, Constraints, ScoreOut, NewConstraints) :-
+    funcConstraints(Func, Constraints, 1.0, ScoreOut, NewConstraints).
 
-funcConstraints(_Func, [], Threshold, ScoreIn, ScoreOut) :-
-    ScoreIn > Threshold,
+funcConstraints(_Func, [], ScoreIn, ScoreOut, _) :-
     ScoreOut = ScoreIn, !.
 
-funcConstraints(Func, [(ConstraintFn, Args)|Rest], Threshold, ScoreIn, ScoreOut) :-
-    ScoreIn > Threshold,
-    call(ConstraintFn, Func, Args, ThisScore),
-    ScoreIn2 is ScoreIn * ThisScore,
-    funcConstraints(Func, Rest, Threshold, ScoreIn2, ScoreOut), !.
-
-funcConstraints(_, _, _, _, 0.0).
+funcConstraints(
+    Func,
+    [(ConstraintFn, Args)|Rest],
+    ScoreIn,
+    ScoreOut,
+    [NewConstraint|NewConstraints]
+    ) :-
+    call(ConstraintFn, Func, Args, ThisScore, NewConstraint),
+    ScoreIn2 is ScoreIn + ThisScore,
+    funcConstraints(Func, Rest, ScoreIn2, ScoreOut, [NewConstraint | NewConstraints]).
 
 pathConstraints(_, _, []).
 
@@ -81,28 +88,34 @@ pathConstraints(Path, Func, [(ConstraintFn, Args)|Rest]) :-
 
 % try funcPath(["str"], ["None"], Path). (use ; to get more than one path)
 funcPath(InputTypes, OutputTypes, Path) :-
-    funcPath(InputTypes, OutputTypes, [], [(lengthConstraint, 999)], Path).
-
+    funcPath(
+        [],
+        [(inputConstraint, InputTypes)],
+        [(lengthConstraint, 999),
+         (pathOutputConstraint, OutputTypes)],
+        Path
+    ).
 % TODO: Make this a breadth-first search which expands highest priority
 % items first (eg. items with highest score) - look @ A*.
 % TODO: Add path length constraint and/or threshold to this.
 
 funcPathNoCycles(InputTypes, OutputTypes, Path) :-
-    funcPath(InputTypes, OutputTypes, [],  [
-        (cycleConstraint, _),
-        (lengthConstraint, 999)
-    ], Path).
+    funcPath(
+        [],
+        [(inputConstraint, InputTypes)],
+        [(cycleConstraint, _),
+        (lengthConstraint, 999),
+        (pathOutputConstraint, OutputTypes)], Path).
 
-funcPath(InputTypes, OutputTypes, Visited, PathConstraints, []) :-
-    listSubset(InputTypes, OutputTypes),
-    pathConstraints(Visited, none, PathConstraints).
+funcPath(Visited, FuncConstraints, PathConstraints, []) :-
+    pathConstraints(Visited, none, PathConstraints),
+    noConstraintsLeft(FuncConstraints).
 
-funcPath(InputTypes, OutputTypes, Visited, PathConstraints, [StartFn|Rest]) :-
-    inputs(StartFn, Inputs),
-    listSubset(InputTypes, Inputs),
-    outputs(StartFn, Outputs),
+funcPath(Visited, FuncConstraints, PathConstraints, [StartFn|Rest]) :-
+    funcConstraints(StartFn, FuncConstraints, _, NewConstraints),
     pathConstraints(Visited, StartFn, PathConstraints),
-    funcPath(Outputs, OutputTypes, [StartFn|Visited], PathConstraints, Rest).
+    funcPath([StartFn|Visited], NewConstraints, PathConstraints, Rest).
+
 
 % Contraint *args, Func, Score
 % Constraint -> Score
@@ -117,3 +130,14 @@ cycleConstraint(Path, Func, _) :-
 lengthConstraint(Path, _, Length) :-
     length(Path, PathLength),
     PathLength =< Length.
+
+pathOutputConstraint([LastFn|_], none, OutputTypes) :-
+    hasOutput(LastFn, OutputTypes).
+pathOutputConstraint(_, Value, OutputTypes) :- \+(Value=none).
+
+% Needs to be used in conjunction with pathOutputConstraint
+noConstraintsLeft([]) :- !.
+noConstraintsLeft([(noConstraint, _)|Rest]) :- 
+    noConstraintsLeft(Rest).
+noConstraintsLeft([(inputConstraint, _)|Rest]) :- 
+    noConstraintsLeft(Rest).
