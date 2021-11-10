@@ -7,17 +7,15 @@ pretty_print_path([]) :- !.
 pretty_print_path([Func]) :-
     write(Func), !.
 pretty_print_path([Head|Tail]) :-
-    write(Head), write(" -> "), pretty_print_path(Tail), !.
+    format("~w -> ", [Head]), pretty_print_path(Tail), !.
     
 parse_definition(Definition, InputTypes, OutputTypes, Docs) :- 
     split_left(Definition, " :", 1, [Inputs, OutputDoc]),
     split_string(Inputs, ", ", ", ", InputTypes),
-    write("InputTypes is "),
-    write(InputTypes), nl, 
+    format("InputTypes is ~w", [InputTypes]), nl,
     split_left(OutputDoc, "| ", 1, [Outputs, Docs]),
     split_string(Outputs, ", ", ", ", OutputTypes),
-    write("OutputTypes is "),
-    write(OutputTypes), nl.
+    format("OutputTypes is ~w", [OutputTypes]), nl.
 
 command("define").
 command("clear").
@@ -37,18 +35,16 @@ assist("path") :-
     write("Finds a sequence of function which transform the input to the output."), nl,
     write("Format: search arg1, arg2 :: output1, output2 | doc"), nl, !.
 assist(String) :- 
-    write("Unrecognized command ~"),
-    write(String), nl,
+    format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
 
 available_commands() :-
     write("Available commands: "), nl,
-    foreach(command(Name), (write("    "), write(Name), nl)).
+    foreach(command(Name), (format("    ~w", Name), nl)).
 
 execute_command(String) :-
     split_left(String, " ", 2, ["define", FnName, Rest]),
-    write("fnName is "),
-    write(FnName), nl, 
+    format("fnName is ~w", [FnName]), nl,
     write(Rest), nl,
     parse_definition(Rest, InputTypes, OutputTypes, Docs),
     assertz(function(FnName, InputTypes, OutputTypes, Docs)), !.
@@ -62,20 +58,20 @@ execute_command(String) :-
     parse_definition(Rest, InputTypes, OutputTypes, Docs),
     findnsols(5, Func, func_path_no_cycles(InputTypes, OutputTypes, [Func]), Solns),
     length(Solns, Len),
-    write("Found "), write(Len), write(" solutions:"), nl,
-    foreach(member(Soln, Solns), (write("Function: "), write(Soln), nl)), !.
+    format("Found ~w solutions:", [Len]), nl,
+    foreach(member(Soln, Solns), (format("Function: ~w", [Soln]), nl)), !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["path", Rest]),
     parse_definition(Rest, InputTypes, OutputTypes, Docs),
     findnsols(5, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
     length(Solns, Len),
-    write("Found "), write(Len), write(" solutions:"), nl,
+    format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.
 
 execute_command("help") :-
-    available_commands(),
-    write("Use `help command` for help with a particular command"), nl, !.
+    write("Use `help command` for help with a particular command"), nl,
+    available_commands(), !.
 
 execute_command(String) :-
     split_left(String, " ", 2, ["help", Command]),
@@ -85,7 +81,7 @@ execute_command(String) :- assist(String), !.
 
 input_loop() :-
     write("Enter a command."), nl,
-    read(Command),
+    read(Command), nl,
     execute_command(Command),
     input_loop().
 
