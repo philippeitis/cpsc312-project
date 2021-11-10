@@ -47,10 +47,6 @@ input_constraint(Func, Inputs, 0.0, (input_constraint, Outputs)) :-
     has_input(Func, Inputs),
     outputs(Func, Outputs).
 
-% TODO: Add Levenshtein distance:
-% https://en.wikipedia.org/wiki/Levenshtein_distance
-% TODO: Add regex?
-
 %% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
 % Tests if Func satisfies all constraints, producing a score for this function,
 % ScoreOut, and a set of constraints which follow Constraints, NewConstraints.

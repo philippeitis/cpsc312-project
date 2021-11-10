@@ -52,3 +52,5 @@ levenshtein_distance([A|TailA], [B|TailB], Distance) :-
     levenshtein_distance(TailA, TailB, Distance3),
     min_list([Distance1, Distance2, Distance3], DistanceMin),
     Distance is DistanceMin + 1, !.
+
+% TODO: Add regex?
