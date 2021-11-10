@@ -1,3 +1,5 @@
+:- module(server, [server/1]).
+
 %% Load this file in prolog, and use server(Port). to launch it.
 
 :- use_module(library(http/thread_httpd)).

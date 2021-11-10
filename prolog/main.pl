@@ -1,6 +1,7 @@
 :- use_module(function).
 :- use_module(string_op).
 :- use_module(search).
+:- use_module(server).
 
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
@@ -29,6 +30,7 @@ command("define").
 command("clear").
 command("search").
 command("path").
+command("launch").
 
 assist("define") :- 
     write("Defines a function from user input."), nl,
@@ -42,6 +44,10 @@ assist("search") :-
 assist("path") :- 
     write("Finds a sequence of function which transform the input to the output."), nl,
     write("Format: search arg1, arg2 :: output1, output2"), nl, !.
+assist("launch") :- 
+    write("Launches the server on the given port."), nl,
+    write("Format: launch port"), nl, !.
+
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
@@ -76,6 +82,11 @@ execute_command(String) :-
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.
+
+execute_command(String) :-
+    split_left(String, " ", 1, ["launch", PortStr]),
+    number_string(Port, PortStr),
+    server(Port), !.
 
 execute_command("help") :-
     write("Use `help command` for help with a particular command"), nl,
