@@ -52,19 +52,12 @@ inputConstraint(Func, Inputs, 0.0, NewConstraint) :-
     outputs(Func, Outputs),
     NewConstraint = (inputConstraint, Outputs).
 
-outputConstraint(Func, Outputs, 0.0, NewConstraint) :-
-    hasOutput(Func, Outputs),
-    NewConstraint = (noConstraint, _), !.
-outputConstraint(Func, Outputs, 0.0, NewConstraint) :- 
-    \+hasOutput(Func, Outputs),
-    NewConstraint = (outputConstraint, Outputs).
-
 % TODO: Add Levenshtein distance:
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 % TODO: Add regex?
 
 funcConstraints(Func, Constraints, ScoreOut, NewConstraints) :-
-    funcConstraints(Func, Constraints, 1.0, ScoreOut, NewConstraints).
+    funcConstraints(Func, Constraints, 0.0, ScoreOut, NewConstraints).
 
 funcConstraints(_Func, [], ScoreIn, ScoreOut, _) :-
     ScoreOut = ScoreIn, !.
@@ -78,9 +71,9 @@ funcConstraints(
     ) :-
     call(ConstraintFn, Func, Args, ThisScore, NewConstraint),
     ScoreIn2 is ScoreIn + ThisScore,
-    funcConstraints(Func, Rest, ScoreIn2, ScoreOut, [NewConstraint | NewConstraints]).
+    funcConstraints(Func, Rest, ScoreIn2, ScoreOut, NewConstraints).
 
-pathConstraints(_, _, []).
+pathConstraints(_, _, []) :- !.
 
 pathConstraints(Path, Func, [(ConstraintFn, Args)|Rest]) :-
     call(ConstraintFn, Path, Func, Args),
@@ -123,7 +116,7 @@ funcPath(Visited, FuncConstraints, PathConstraints, [StartFn|Rest]) :-
 % Path -> Length, membership
 
 % Constraint: Func -> Args -> Score
-cycleConstraint(_, none, _).
+cycleConstraint(_, none, _) :- !.
 cycleConstraint(Path, Func, _) :-
     \+member(Func, Path).
 
@@ -133,7 +126,7 @@ lengthConstraint(Path, _, Length) :-
 
 pathOutputConstraint([LastFn|_], none, OutputTypes) :-
     hasOutput(LastFn, OutputTypes).
-pathOutputConstraint(_, Value, OutputTypes) :- \+(Value=none).
+pathOutputConstraint(_, Value, _) :- \+(Value=none).
 
 % Needs to be used in conjunction with pathOutputConstraint
 noConstraintsLeft([]) :- !.
