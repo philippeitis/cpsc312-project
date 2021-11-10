@@ -1,4 +1,5 @@
-:- module(string_op, [split_left/4]).
+:- module(string_op, [split_left/4, levenshtein_distance/3]).
+:- table levenshtein_distance/3.
 
 % split_left/4 splits the provided string on the characters in Sep,
 % up to a maximum of N times into Substrings. Multiple seperator characters
@@ -33,3 +34,21 @@ split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
     split_left(Tail, Sep, NSub, [], Strings), !.
 split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
     split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
+
+%%levenshtein_distance(A, B, Distance) :-
+levenshtein_distance(A, B, Distance) :-
+    string(A),
+    string(B),
+    string_chars(A, AChars),
+    string_chars(B, BChars),
+    levenshtein_distance(AChars, BChars, Distance), !.
+levenshtein_distance([], B, Distance) :- length(B, Distance), !.
+levenshtein_distance(A, [], Distance) :- length(A, Distance), !.
+levenshtein_distance([X|TailA], [X|TailB], Distance) :-
+    levenshtein_distance(TailA, TailB, Distance), !.
+levenshtein_distance([A|TailA], [B|TailB], Distance) :-
+    levenshtein_distance(TailA, [B|TailB], Distance1),
+    levenshtein_distance([A|TailA], TailB, Distance2),
+    levenshtein_distance(TailA, TailB, Distance3),
+    min_list([Distance1, Distance2, Distance3], DistanceMin),
+    Distance is DistanceMin + 1, !.
