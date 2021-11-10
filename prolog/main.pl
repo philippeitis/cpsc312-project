@@ -37,7 +37,7 @@ assist("path") :-
 assist(String) :- 
     write("Unrecognized command ~"),
     write(String), nl,
-    write("Available commands: define, clear"), nl, !.
+    available_commands(), !.
 
 available_commands() :-
     write("Available commands: "), nl,
@@ -78,6 +78,8 @@ execute_command("help") :-
 execute_command(String) :-
     split_left(String, " ", 2, ["help", Command]),
     assist(Command), !.
+
+execute_command(String) :- assist(String), !.
 
 input_loop() :-
     write("Enter a command."), nl,
