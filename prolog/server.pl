@@ -21,48 +21,63 @@
 server(Port) :-						% (2)
         http_server(http_dispatch, [port(Port)]).
 
-say_hi(_Request) :-					% (3)
-    format('Content-type: text/plain~n~n'),
-    format('Hello World!~n').
+render_param(Param, "?") :- var(Param), !.
+render_param(Param, Param) :- !.
 
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs) :-
     function(FuncName, Inputs, Outputs, Docs),
     format('Found func: ~w ~w :: ~w | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
 
-find_and_fmt_func(FuncName, Inputs, Outputs, Docs) :-
+find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0) :-
+    render_param(FuncName0, FuncName),
+    render_param(Inputs0, Inputs),
+    render_param(Outputs0, Outputs),
+    render_param(Docs0, Docs),
     format('No matching func found: ~w ~w :: ~w | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
 
-func(get, Request) :-					% (3)
+nonempty_list([], true, []) :- !.
+nonempty_list([], false, _) :- !.
+nonempty_list(_, _, _) :- !.
+
+parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs) :-
     http_parameters(Request,
         [
-            func(FuncName, [string, optional(true)]),
-            inputs(Inputs, [list(string), optional(true)]),
-            outputs(Ouputs, [list(string), optional(true)]),
+            name(FuncName, [string, default(none)]),
+            no_inputs(NoInputs, [boolean, default(false)]),
+            no_outputs(NoOutputs, [boolean, default(false)]),
+            inputs(Inputs0, [list(string)]),
+            outputs(Outputs0, [list(string)]),
             docs(Docs, [string, optional(true)])
         ]),
+    nonempty_list(Inputs0, NoInputs, Inputs),
+    nonempty_list(Outputs0, NoOutputs, Outputs).
+
+parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
+    http_parameters(Request,
+        [
+            name(FuncName, [string]),
+            no_inputs(NoInputs, [boolean, default(false)]),
+            no_outputs(NoOutputs, [boolean, default(false)]),
+            inputs(Inputs0, [list(string)]),
+            outputs(Outputs0, [list(string)]),
+            docs(Docs, [string, default("")])
+        ]),
+    nonempty_list(Inputs0, NoInputs, Inputs),
+    nonempty_list(Outputs0, NoOutputs, Outputs).
+
+func(get, Request) :-					% (3)
+    parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs),
     format('Content-type: text/plain~n~n'),
     find_and_fmt_func(FuncName, Inputs, Outputs, Docs).
 
 func(post, Request) :-					% (3)
-    http_parameters(Request,
-        [
-            func(FuncName, [string]),
-            inputs(Inputs, [list(string)]),
-            outputs(Ouputs, [list(string)]),
-            docs(Docs, [string, default("")])
-        ]),
+    parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs),
     assertz(function(FuncName, Inputs, Outputs, Docs)),
     format('Content-type: text/plain~n~n'),
     format('Created func ~w~n', [FuncName]).
 
 func(delete, Request) :-					% (3)
-    http_parameters(Request,
-        [
-            func(FuncName, [string]),
-            inputs(Inputs, [list(string)]),
-            outputs(Ouputs, [list(string)]),
-            docs(Docs, [string, default("")])
-        ]),
-    retract(function(FuncName, Inputs, Outputs, Docs)),
+    parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs),
+    retractall(function(FuncName, Inputs, Outputs, Docs)),
     format('Content-type: text/plain~n~n'),
     format('Removed func ~w~n', [FuncName]).
