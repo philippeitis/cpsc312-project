@@ -8,12 +8,20 @@ pretty_print_path([Func]) :-
     write(Func), !.
 pretty_print_path([Head|Tail]) :-
     format("~w -> ", [Head]), pretty_print_path(Tail), !.
-    
+
+%% default_docs(OutputDoc, Outputs, Docs)
+% True if Outputs is the first item of OutputDoc,
+% and Docs is either "" and OutputDoc only contains Output,
+% or Docs is the second item of Output.
+default_docs([Outputs], Outputs, "").
+default_docs([Outputs, Docs], Outputs, Docs).
+
 parse_definition(Definition, InputTypes, OutputTypes, Docs) :- 
     split_left(Definition, " :", 1, [Inputs, OutputDoc]),
     split_string(Inputs, ", ", ", ", InputTypes),
     format("InputTypes is ~w", [InputTypes]), nl,
-    split_left(OutputDoc, "| ", 1, [Outputs, Docs]),
+    split_left(OutputDoc, "| ", 1, OutputDocs),
+    default_docs(OutputDocs, Outputs, Docs),
     split_string(Outputs, ", ", ", ", OutputTypes),
     format("OutputTypes is ~w", [OutputTypes]), nl.
 
@@ -30,10 +38,10 @@ assist("clear") :-
     write("Format: clear"), nl, !.
 assist("search") :- 
     write("Finds a function with the given signature."), nl,
-    write("Format: search arg1, arg2 :: output1, output2 | doc"), nl, !.
+    write("Format: search arg1, arg2 :: output1, output2"), nl, !.
 assist("path") :- 
     write("Finds a sequence of function which transform the input to the output."), nl,
-    write("Format: search arg1, arg2 :: output1, output2 | doc"), nl, !.
+    write("Format: search arg1, arg2 :: output1, output2"), nl, !.
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
