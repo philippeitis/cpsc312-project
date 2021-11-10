@@ -1,3 +1,5 @@
+:- dynamic function/4.
+
 type("int").
 type("None").
 
@@ -134,3 +136,83 @@ noConstraintsLeft([(noConstraint, _)|Rest]) :-
     noConstraintsLeft(Rest).
 noConstraintsLeft([(inputConstraint, _)|Rest]) :- 
     noConstraintsLeft(Rest).
+
+split_left(String, Sep, N, Substrings) :-
+    string_chars(String, Chars),
+    string_chars(Sep, Sep_),
+    split_left(Chars, Sep_, N, [], CharSubstrings),
+    maplist(
+        string_chars,
+        Substrings,
+        CharSubstrings
+    ), !.
+
+% [Char], [Sep], N, [Acc], [Reversed]
+split_left([], _Sep, _, Accumulator, [Reversed]) :-
+    reverse(Accumulator, Reversed), !.
+split_left([Head|Tail], Sep, 0, Accumulator, [Whole]) :-
+    member(Head, Sep),
+    split_left(Tail, Sep, 0, Accumulator, [Whole]), !.
+split_left(String, _Sep, 0, Accumulator, [Whole]) :-
+    reverse(Accumulator, Reversed),
+    append(Reversed, String, Whole), !.
+split_left([Head|Tail], Sep, N, [], Strings) :-
+    member(Head, Sep),
+    split_left(Tail, Sep, N, [], Strings), !.
+split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
+    member(Head, Sep),
+    reverse(Accumulator, Reversed),
+    % Force early evaluation
+    NSub is N - 1,
+    split_left(Tail, Sep, NSub, [], Strings), !.
+split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
+    split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
+
+assist("define") :- 
+    write("Defines a function from user input."), nl,
+    write("Format: define `fnName` arg1, arg2 :: output1, output2 | doc "), nl, !.
+assist("clear") :- 
+    write("Clears the database of functions."), nl,
+    write("Format: clear"), nl, !.
+assist(String) :- 
+    write("Unrecognized command ~"),
+    write(String), nl,
+    write("Available commands: define, clear"), nl, !.
+
+execute_command(String) :-
+    split_left(String, " ", 2, ["define", FnName, Rest]),
+    write("fnName is "),
+    write(FnName), nl, 
+    write(Rest), nl,
+    split_left(Rest, " :", 1, [Inputs, OutputDoc]),
+    write("Inputs is "),
+    write(Inputs), nl, 
+    split_string(Inputs, ", ", ", ", InputTypes),
+    split_left(OutputDoc, "| ", 1, [Outputs, Docs]),
+    write("Outputs is "),
+    write(Outputs), nl,
+    split_string(Outputs, ", ", ", ", OutputTypes),
+    write("OutputTypes is "),
+    write(OutputTypes), nl,
+    assertz(function(FnName, InputTypes, OutputTypes, Docs)), !.
+
+execute_command("clear") :-
+    retractall(function(_, _, _, _)),
+    write("All functions have been erased."), nl, !.
+
+execute_command("help") :-
+    write("Available commands: define, clear"), nl,
+    write("Use help command for help with a particular command"), nl, !.
+
+execute_command(String) :-
+    split_left(String, " ", 2, ["help", Command]),
+    assist(Command), !.
+
+input_loop() :-
+    write("Enter a command."), nl,
+    read(Command),
+    execute_command(Command),
+    input_loop().
+
+main(_Argv) :- input_loop().
+
