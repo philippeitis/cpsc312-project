@@ -19,6 +19,17 @@ test('split_left split once multiple sep', [nondet]) :-
 test('split_left split many times', [nondet]) :-
     split_left("Hello    world  ! a a   a", " ", 999, ["Hello", "world", "!", "a", "a", "a"]).
 
+test('levenshtein_distance all equal', [nondet]) :-
+    levenshtein_distance("kitten", "kitten", 0).
+test('levenshtein_distance insert and replace', [nondet]) :-
+    levenshtein_distance("kitten", "knitting", 3).
+test('levenshtein_distance no similarity', [nondet]) :-
+    levenshtein_distance("abcdef", "zzzzzz", 6).
+test('levenshtein_distance left empty', [nondet]) :-
+    levenshtein_distance("", "zzzzzz", 6).
+test('levenshtein_distance right empty', [nondet]) :-
+    levenshtein_distance("abcdef", "", 6).
+
 :- end_tests('string_ops').
 
 :- begin_tests('function').
