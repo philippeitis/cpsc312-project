@@ -1,6 +1,8 @@
-:- use_module(search).
+:- use_module(function).
 :- use_module(string_op).
+:- use_module(search).
 
+%% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
 pretty_print_path([Func]) :-
     write(Func), !.
@@ -58,7 +60,7 @@ execute_command("clear") :-
 execute_command(String) :-
     split_left(String, " ", 1, ["search", Rest]),
     parse_definition(Rest, InputTypes, OutputTypes, Docs),
-    findnsols(5, Func, funcPathNoCycles(InputTypes, OutputTypes, [Func]), Solns),
+    findnsols(5, Func, func_path_no_cycles(InputTypes, OutputTypes, [Func]), Solns),
     length(Solns, Len),
     write("Found "), write(Len), write(" solutions:"), nl,
     foreach(member(Soln, Solns), (write("Function: "), write(Soln), nl)), !.
@@ -66,7 +68,7 @@ execute_command(String) :-
 execute_command(String) :-
     split_left(String, " ", 1, ["path", Rest]),
     parse_definition(Rest, InputTypes, OutputTypes, Docs),
-    findnsols(5, Path, funcPathNoCycles(InputTypes, OutputTypes, Path), Solns),
+    findnsols(5, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
     length(Solns, Len),
     write("Found "), write(Len), write(" solutions:"), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.

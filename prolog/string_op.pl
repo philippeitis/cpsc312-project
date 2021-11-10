@@ -1,5 +1,8 @@
 :- module(string_op, [split_left/4]).
 
+% split_left/4 splits the provided string on the characters in Sep,
+% up to a maximum of N times into Substrings. Multiple seperator characters
+% will be treated as one.
 split_left(String, Sep, N, Substrings) :-
     string_chars(String, Chars),
     string_chars(Sep, Sep_),
