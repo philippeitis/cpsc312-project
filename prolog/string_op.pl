@@ -1,7 +1,25 @@
-:- module(string_op, [split_left/4, levenshtein_distance/3]).
+:- module(string_op, [split_left/4, levenshtein_distance/3, sequence_match/2]).
 :- table levenshtein_distance/3.
 
-% split_left/4 splits the provided string on the characters in Sep,
+%% sequence_match/2(Sequence, String)
+% sequence_match is true if the all elements in Sequence appear in
+% String, in sequential order.
+sequence_match(Sequence, String) :-
+    string(Sequence), string(String),
+    string_chars(Sequence, SeqChars),
+    string_chars(String, SChars),
+    sequence_match(SeqChars, SChars), !.
+
+sequence_match([], _).
+
+sequence_match([Head|Tail], [Head|Tail1]) :-
+    sequence_match(Tail, Tail1), !.
+
+sequence_match(Sequence, [_|Tail1]) :-
+    sequence_match(Sequence, Tail1).
+
+% split_left/4(String, Sep, N, Substrings)
+% split_left splits the provided string on the characters in Sep,
 % up to a maximum of N times into Substrings. Multiple seperator characters
 % will be treated as one.
 split_left(String, Sep, N, Substrings) :-
