@@ -1,111 +1,123 @@
-# C is for Coding
- 
-As we move further into the digital age, knowing how computer programs work is becoming a more important skill for employment opportunities and understanding the world we live in. Parents are looking for and spending money on educational products that help children learn this essential skill. "C is for Coding" is a fun, interactive way for children to take their first step on this journey in an easy to use, natural language environment.
- 
+# FastFuncs
+
+Software development is consistently on the leading edge of occupational innovation and process improvement. Advancements in machine learning and prediction are helping development environments save developers time and effort by anticipating their intentions and offering suggestions. FastFuncs is a tool that allows users to quickly find functions and automate function composition.
+
 This project is in fulfillment of the [CPSC 312 2021W1 project requirements](https://steven-wolfman.github.io/cpsc-312-website/project.html).
- 
+
 ## Team Members
- 
+
 Our team is:
- 
+
 + Philippe Solodov (25117292): SoloDev
 + Sam Ko (98263569): K-O
 + Scott Banducci (80557069): Bandersnatch
- 
++ Luis Victoria (78827979): Tor
+
 We call ourselves: Pattern Match This.
- 
+
 ## Product Pitch
- 
-Billions of dollars a year are spent on extracurricular educational programs and products by parents who want the best for their children. Competition for quality jobs is increasing and the skills necessary to succeed are becoming increasingly more technical and technological. So how can devoted parents help give their kids the best chances in this silicon-based world? They can empower them with an early, intuitive understanding of computer programming and computer science fundamentals, setting the foundation for future excellence.
- 
-"C is for Coding" is a fun, easy-to-use educational aid designed to help young children become familiar with programming. Once a child is able to type at a keyboard, they are ready to start learning on this platform. At its core, it uses natural language processing to remove the barriers of complicated syntax and unclear keywords, allowing kids to experiment and learn in a way they find natural. In this playful environment, a child can type in their best attempt at a command. Our system will interpret the intent and provide colorful graphical feedback that they can play with. "Draw cat and dog" followed by "Cat likes Dog" would generate cats and dogs, who, if separated, will move to sit near each other.
- 
-What makes "C is for Coding" unique is not just that it allows for the earliest possible introduction to this world. It also paves the road to a deeper understanding of programming languages. As children become comfortable typing in commands, they will construct more complex statements, with gentle prompts and hints to guide them, such as "Try using 'if'! :)". Eventually they will gain access to a graphical representation of code similar to what they'll see in high school, using more typical programmatic syntax. The computer equivalent of a children's book, "C is for Coding" will change what you thought possible for the ones you love most.
- 
- 
+
+The software development industry continues to grow and with it so does the demand for programmers. Many companies require their software developers to work harder and longer in order to increase productivity. This mismanagement can lead to overbearing crunch times, lowering workers' quality of life. Fortunately this industry is populated by adapters, innovators and outside the box thinkers who are ready and willing to adjust to more efficient workflows. Technologies for workflow improvements such as 'auto-complete' or AI assistants are already helping programmers quickly finish typing a line of code by predicting their intent. So, what is the next phase of evolution for these technologies?
+
+FastFuncs is a next generation programming assistant that helps users quickly find and compose functions to perform particular tasks, using state-of-the-art natural language processing techniques to interpret intent and search databases of functions.
+
+Users can quickly import their codebases into FastFuncs, with a variety of easy-to-use interfaces which can be adapted to any user's particular needs. Once this is done, they can:
+1. Search their entire codebase with FastFuncs' own predicates, and with their own predicates, with minimal effort
+2. Use a natural language description to automatically generate a sequence of functions
+3. Provide code-completion which can take into account the surrounding context, including functions and documentation
+
+First, FastFuncs will find all possible chains of functions that will take a given input and produce a desired output. Then, using intelligent AI scoring algorithms and the user's description, FastFuncs will sort these options and suggest which newly created function is right for the user.
+
+FastFuncs not only makes designing novel functions quick and easy, it can help improve programs by finding shorter ways to convert given inputs to desired outputs. This means that programmers can quickly and easily simplify their programs to improve their efficiency. It doesn't just make programming quicker and easier. FastFuncs will help make your programs faster and less complicated. Investing in your employees toolkit with the addition of FastFuncs will allow you to maximize their efficiency and, most importantly, their quality of life.
+
+
 ## Minimal Viable Project
- 
+
 Our MVP will deliver 3 core features necessary to build the product above:
+
+1. Consolidation of all functions available given imported and standard libraries into a single knowledge-base.
+2. Natural language processing of user descriptions about what they want to do
+3. A scoring feature which will sort the possible approaches by what is most likely the best option
+
+Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces, either by example, or by hooking into the REST API.
+
+Prolog makes defining knowledge bases and constraint satisfaction problems very intuitive as its ability to search for terms that make a predicate true is a core feature of it's proof procedure.
+
+By building systems of constraints, we have already begun to learn the best designs for a search algorithm in Prolog. We also anticipate that building functions for scoring paths can be used to train machine learning models to more intelligently explore the space of user defined functions.
+
+<!-- Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
+It may be as short as a few paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
+to read carefully and thoroughly.
  
-1. Natural language processing of user input
-2. Real-time GUI
-3. Functional composition for chaining effects
+Make clear:
++ how this builds meaningfully toward your product pitch above, without being nearly as much work,
++ how it builds on the strength and power of the language, and
++ how it leads naturally to learning and applying some new element of the language (including what that element is!)
  
-In order to realistically deliver these features we will need to reduce their scope compared to the final product. We will implement only a subset of possible commands, a limited portion of our desired graphical feedback, and support for a few sequential actions.
+Good goals to aim for are from the top two rubric items for proposal grading:
  
-Natural language: We will make use of Haskell's powerful abstract datatypes to interpret natural language and create a simplified pseudo-language that we can then interpret.
+> The minimal viable project (MVP) builds on the strengths and power of the language in exciting ways that will clearly lead to excellent learning for students.
  
-GUI: The gloss package will enable us to quickly develop a simple, beautiful user facing interface that will display, and potentially animate, images and text on screen.
+Or:
  
-Sequences of effects: Using the flexibility of Haskell's function composition and Typeclasses, we will allow for input interpreted as a combination of commands to correctly execute.
- 
-We are excited to learn more about natural language programming with a group member who has experience from previous courses. They will be an excellent resource getting us started. We also hope to share in learning more about using Haskell for natural language processing, with companies like Facebook using it for spam filtering. None of us have built a GUI in Haskell and we're interested to see how gloss will allow us to build one. We've all learned about functional composition in CPSC 312 but this project will give us the opportunity to implement this key feature of Haskell in a complex, real world environment.
- 
- 
+> The MVP clearly builds significantly on the language and will lead in interesting and natural ways to learning for the students. -->
+
 ## Proof of Concept
-Our POC focuses on the end-to-end pipeline:
-1. take user input [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/2aa67175c857c8c7aa517d2262ae7f4d4d5a6c76/haskell/app/Main.hs#L28)
-2. tokenize it using spaCy [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/2aa67175c857c8c7aa517d2262ae7f4d4d5a6c76/haskell/src/Tokenizer.hs#L38)
-3. parse the resulting tokens into trees [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/2aa67175c857c8c7aa517d2262ae7f4d4d5a6c76/haskell/src/NLTree.hs#L33)
-4. Parse individual elements into program commands with modifiers such as draw orange [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Parse.hs)
-5. Interpret the commands [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/haskell/src/Interpret.hs)
-6. Render the resulting world [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/2aa67175c857c8c7aa517d2262ae7f4d4d5a6c76/haskell/src/World.hs#L51) to screen [(link)](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/2aa67175c857c8c7aa517d2262ae7f4d4d5a6c76/haskell/app/Main.hs#L51)
- 
-This represents the core event loop our product aims to provide: a user types in a command they want to see evaluated, and our product will display the effects of that command. Building this proof of concept has given us confidence that we can expand the scope of commands and refine the presentation to create an outstanding MVP. We believe that this goes above and beyond what was expected for the proof of concept, as it is a complete system which demonstrates what a solution to the problem would look like, and implements a significant portion of our proposed MVP. This project has also been built with extensibility and ease of use as a first priority, and the various components are documented and separated into distinct files, which are detailed below, and in the testing section.
 
-Additional details of our POC:
- 
-Our proof of concept uses gloss to accept user input, and show the corresponding output. We draw user input directly into the viewing area. When the user presses enter we draw the result to the screen, which demonstrates that we can provide an interactive feedback loop in Haskell. The ease of which we accomplished this gives us confidence that we may expand the scope of the input we accept - for instance, we could allow someone to select a specific entity on screen using their mouse.
- 
-Being able to tokenize the input with the powerful natural language models provided by `spaCy`, using shell calls written in Haskell, makes us confident that our system will be able to handle a variety of input. Knowing this, and knowing that we can always upgrade to a more powerful English language model provided by `spaCy`, (or even models for other languages) makes us confident that our project will not be limited by the language models we currently use.
- 
-While we were already confident that Haskell's abstract data types and pattern matching would make parsing the tokens that `spaCy` produces into useful structures for our project straightforward, actually building out the functionality helped reinforce this confidence. This is currently the weakest part of our project, but it is easy to see how we could extend this to support a variety of input, without compromising on expressiveness.
- 
+Our POC focuses on demonstrating our ability to search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply a scoring algorithm.
+
+It allows the user to:
+1. Specify functions, including their signatures and documentation, via [JSON files](), [a REST API](), [or command line input]().
+2. Search for individual functions with a [particular set of features](), and [sort these by a computed score]() 
+3. Generate a [sequence of functions]() which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of constraints]().
+
+This represents the core functionality our product aims to provide:
+1. a user interface where users can easily define new functions and perform searches over the knowledge base, using constraints to find the most appropriate functions
+2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort.
+
+We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
+Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy to personally
+add new constraint functions, but also, it makes it easy for users themselves to define and compose their own constraints. In addition, it provides a 
+powerful terminal interface which makes use of some of our constraint functionality to make commands easily discoverable. 
+We believe that our proof of concept goes above and beyond the requirements, and only requires polishing to become an MVP.
+
+Being able to implement searches with parameterized constraints gives us confidence that we could extend the search
+functionality with more powerful constraints, which utilize information derived through natural language processing of the input.
+Additionally, having implemented path-level constraints and function scoring makes us confident that we could develop interesting
+path scoring functionality, as this naturally follows.
+
+Additionally, the simplicity of Prolog's http library demonstrates that we can provide a powerful REST API with minimal effort.
+
+However, we have found that Prolog's depth-first search by default is not always
+the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths.
+The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which
+can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
+
+Our proof of concept does not currently assign a score to the paths that it generates, which means that the end user would
+have to manually evaluate all generated paths, which can be time-consuming and overwhelming when they have large code bases.
+In the future, we would to use a best-first search and a scoring function to present the best paths first.
+
+## Files
+- [constraint.pl](prolog/constraint.pl): This file contains functionality for defining and composing constraints for both individual functions, and for paths. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
+- [function.pl](prolog/function.pl): This file contains a set of basic function definitions, and functionality for serializing/deserializing functions from JSON.
+- [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list and find instructions for how particular commands are used.
+- [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow generating chains of functions or finding individual functions, and accept constraints in order to select the best functions.
+- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions.
+- [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations.
+
 ### How to test and run the code: Haskell
-Our proof of concept provides a GUI where you can input a sentence and hit Enter to process the sentence and see what happens. To see this proof of concept in action, use `make haskell-run` from the project root. Note that to run the full demo, a recent version of Python (3.6+) must be installed on the system. `spaCy` will automatically be installed to a new virtual environment in the project directory, with the necessary language models, which should take less than 30s. 
 
-To run the tests, which test smaller portions of the project and use pretokenized data (so Python is not required, and `spaCy` will not be downloaded), run `make haskell-eval` from the project.
+Replace this section with instructions to us for how to test and run your code.
 
-Using `cd haskell && stack ghci` (but first running `make haskell-eval` to set everything up), you can import the following files:
-- TLDR: using `main`, you can try drawing various colors of cats in the GUI by typing "draw a `attribute` cat" (attributes can be colors or sizes, but not all colors and sizes are supported - try "black", "red", "blue", "green", "orange", "big" and "small"). Cats currently overlap each other, so you will only see one cat of a specific size at a time.
-- `Tokens.hs`: This file contains the token format used throughout the project, and a `Tag` class which enumerates some of the parts-of-speech tags that spacy produces. You can use `newTag` to parse a String, or `newToken` to parse a `String` (which is the tag) and `String` (which is the text).
-- `Tokenizer.hs`: This file uses `System.Process` to call `spaCy` to tokenize text and extract part-of-speech tags, using the `tokenize` function, which takes a `String` and produces `IO (Maybe [Token])`. Additionally, it provides `setupTokenizer`, which will automatically set up a virtual environment and install `spaCy` if it is not found.
-- `NLTree.hs` - NLTree refers to natural language tree. This file contains the various datatypes used to represent a series of tokens in a tree format. You can use `parse` to parse the output of `Tokenizer.tokenize`.
-- `Parse.hs` - `Parse.hs` is an extension of `NLTree.hs`, which contains methods private to `NLTree.hs`, but separated to allow testing. `Parse.hs` contains additional methods for parsing adjectives and verbs into their intermediate representations. For example, `parseAdjective` can parse `Adjective JJ "black"`, to an Attribute `AColor black`, and `parseAction` parses `Verb VB "draw"` to the action `Draw`. In the future, we would like to support more attributes, such as "tall", and more actions, such as "remove".
-- `World.hs`: This file contains both the world and entity representation. A `World` stores user input, as well a list of entities introduced into the world. It also provides helper methods for interacting with gloss - `worldToPicture` renders the world to gloss's `Picture` class. The apply `applyAttribute` function will apply an Attribute generated by `parseAdjective` to a target image, and is used to in `individualToPicture` to apply all of the attributes an individual has.
-- `Main.hs`: This provides the event loop used to facilitate user interaction. Calling `main` will set up the tokenizer and open a window with the default environment, which is empty. As the user types, they will see their text appear on screen. Once they hit Enter, the text will be interpreted. We currently support drawing a limited variety of cats, using the command "draw a `attribute` cat", where the attribute is optional, but can be one of black, red, blue, green, orange, small, or big (but not both).
+As it is currently set up, editing works best if you first `cd` into the `haskell` subdirectory and open VS Code on that directory (`code .`). There is a `Makefile` with some helpful aliases, but you can also just use `stack` as normal.
 
-Notes (not required to test/run code):
-- Due to OS specific dependencies, we use `stack-unix.yaml` and `stack-win.yaml`. The top level `Makefile` will copy the correct version to `stack.yaml`. This is required because stack does not allow os-specific dependencies (https://github.com/commercialhaskell/stack/issues/3369).
-- We bundle freeglut.dll and glut32.dll in the src directory in order to run gloss on Windows. 
-
-### Previously written
 Note: We expect to be able to test your code by running `stack test`. Included among your tests should be some that demonstrate the core functionality of your code. (We will be running `make haskell-eval` from the project root.)
 
 We should be able to further explore your code's functionality by running `stack ghci`, and you should instruct us on some interesting cases to try.
 
 If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
 
-### External Libraries Used
-- gloss: https://hackage.haskell.org/package/gloss
-- spacy: https://spacy.io/
-
 ### How to test and run the code: Prolog
 
-## Product Pitch
-Intelligent tool for helping write code, which helps accelerate development by taking into considering the rest of your codebase to help you transform pseudocode into fully functional software
-
-## MVP:
-Types with generics, function types, traits, and functions
-- Supports various text-search methods
-- Provides simple NLP API to return best matches for functions
-## POC:
-- Allow user defined functions
-- Provide simple search system (eg. line by line, ask for input, output, then docs)
-- Supports simple text-based constraints, best-first search, and input/output constraints
-
-Replace this section with instructions to us for how to test and run your code.
-
-Instructions coming soon, but we expect you'll use the [Prolog Unit Testing](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/plunit.html%27)) library for testing and that we'll be able to run your code with `swipl`.
-
-
+In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
+ 
