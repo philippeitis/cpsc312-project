@@ -1,5 +1,12 @@
-:- module(string_op, [split_left/4, levenshtein_distance/3, sequence_match/2]).
+:- module(string_op, [split_left/4, levenshtein_distance/3, sequence_match/2, join/3]).
 :- table levenshtein_distance/3.
+
+join([], _Sep, "") :- !.
+join([Item], _Sep, Item) :- !.
+join([Head|Tail], Sep, Output) :-
+    join(Tail, Sep, TailOutput),
+    string_concat(Head, Sep, HeadSep),
+    string_concat(HeadSep, TailOutput, Output), !.
 
 %% sequence_match/2(Sequence, String)
 % sequence_match is true if the all elements in Sequence appear in

@@ -60,10 +60,24 @@ assist("launch") :-
     write("Example: launch 5000"), nl, !.
 assist("quit") :-
     write("Terminates the program."), nl, !.
-
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
+
+read_y :-
+    get_single_char(YCode),
+    char_code(Y, YCode),
+    member(Y, ['y', 'Y']), !.
+
+assist_nearest(String, Corrected) :-
+    findall((Distance, Command),
+        (
+            command(Command),
+            levenshtein_distance(Command, String, Distance)
+        ), Commands),
+    min_member((Distance, Corrected), Commands),
+    format("Did you mean ~w? Type y or n: ", [Corrected]),
+    read_y(), !.
 
 available_commands() :-
     write("Available commands: "), nl,
@@ -120,8 +134,15 @@ execute_command("help") :-
     available_commands(), !.
 
 execute_command(String) :-
-    split_left(String, " ", 2, ["help", Command]),
+    split_left(String, " ", 1, ["help", Command]),
     assist(Command), !.
+
+execute_command(String) :-
+    split_left(String, " ", 1, [Command|Rest]),
+    assist_nearest(Command, Nearest),
+    join([Nearest|Rest], " ", CorrectedCommand),
+    write(CorrectedCommand), nl,
+    execute_command(CorrectedCommand), !.
 
 execute_command(String) :- assist(String), !.
 
@@ -135,4 +156,14 @@ main(['--help']) :- execute_command("help"), !.
 main(['--help', CommandAtom]) :-
     atom_string(CommandAtom, Command),
     assist(Command), !.
+main([CommandAtom|AtomArgs]) :-
+    atom_string(CommandAtom, Command),
+    findall(String, (
+        member(Atom, AtomArgs),
+        atom_string(Atom, String)
+    ), Args),
+    join([Command|Args], " ", CommandStr),
+    execute_command(CommandStr),
+    input_loop(), !.
+
 main(_Argv) :- input_loop().
