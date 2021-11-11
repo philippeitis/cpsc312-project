@@ -113,7 +113,11 @@ execute_command(String) :-
 execute_command(String) :-
     split_left(String, " ", 1, ["launch", PortStr]),
     number_string(Port, PortStr),
-    server(Port), !.
+    catch(
+        server(Port),
+        error(socket_error(_, _), _),
+        writeln("Port already in use - have you already launched a server?")
+    ), !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["store", Path]),
