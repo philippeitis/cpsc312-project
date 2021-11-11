@@ -105,6 +105,24 @@ In the future, we would to use a best-first search and a scoring function to pre
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions.
 - [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations.
 
+<!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
+It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
+code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
+ 
+Tell us:
+ 
++ what key element of your project the proof-of-concept focuses on
++ what makes that such an important element
++ how completing this gives you confidence that, with sufficient work, you could complete the full (minimal viable) project
+ 
+Include links (likely even line-level links, which are easy to create in Github) throughout to critical pieces of
+the code to make it easy for us to understand what you've accomplished and how it fulfills the requirements.
+ 
+Also include instructions for us to test and run your code. (See our guidelines below.)
+ 
+A good goal to aim for is the top rubric item from proposal grading:
+ 
+> Fully functional proof-of-concept is easy to use and review, and it clearly demonstrates a key element necessary for the overall project. -->
 ### How to test and run the code: Haskell
 
 Replace this section with instructions to us for how to test and run your code.
