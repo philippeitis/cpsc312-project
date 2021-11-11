@@ -1,3 +1,5 @@
+:- initialization(main, main).
+
 :- use_module(function).
 :- use_module(string_op).
 :- use_module(search).
@@ -33,28 +35,31 @@ command("path").
 command("store").
 command("load").
 command("launch").
+command("quit").
 
 assist("define") :- 
     write("Defines a function from user input."), nl,
-    write("Format: define `fnName` arg1, arg2 :: output1, output2 | doc "), nl, !.
+    write("Example: define `fnName` arg1, arg2 :: output1, output2 | doc "), nl, !.
 assist("clear") :- 
     write("Clears the database of functions."), nl,
-    write("Format: clear"), nl, !.
+    write("Example: clear"), nl, !.
 assist("search") :- 
     write("Finds a function with the given signature."), nl,
-    write("Format: search arg1, arg2 :: output1, output2"), nl, !.
+    write("Example: search arg1, arg2 :: output1, output2"), nl, !.
 assist("path") :- 
     write("Finds a sequence of function which transform the input to the output."), nl,
-    write("Format: search arg1, arg2 :: output1, output2"), nl, !.
+    write("Example: search arg1, arg2 :: output1, output2"), nl, !.
 assist("store") :- 
     write("Persists the existing functions to disk at the provided path."), nl,
-    write("Format: store ./path/to/file.json"), nl, !.
+    write("Example: store ./path/to/file.json"), nl, !.
 assist("load") :- 
     write("Loads the persisted functions from disk at the provided path."), nl,
-    write("Format: load ./path/to/file.json"), nl, !.
+    write("Example: load ./path/to/file.json"), nl, !.
 assist("launch") :- 
     write("Launches the server on the given port."), nl,
-    write("Format: launch port"), nl, !.
+    write("Example: launch 5000"), nl, !.
+assist("quit") :-
+    write("Terminates the program."), nl, !.
 
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
@@ -77,7 +82,7 @@ execute_command("clear") :-
 
 execute_command(String) :-
     split_left(String, " ", 1, ["search", Rest]),
-    parse_definition(Rest, InputTypes, OutputTypes, Docs),
+    parse_definition(Rest, InputTypes, OutputTypes, _Docs),
     findnsols(5, Func, func_path_no_cycles(InputTypes, OutputTypes, [Func]), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
@@ -85,7 +90,7 @@ execute_command(String) :-
 
 execute_command(String) :-
     split_left(String, " ", 1, ["path", Rest]),
-    parse_definition(Rest, InputTypes, OutputTypes, Docs),
+    parse_definition(Rest, InputTypes, OutputTypes, _Docs),
     findnsols(5, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
@@ -108,6 +113,8 @@ execute_command(String) :-
     read_json_funcs(Stream),
     close(Stream), !.
 
+execute_command("quit") :- halt(0).
+
 execute_command("help") :-
     write("Use `help command` for help with a particular command"), nl,
     available_commands(), !.
@@ -120,8 +127,12 @@ execute_command(String) :- assist(String), !.
 
 input_loop() :-
     write("Enter a command."), nl,
-    read(Command), nl,
+    read_line_to_string(current_input, Command), nl,
     execute_command(Command),
     input_loop().
 
+main(['--help']) :- execute_command("help"), !.
+main(['--help', CommandAtom]) :-
+    atom_string(CommandAtom, Command),
+    assist(Command), !.
 main(_Argv) :- input_loop().
