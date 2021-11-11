@@ -115,7 +115,7 @@ execute_command(String) :-
     number_string(Port, PortStr),
     catch(
         server(Port),
-        error(socket_error(_, _), _),
+        error(socket_error(_, 'Address already in use'), _),
         writeln("Port already in use - have you already launched a server?")
     ), !.
 
