@@ -45,3 +45,18 @@ func_path_no_cycles(InputTypes, OutputTypes, Path) :-
         [(cycle_constraint, _),
         (length_constraint, 999),
         (path_output_constraint, OutputTypes)], Path).
+
+%% find_func(Function, Constraints, )
+find_func(Func, FuncConstraints, Score) :-
+    func_constraints(Func, FuncConstraints, Score, NewConstraints),
+    no_constraints_left(NewConstraints).
+
+find_funcs(Funcs, FuncConstraints) :-
+    findall(
+        (Score, Func),
+        find_func(Func, FuncConstraints, Score),
+        FuncsUnsorted
+    ),
+    sort(0, @>, FuncsUnsorted, FuncPairs),
+    findall(Func, member((_Score, Func), FuncPairs), Funcs).
+    

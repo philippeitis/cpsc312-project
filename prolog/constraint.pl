@@ -10,6 +10,7 @@
     no_constraints_left/1
 ]).
 :- use_module(function).
+:- use_module(string_op).
 
 %% list_subset(?List1, ?List2)
 % Returns true if List1 is a subset of List2.
@@ -35,6 +36,20 @@ doc_substring_constraint(Func, Substring, Score, NewConstraint) :-
     docs(Func, Doc),
     substring_constraint(Substring, Doc, Score, doc_substring_constraint, NewConstraint).
 
+
+target_similarity(String, (Target, MaxDistance), Score, _, (no_constraint, _)) :-
+    levenshtein_distance(Target, String, Distance),
+    Distance =< MaxDistance,
+    Score is MaxDistance - Distance, !.
+target_similarity(_, Args, 0.0, ConstraintFn, (ConstraintFn, Args)) :- !.
+
+name_distance_constraint(Func, Args, Score, NewConstraint) :-
+    name(Func, Name),
+    target_similarity(Name, Args, Score, name_distance_constraint, NewConstraint).
+
+doc_distance_constraint(Func, Args, Score, NewConstraint) :-
+    docs(Func, Doc),
+    target_similarity(Doc, Args, Score, doc_distance_constraint, NewConstraint).
 
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),
