@@ -3,8 +3,11 @@
     name/2,
     inputs/2,
     outputs/2,
-    docs/2
+    docs/2,
+    write_json_funcs/1,
+    read_json_funcs/1
 ]).
+:- use_module(library(http/json)).
 :- dynamic function/4.
 
 type("int").
@@ -27,3 +30,24 @@ name(Func, Name) :- function(Func, _, _, _), Name=Func.
 inputs(Func, Inputs) :- function(Func, Inputs, _, _).
 outputs(Func, Outputs) :- function(Func, _, Outputs, _).
 docs(Func, Documentation) :- function(Func, _, _, Documentation).
+
+write_json_funcs(Stream) :-
+    findall(_{
+        name:Name,
+        inputs:Inputs,
+        outputs:Outputs,
+        docs:Docs
+    }, function(Name, Inputs, Outputs, Docs), Functions),
+    write_json_funcs(Stream, Functions).
+
+write_json_funcs(Stream, Functions) :-
+    json_write_dict(Stream, _{functions:Functions}).
+
+read_json_funcs(Stream) :-
+    json_read_dict(Stream, _{
+        functions:JsonFuncs
+    }),
+    foreach(
+        member(_{name:Name, inputs:Inputs, outputs:Outputs, docs:Docs}, JsonFuncs),
+        assertz(function(Name, Inputs, Outputs, Docs))
+    ).

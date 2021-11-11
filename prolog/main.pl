@@ -30,6 +30,8 @@ command("define").
 command("clear").
 command("search").
 command("path").
+command("store").
+command("load").
 command("launch").
 
 assist("define") :- 
@@ -44,6 +46,12 @@ assist("search") :-
 assist("path") :- 
     write("Finds a sequence of function which transform the input to the output."), nl,
     write("Format: search arg1, arg2 :: output1, output2"), nl, !.
+assist("store") :- 
+    write("Persists the existing functions to disk at the provided path."), nl,
+    write("Format: store ./path/to/file.json"), nl, !.
+assist("load") :- 
+    write("Loads the persisted functions from disk at the provided path."), nl,
+    write("Format: load ./path/to/file.json"), nl, !.
 assist("launch") :- 
     write("Launches the server on the given port."), nl,
     write("Format: launch port"), nl, !.
@@ -87,6 +95,18 @@ execute_command(String) :-
     split_left(String, " ", 1, ["launch", PortStr]),
     number_string(Port, PortStr),
     server(Port), !.
+
+execute_command(String) :-
+    split_left(String, " ", 1, ["store", Path]),
+    open(Path, write, Stream),
+    write_json_funcs(Stream),
+    close(Stream), !.
+
+execute_command(String) :-
+    split_left(String, " ", 1, ["load", Path]),
+    open(Path, read, Stream),
+    read_json_funcs(Stream),
+    close(Stream), !.
 
 execute_command("help") :-
     write("Use `help command` for help with a particular command"), nl,
