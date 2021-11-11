@@ -15,3 +15,6 @@ haskell-run:
 	copy haskell\stack-win.yaml haskell\stack.yaml
 	cd haskell && stack run
 endif
+.PHONY: prolog-eval
+prolog-eval:
+	cd prolog && make test
