@@ -84,7 +84,7 @@ During development, we found that Prolog's depth-first search by default is not 
 
 ## Files
 - [constraint.pl](prolog/constraint.pl): This file contains function and path constraints, as well as functionality for defining and composing said constraints. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
-- [function.pl](prolog/function.pl): This file contains a set of sample function definitions, and functionality for serializing/deserializing functions from JSON.
+- [function.pl](prolog/function.pl): This file contains a set of sample function definitions, and functionality for serializing/deserializing functions from/to JSON and Haskell-style signatures.
 - [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list commands and find instructions for how particular commands are used.
 - [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow finding individual functions, or generating chains of functions that transform inputs into outputs. All of these functions accept constraints to filter functions and paths.
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
