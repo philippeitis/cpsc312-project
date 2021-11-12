@@ -4,7 +4,6 @@
 :- use_module(string_op).
 :- use_module(search).
 :- use_module(server).
-:- use_module(library(dcg/basics)).
 
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
@@ -13,43 +12,7 @@ pretty_print_path([Func]) :-
 pretty_print_path([Head|Tail]) :-
     format("~w -> ", [Head]), pretty_print_path(Tail), !.
 
-append(Left, Mid, Right, List) :-
-    append(Left, Mid, LeftMid),
-    append(LeftMid, Right, List).
-
-parse_sig(Name, Inputs, Outputs, Docs) -->
-    string(NameCodes),
-    {string_codes(Name, NameCodes)},
-    dcol, 
-    parse_type_sig(Inputs, Outputs),
-    optional_doc(Docs).
-
-parse_type_sig(Inputs, Outputs) -->
-    "[", list_of_types(Inputs), "]",
-    wh, "->", wh,
-    "[", list_of_types(Outputs), "]".
-
-optional_doc(Docs) --> tail, string(DocCodes), {string_codes(Docs, DocCodes)}.
-optional_doc("") --> wh.
-single_type(Type) --> string(TypeCode), {string_codes(Type, TypeCode)}.
-
-list_of_types([Type|Rem]) --> single_type(Type), wh, ",", wh, list_of_types(Rem).
-list_of_types([Type]) --> single_type(Type).
-list_of_types([]) --> [].
-
-wh -->  " ", wh.
-wh -->  "".
-dcol --> wh, "::", wh.
-tail --> wh, "|", wh.
-
-parse_signature(String, Name, Inputs, Outputs, Docs) :-
-    string_codes(String, Codes),
-    phrase(parse_sig(Name, Inputs, Outputs, Docs), Codes).
-
-parse_types(String, Inputs, Outputs) :-
-    string_codes(String, Codes),
-    phrase(parse_type_sig(Inputs, Outputs), Codes).
-
+%% Listing of available commands.
 command("define").
 command("clear").
 command("search").
@@ -59,6 +22,7 @@ command("load").
 command("launch").
 command("quit").
 
+%% Help strings for available commands.
 assist("define") :- 
     write("Defines a function from user input."), nl,
     write("Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc "), nl, !.
@@ -69,7 +33,7 @@ assist("search") :-
     write("Finds a function with the given signature."), nl,
     write("Example: search :: [arg1, arg2] -> [output1, output2]"), nl, !.
 assist("path") :- 
-    write("Finds a sequence of function which transform the input to the output."), nl,
+    write("Finds a sequence of functions which transform the input to the output."), nl,
     write("Example: path :: [arg1, arg2] -> [output1, output2]"), nl, !.
 assist("store") :- 
     write("Persists the existing functions to disk at the provided path."), nl,
@@ -86,11 +50,13 @@ assist(String) :-
     format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
 
+%% Succeeds if a single y is read.
 read_y :-
     get_single_char(YCode),
     char_code(Y, YCode),
     member(Y, ['y', 'Y']), !.
 
+%% Finds the nearest command to the user input
 assist_nearest(String, Corrected) :-
     findall((Distance, Command),
         (
@@ -101,10 +67,12 @@ assist_nearest(String, Corrected) :-
     format("Did you mean ~w? Type y or n: ", [Corrected]),
     read_y(), !.
 
+%% Lists all available commands
 available_commands() :-
     write("Available commands: "), nl,
     foreach(command(Name), (format("    ~w", Name), nl)).
 
+%% Executes the user input - assist has examples of usage.
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
     parse_signature(Rest, FnName, InputTypes, OutputTypes, Docs),
@@ -164,6 +132,9 @@ execute_command(String) :-
 
 execute_command(String) :-
     split_left(String, " ", 1, [Command|Rest]),
+    % If this part is correct, command was not
+    % sucessfully executed.
+    \+command(Command),
     assist_nearest(Command, Nearest),
     join([Nearest|Rest], " ", CorrectedCommand),
     write(CorrectedCommand), nl,
@@ -171,12 +142,14 @@ execute_command(String) :-
 
 execute_command(String) :- assist(String), !.
 
+%% Core event loop.
 input_loop() :-
     write("Enter a command."), nl,
     read_line_to_string(current_input, Command), nl,
     execute_command(Command),
     input_loop().
 
+%% Intercept any arguments when called from cli.
 main(['--help']) :- execute_command("help"), !.
 main(['--help', CommandAtom]) :-
     atom_string(CommandAtom, Command),

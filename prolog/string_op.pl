@@ -1,6 +1,7 @@
 :- module(string_op, [split_left/4, levenshtein_distance/3, sequence_match/2, join/3]).
 :- table levenshtein_distance/3.
 
+%% Joins the string with the provided separator string
 join([], _Sep, "") :- !.
 join([Item], _Sep, Item) :- !.
 join([Head|Tail], Sep, Output) :-
@@ -39,7 +40,8 @@ split_left(String, Sep, N, Substrings) :-
         CharSubstrings
     ), !.
 
-% [Char], [Sep], N, [Acc], [Reversed]
+%% Splits the string from left to right, on the provided separator,
+% up to a maximum of n times, and stores intermediate state in Accumulator
 split_left([], _Sep, _, Accumulator, [Reversed]) :-
     reverse(Accumulator, Reversed), !.
 split_left([Head|Tail], Sep, 0, Accumulator, [Whole]) :-
@@ -60,7 +62,9 @@ split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
 split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
     split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
 
-%%levenshtein_distance(A, B, Distance) :-
+%%levenshtein_distance(A, B, Distance)
+%% Returns the Levenshtein distance between A and B
+% https://en.wikipedia.org/wiki/Levenshtein_distance
 levenshtein_distance(A, B, Distance) :-
     string(A),
     string(B),

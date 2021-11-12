@@ -48,11 +48,14 @@ func_path_no_cycles(InputTypes, OutputTypes, Path) :-
         (length_constraint, 999),
         (path_output_constraint, OutputTypes)], Path).
 
-%% find_func(Function, Constraints, )
+%% find_func(Function, Constraints, Score)
+% Finds a function satisfying the constraints, unifying the score with Score
 find_func(Func, FuncConstraints, Score) :-
     func_constraints(Func, FuncConstraints, Score, NewConstraints),
     no_constraints_left(NewConstraints).
 
+%% Finds all functions satisfying the constraints, and orders them from
+% highest score to lowest.
 find_funcs(Funcs, FuncConstraints) :-
     findall(
         (Score, Func),

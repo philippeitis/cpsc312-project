@@ -17,11 +17,9 @@
     [method(Method), methods([get, post, delete])]
 ).
 
-:- http_handler(root(hello_world), say_hi, []).		% (1)
+server(Port) :-	http_server(http_dispatch, [port(Port)]).
 
-server(Port) :-						% (2)
-        http_server(http_dispatch, [port(Port)]).
-
+%% Hide unconstrained variables.
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
 
@@ -34,6 +32,7 @@ add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
     get_field_constraint(Field, String, Method, Constraint), !.
 
+%% Finds all functions with the constraints.
 func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name) :-
     add_field_constraint(name, FuncName, StringCmpName, [], C0),
     add_field_constraint(docs, Docs, StringCmpDocs, C0, C1),
@@ -44,23 +43,28 @@ func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name)
             |[(output_constraint, Outputs)|C1]
         ]
     ).
-    
+
+%% Finds a single function with the constraints and prints it.
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
     func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
-    function(Name, InputsOut, OutputsOut, DocsOut),
-    format('Found func: ~w :: ~w -> ~w | ~w~n', [Name, InputsOut, OutputsOut, DocsOut]), !.
-
+    format_func(String, Name),
+    format("Found func: ~w~n", [String]).
+    
 find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     render_param(FuncName0, FuncName),
     render_param(Inputs0, Inputs),
     render_param(Outputs0, Outputs),
     render_param(Docs0, Docs),
-    format('No matching func found: ~w :: ~w -> ~w | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
+    format_skeleton(String, FuncName, Inputs, Outputs, Docs),
+    format('No matching func found: ~w~n', [String]), !.
 
+%% Helper for correctly constraining lists.
 nonempty_list([], true, []) :- !.
 nonempty_list([], false, _) :- !.
 nonempty_list(NonEmpty, _, NonEmpty) :- !.
 
+%% Parses parameters for search requests.
+% Can be partially specified.
 parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
     http_parameters(Request,
         [
@@ -76,6 +80,8 @@ parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpNam
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).
 
+%% Parses parameters for insertion of function
+% Requires function signature to be defined
 parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
     http_parameters(Request,
         [
@@ -89,18 +95,19 @@ parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).
 
-func(get, Request) :-					% (3)
+%% REST API
+func(get, Request) :-
     parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
     format('Content-type: text/plain~n~n'),
     find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs).
 
-func(post, Request) :-					% (3)
+func(post, Request) :-
     parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs),
     assertz(function(FuncName, Inputs, Outputs, Docs)),
     format('Content-type: text/plain~n~n'),
     format('Created func ~w~n', [FuncName]).
 
-func(delete, Request) :-					% (3)
+func(delete, Request) :-
     parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
     foreach(
         func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),

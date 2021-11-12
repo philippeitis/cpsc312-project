@@ -26,11 +26,7 @@ list_subset([First|Rest], B) :-
 % The empty constraint.
 no_constraint(_, _, 0.0, (no_constraint, _)).
 
-get_field(Func, name, Field) :- name(Func, Field).
-get_field(Func, docs, Field) :- docs(Func, Field).
-get_field(Func, inputs, Field) :- inputs(Func, Field).
-get_field(Func, outputs, Field) :- outputs(Func, Field).
-
+%% Wrapper for string comparision methods
 wrapper(Func, (Self, Args), Score, NewConstraint) :-
     wrap_core(Self, Func, Args, Score, NewConstraint).
 
@@ -40,6 +36,7 @@ wrap_core(Core, Func, Args, Score, (no_constraint, _)) :-
 wrap_core(Core, Func, Args, 0.0, (wrapper, (Core, Args))) :-
     \+call(Core, Func, Args, _), !.
 
+%% String comparison methods
 equality_core(Func, (Target, Field), 1.0) :-
     get_field(Func, Field, Target), !.
 equality_constraint(Func, Args, Score, NewConstraint) :-
@@ -65,6 +62,8 @@ seq_core(Func, (Sequence, Field), 1.0) :-
 subsequence_constraint(Func, Args, Score, NewConstraint) :-
     wrap_core(seq_core, Func, Args, Score, NewConstraint).
 
+
+%% Input/output checking
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),
     list_subset(TargetInputs, Inputs).
