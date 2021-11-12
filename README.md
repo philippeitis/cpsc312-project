@@ -123,7 +123,9 @@ If you include instructions different from these, be **absolutely sure** that th
 ### How to test and run the code: Prolog
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
- 
+
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
+
 This program provides a REPL, which can be run using `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
