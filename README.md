@@ -17,13 +17,11 @@ We call ourselves: Pattern Match This.
 
 ## Product Pitch
 
-The software development industry continues to grow and with it so does the demand for programmers. Many companies require their software developers to work harder and longer in order to increase productivity. This mismanagement can lead to overbearing crunch times, lowering workers' quality of life. Fortunately this industry is populated by adapters, innovators and outside the box thinkers who are ready and willing to adjust to more efficient workflows. Technologies for workflow improvements such as 'auto-complete' or AI assistants are already helping programmers quickly finish typing a line of code by predicting their intent. So, what is the next phase of evolution for these technologies?
+The software development industry continues to grow and with it so does the demand for programmers. Many companies require their software developers to work harder and longer in order to increase productivity. This mismanagement can lead to overbearing crunch times, lowering workers' quality of life. Fortunately this industry is populated by adapters, innovators and outside the box thinkers who are ready to learn new technologies to make their workflows easier and more efficient. Modern IDEs already provide simple auto-complete as users type, and services like GitHub's Copilot try to help programmers quickly complete their programs by predicting their intent. FastFuncs is an evolution of these technologies, which gives programmers highly customizable, feature-rich code discovery and autocompletion tools, which avoid many of the pitfalls of existing tools.
 
-FastFuncs is a next generation programming assistant that helps users quickly find and compose functions to perform particular tasks, using state-of-the-art natural language processing techniques to interpret intent and search databases of functions.
-
-Users can quickly import their codebases into FastFuncs, with a variety of easy-to-use interfaces which can be adapted to any user's particular needs. Once this is done, they can:
+FastFuncs is a next generation programming assistant that helps users quickly find and compose functions to perform particular tasks, using state-of-the-art natural language processing techniques to interpret intent and search databases of functions. Users can quickly import their codebases into FastFuncs, with a variety of easy-to-use interfaces which can be adapted to any user's particular needs. Once this is done, they can:
 1. Search their entire codebase with FastFuncs' own predicates, and with their own predicates, with minimal effort
-2. Use a natural language description to automatically generate a sequence of functions
+2. Use a natural language description to automatically generate a sequence of functions to accomplish a particular task
 3. Provide code-completion which can take into account the surrounding context, including functions and documentation
 
 First, FastFuncs will find all possible chains of functions that will take a given input and produce a desired output. Then, using intelligent AI scoring algorithms and the user's description, FastFuncs will sort these options and suggest which newly created function is right for the user.
