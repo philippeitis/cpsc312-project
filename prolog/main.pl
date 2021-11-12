@@ -34,6 +34,11 @@ options([(Key, Value)|Rem]) -->
 options([(Key, Value)]) --> single_option(Key, Value), wh.
 options([]) --> [].
 
+single_option(Key, Value) -->
+    "--", string(KeyCodes), wh,
+    {string_codes(Key, KeyCodes)},
+    "=", wh, "\"", escaped_string(ValueCodes), "\"",
+    {string_codes(Value, ValueCodes)}.
 
 single_option(Key, Value) -->
     "--", string(KeyCodes), wh,
@@ -44,6 +49,17 @@ single_option(Key, Value) -->
 single_option(Key, "") -->
     "--", string(KeyCodes),
     {string_codes(Key, KeyCodes)}.
+
+%% DCG for escaping quote and backslach for regex strings.
+escaped_char('"') -->
+    "\\\"".
+escaped_char('\\') -->
+    "\\\\".
+escaped_char(C) --> [H], {char_code(C, H)}.
+
+escaped_string([]) --> [].
+escaped_string([C]) --> escaped_char(C).
+escaped_string([C|Rem]) --> escaped_char(C), escaped_string(Rem).
 
 %% Listing of available commands.
 command("define").
