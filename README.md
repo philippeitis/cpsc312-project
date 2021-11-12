@@ -88,6 +88,7 @@ During development, we found that Prolog's depth-first search by default is not 
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
 - [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations, including subsequence detection, substring matching, Levenshtien distance, and joining lists of strings.
 
+For usage details, go to `How to test and run the code: Prolog`.
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
 code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
@@ -122,3 +123,41 @@ If you include instructions different from these, be **absolutely sure** that th
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
  
+This program provides a REPL, which can be run using `swipl main.pl`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+Enter a command.
+|: 
+```
+
+Use `swipl main.pl --help` for help information:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl --help
+Use `help command` for help with a particular command
+Available commands: 
+    define
+    clear
+    search
+    path
+    store
+    load
+    launch
+    quit
+```
+
+and `swipl main.pl --help COMMAND` for instructions for a particular command.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl --help define
+Defines a function from user input.
+Example: define `fnName` arg1, arg2 :: output1, output2 | doc
+```
+
+Additionally, it is possible to launch the server for the REST API:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
+% Started server at http://localhost:5000/
+Enter a command.
+|: 
+```
+
+The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters.
