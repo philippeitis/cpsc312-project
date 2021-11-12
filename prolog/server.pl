@@ -34,7 +34,7 @@ add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
     get_field_constraint(Field, String, Method, Constraint), !.
 
-find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
+func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name) :-
     add_field_constraint(name, FuncName, StringCmpName, [], C0),
     add_field_constraint(docs, Docs, StringCmpDocs, C0, C1),
     find_funcs(
@@ -43,16 +43,19 @@ find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs)
             (input_constraint, Inputs)
             |[(output_constraint, Outputs)|C1]
         ]
-    ),
+    ).
+    
+find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
+    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
     function(Name, InputsOut, OutputsOut, DocsOut),
-    format('Found func: ~w ~w :: ~w | ~w~n', [Name, InputsOut, OutputsOut, DocsOut]), !.
+    format('Found func: ~w :: (~w) -> (~w) | ~w~n', [Name, InputsOut, OutputsOut, DocsOut]), !.
 
 find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     render_param(FuncName0, FuncName),
     render_param(Inputs0, Inputs),
     render_param(Outputs0, Outputs),
     render_param(Docs0, Docs),
-    format('No matching func found: ~w ~w :: ~w | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
+    format('No matching func found: ~w :: (~w) -> (~w) | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
 
 nonempty_list([], true, []) :- !.
 nonempty_list([], false, _) :- !.
@@ -98,7 +101,10 @@ func(post, Request) :-					% (3)
     format('Created func ~w~n', [FuncName]).
 
 func(delete, Request) :-					% (3)
-    parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, _, _),
-    retractall(function(FuncName, Inputs, Outputs, Docs)),
+    parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
+    foreach(
+        func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
+        retractall(function(Name, _, _, _))
+    ),
     format('Content-type: text/plain~n~n'),
     format('Removed func ~w~n', [FuncName]).
