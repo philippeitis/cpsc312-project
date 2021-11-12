@@ -88,7 +88,7 @@ During development, we found that Prolog's depth-first search by default is not 
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
 - [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations, including subsequence detection, substring matching, Levenshtien distance, and joining lists of strings.
 
-For usage details, go to `How to test and run the code: Prolog`.
+For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`.
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
 code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
