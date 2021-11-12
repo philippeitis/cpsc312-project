@@ -2,10 +2,9 @@
     func_constraints/4,
     input_constraint/4,
     output_constraint/4,
-    exact_name_constraint/4,
-    exact_doc_constraint/4,
-    name_substring_constraint/4,
-    doc_substring_constraint/4,
+    exact_string_constraint/4,
+    substring_constraint/4,
+    levenshtein_constraint/4,
     path_constraints/3,
     cycle_constraint/3,
     length_constraint/3,
@@ -26,44 +25,27 @@ list_subset([First|Rest], B) :-
 % The empty constraint.
 no_constraint(_, _, 0.0, (no_constraint, _)).
 
-exact_string_constraint(Target, Target, 1.0, _, (no_constraint, _)) :- !.
-exact_string_constraint(Target, _, 0.0, ConstraintFn, (ConstraintFn, Target)) :- !.
+get_field(Func, name, Field) :- name(Func, Field).
+get_field(Func, docs, Field) :- docs(Func, Field).
 
-exact_name_constraint(Func, Target, Score, NewConstraint) :-
-    name(Func, Name),
-    exact_string_constraint(Target, Name, Score, exact_name_constraint, NewConstraint).
+exact_string_constraint(Func, (Target, Field), 1.0, (no_constraint, _)) :-
+    get_field(Func, Field, Target), !.
+exact_string_constraint(Func, (Target, Field), 0.0, (exact_string_constraint, (Target, Field))) :-
+    \+get_field(Func, Field, Target), !.
 
-exact_doc_constraint(Func, Target, Score, NewConstraint) :-
-    docs(Func, Docs),
-    exact_string_constraint(Target, Docs, Score, exact_doc_constraint, NewConstraint).
+substring_constraint(Func, (Needle, Field), 1.0, (no_constraint, _)) :-
+    get_field(Func, Field, String),
+    sub_string(String, _, _, _, Needle), !.
+substring_constraint(Func, (Needle, Field), 1.0, (substring_constraint, (Needle, Field))) :-
+    get_field(Func, Field, String),
+    \+sub_string(String, _, _, _, Needle), !.
 
-substring_constraint(Substring, String, 1.0, _, (no_constraint, _)) :-
-    sub_string(String, _, _, _, Substring), !.
-substring_constraint(Substring, String, 0.0, ConstraintFn, (ConstraintFn, Substring)) :-
-    \+sub_string(String, _, _, _, Substring).
-
-name_substring_constraint(Func, Substring, Score, NewConstraint) :-
-    name(Func, Name),
-    substring_constraint(Substring, Name, Score, name_substring_constraint, NewConstraint).
-
-doc_substring_constraint(Func, Substring, Score, NewConstraint) :-
-    docs(Func, Doc),
-    substring_constraint(Substring, Doc, Score, doc_substring_constraint, NewConstraint).
-
-
-target_similarity(String, (Target, MaxDistance), Score, _, (no_constraint, _)) :-
+levenshtein_constraint(Func, (Target, Field, MaxDistance), Score, (no_constraint, _)) :-
+    get_field(Func, Field, String),
     levenshtein_distance(Target, String, Distance),
     Distance =< MaxDistance,
     Score is MaxDistance - Distance, !.
-target_similarity(_, Args, 0.0, ConstraintFn, (ConstraintFn, Args)) :- !.
-
-name_distance_constraint(Func, Args, Score, NewConstraint) :-
-    name(Func, Name),
-    target_similarity(Name, Args, Score, name_distance_constraint, NewConstraint).
-
-doc_distance_constraint(Func, Args, Score, NewConstraint) :-
-    docs(Func, Doc),
-    target_similarity(Doc, Args, Score, doc_distance_constraint, NewConstraint).
+levenshtein_constraint(_, Args, 0.0, (levenshtein_constraint, Args)) :- !.
 
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),

@@ -25,26 +25,17 @@ server(Port) :-						% (2)
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
 
+get_field_constraint(String, Field, exact, (exact_string_constraint, (String, Field))).
+get_field_constraint(String, Field, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
+get_field_constraint(String, Field, substr, (substring_constraint, (String, Field))).
 
-get_name_constraint(String, exact, (exact_name_constraint, String)).
-get_name_constraint(String, lev, (name_distance_constraint, (String, MaxDis))) :- string_length(String, MaxDis).
-get_name_constraint(String, substr, (name_substring_constraint, String)).
-
-get_doc_constraint(String, exact, (exact_doc_constraint, String)).
-get_doc_constraint(String, lev, (doc_distance_constraint, (String, MaxDis))) :- string_length(String, MaxDis).
-get_doc_constraint(String, substr, (doc_substring_constraint, String)).
-
-add_name_constraint(none, _, Constraints, Constraints) :- !.
-add_name_constraint(Name, Method, Constraints, [Constraint|Constraints]) :-
-    get_name_constraint(Name, Method, Constraint), !.
-
-add_doc_constraint(none, _, Constraints, Constraints) :- !.
-add_doc_constraint(Docs, Method, Constraints, [Constraint|Constraints]) :-
-    get_doc_constraint(Docs, Method, Constraint), !.
+add_field_constraint(Field, none, _, Constraints, Constraints) :- !.
+add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
+    get_field_constraint(Docs, Method, Constraint), !.
 
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
-    add_name_constraint(FuncName, StringCmpName, [], C0),
-    add_doc_constraint(Docs, StringCmpDocs, C0, C1),
+    add_field_constraint(FuncName, name, StringCmpName, [], C0),
+    add_field_constraint(Docs, docs, StringCmpDocs, C0, C1),
     find_funcs(
         [Name|_],
         [
