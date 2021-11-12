@@ -48,14 +48,14 @@ func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name)
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
     func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
     function(Name, InputsOut, OutputsOut, DocsOut),
-    format('Found func: ~w :: (~w) -> (~w) | ~w~n', [Name, InputsOut, OutputsOut, DocsOut]), !.
+    format('Found func: ~w :: ~w -> ~w | ~w~n', [Name, InputsOut, OutputsOut, DocsOut]), !.
 
 find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     render_param(FuncName0, FuncName),
     render_param(Inputs0, Inputs),
     render_param(Outputs0, Outputs),
     render_param(Docs0, Docs),
-    format('No matching func found: ~w :: (~w) -> (~w) | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
+    format('No matching func found: ~w :: ~w -> ~w | ~w~n', [FuncName, Inputs, Outputs, Docs]), !.
 
 nonempty_list([], true, []) :- !.
 nonempty_list([], false, _) :- !.
