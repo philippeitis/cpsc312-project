@@ -25,17 +25,17 @@ server(Port) :-						% (2)
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
 
-get_field_constraint(String, Field, exact, (equality_constraint, (String, Field))).
-get_field_constraint(String, Field, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
-get_field_constraint(String, Field, substr, (substring_constraint, (String, Field))).
+get_field_constraint(Field, String, exact, (equality_constraint, (String, Field))).
+get_field_constraint(Field, String, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
+get_field_constraint(Field, String, substr, (substring_constraint, (String, Field))).
 
-add_field_constraint(Field, none, _, Constraints, Constraints) :- !.
+add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
-    get_field_constraint(Docs, Method, Constraint), !.
+    get_field_constraint(Field, String, Method, Constraint), !.
 
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
-    add_field_constraint(FuncName, name, StringCmpName, [], C0),
-    add_field_constraint(Docs, docs, StringCmpDocs, C0, C1),
+    add_field_constraint(name, FuncName, StringCmpName, [], C0),
+    add_field_constraint(docs, Docs, StringCmpDocs, C0, C1),
     find_funcs(
         [Name|_],
         [
