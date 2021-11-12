@@ -1,6 +1,8 @@
 :- module(search, [
     func_path/3,
-    func_path_no_cycles/3
+    func_path_no_cycles/3,
+    find_func/3,
+    find_funcs/2
 ]).
 :- use_module(function).
 :- use_module(constraint).

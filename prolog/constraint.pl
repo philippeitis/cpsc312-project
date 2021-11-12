@@ -1,6 +1,9 @@
 :- module(constraint, [
     func_constraints/4,
     input_constraint/4,
+    output_constraint/4,
+    exact_name_constraint/4,
+    exact_doc_constraint/4,
     name_substring_constraint/4,
     doc_substring_constraint/4,
     path_constraints/3,
@@ -22,6 +25,17 @@ list_subset([First|Rest], B) :-
 %% no_constraint(?, ?, ?Score, ?NewConstraint)
 % The empty constraint.
 no_constraint(_, _, 0.0, (no_constraint, _)).
+
+exact_string_constraint(Target, Target, 1.0, _, (no_constraint, _)) :- !.
+exact_string_constraint(Target, _, 0.0, ConstraintFn, (ConstraintFn, Target)) :- !.
+
+exact_name_constraint(Func, Target, Score, NewConstraint) :-
+    name(Func, Name),
+    exact_string_constraint(Target, Name, Score, exact_name_constraint, NewConstraint).
+
+exact_doc_constraint(Func, Target, Score, NewConstraint) :-
+    docs(Func, Docs),
+    exact_string_constraint(Target, Docs, Score, exact_doc_constraint, NewConstraint).
 
 substring_constraint(Substring, String, 1.0, _, (no_constraint, _)) :-
     sub_string(String, _, _, _, Substring), !.
@@ -61,6 +75,9 @@ has_output(Func, TargetOutputs) :-
 input_constraint(Func, Inputs, 0.0, (input_constraint, Outputs)) :-
     has_input(Func, Inputs),
     outputs(Func, Outputs).
+
+output_constraint(Func, Outputs, 0.0, (no_constraint, _)) :-
+    has_output(Func, Outputs).
 
 %% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
 % Tests if Func satisfies all constraints, producing a score for this function,
