@@ -2,7 +2,7 @@
     func_constraints/4,
     input_constraint/4,
     output_constraint/4,
-    exact_string_constraint/4,
+    equality_constraint/4,
     substring_constraint/4,
     levenshtein_constraint/4,
     path_constraints/3,
@@ -27,10 +27,12 @@ no_constraint(_, _, 0.0, (no_constraint, _)).
 
 get_field(Func, name, Field) :- name(Func, Field).
 get_field(Func, docs, Field) :- docs(Func, Field).
+get_field(Func, inputs, Field) :- inputs(Func, Field).
+get_field(Func, outputs, Field) :- outputs(Func, Field).
 
-exact_string_constraint(Func, (Target, Field), 1.0, (no_constraint, _)) :-
+equality_constraint(Func, (Target, Field), 1.0, (no_constraint, _)) :-
     get_field(Func, Field, Target), !.
-exact_string_constraint(Func, (Target, Field), 0.0, (exact_string_constraint, (Target, Field))) :-
+equality_constraint(Func, (Target, Field), 0.0, (equality_constraint, (Target, Field))) :-
     \+get_field(Func, Field, Target), !.
 
 substring_constraint(Func, (Needle, Field), 1.0, (no_constraint, _)) :-

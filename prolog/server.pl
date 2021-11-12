@@ -25,7 +25,7 @@ server(Port) :-						% (2)
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
 
-get_field_constraint(String, Field, exact, (exact_string_constraint, (String, Field))).
+get_field_constraint(String, Field, exact, (equality_constraint, (String, Field))).
 get_field_constraint(String, Field, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
 get_field_constraint(String, Field, substr, (substring_constraint, (String, Field))).
 
