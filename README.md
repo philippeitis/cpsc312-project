@@ -150,7 +150,7 @@ and `swipl main.pl --help COMMAND` for instructions for a particular command.
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl --help define
 Defines a function from user input.
-Example: define `fnName` arg1, arg2 :: output1, output2 | doc
+Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
 Additionally, it is possible to launch the server for the REST API:
@@ -168,19 +168,19 @@ Example usage with Python's requests library:
 ```python
 # Finds a function with the letters "pat" in sequential order
 >>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
-b'Found func: parseInt2 :: ([str]) -> ([int]) | documentation\n'
+b'Found func: parseInt2 :: [str] -> [int] | documentation\n'
 # Deletes the parseInt2 function
 >>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2"}).content
 b'Removed func parseInt2\n'
 # Check that parseInt2 is gone
 >>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "exact"}).content
-b'No matching func found: parseInt2 :: (?) -> (?) | none\n'
+b'No matching func found: parseInt2 :: ? -> ? | none\n'
 # Insert new parseInt2
 >>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).content
 b'Created func parseInt2\n'
 # parseInt2 is restored
 >>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "exact"}).content
-b'Found func: parseInt2 :: ([str]) -> ([int]) | too cool for documentation\n'
+b'Found func: parseInt2 :: [str] -> [int] | too cool for documentation\n'
 ```
 
 This API supports "name_cmp" and "doc_cmp" for function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), and "exact" (exact string match).
