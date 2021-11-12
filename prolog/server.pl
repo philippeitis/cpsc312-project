@@ -53,8 +53,8 @@ parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpNam
             inputs(Inputs0, [list(string)]),
             outputs(Outputs0, [list(string)]),
             docs(Docs, [string, default(none)]),
-            name_cmp(StringCmpName, [default(lev), oneof([eq, lev, substr, subseq])]),
-            doc_cmp(StringCmpDocs, [default(substr), oneof([eq, lev, substr, subseq])])
+            name_cmp(StringCmpName, [default(lev), oneof([re, eq, lev, substr, subseq])]),
+            doc_cmp(StringCmpDocs, [default(substr), oneof([re, eq, lev, substr, subseq])])
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).

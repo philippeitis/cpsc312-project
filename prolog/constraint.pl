@@ -7,6 +7,7 @@
     substring_constraint/4,
     levenshtein_constraint/4,
     subsequence_constraint/4,
+    regex_constraint/4,
     path_constraints/3,
     cycle_constraint/3,
     length_constraint/3,
@@ -15,6 +16,7 @@
 ]).
 :- use_module(function).
 :- use_module(string_op).
+:- use_module(library(pcre)).
 
 %% list_subset(?List1, ?List2)
 % Returns true if List1 is a subset of List2.
@@ -58,11 +60,17 @@ levenshtein_constraint(Func, Args, Score, NewConstraint) :-
     wrap_core(lev_core, Func, Args, Score, NewConstraint).
 
 seq_core(Func, (Sequence, Field), 1.0) :-
-    get_field(Func, Field, Source),
-    sequence_match(Sequence, Source), !.
+    get_field(Func, Field, String),
+    sequence_match(Sequence, String), !.
 subsequence_constraint(Func, Args, Score, NewConstraint) :-
     wrap_core(seq_core, Func, Args, Score, NewConstraint).
 
+regex_core(Func, (Regex, Field), 1.0) :-
+    get_field(Func, Field, String),
+    re_match(Regex, String).
+
+regex_constraint(Func, Args, Score, NewConstraint) :-
+    wrap_core(regex_core, Func, Args, Score, NewConstraint).
 
 %% Input/output checking
 has_input(Func, TargetInputs) :-
@@ -84,6 +92,7 @@ match_eq(Eq) :- member(Eq, ["eq", "exact", eq, exact]).
 match_lev(Lev) :- member(Lev, ["lev", lev]).
 match_substr(Substr) :- member(Substr, ["substr", substr]).
 match_subseq(Subseq) :- member(Subseq, ["subseq", subseq]).
+match_re(Re) :- member(Re, ["re", re]).
 
 %% Get the constraint for the field and method
 get_field_constraint(Field, String, Eq, (equality_constraint, (String, Field))) :-
@@ -94,6 +103,8 @@ get_field_constraint(Field, String, Substr, (substring_constraint, (String, Fiel
     match_substr(Substr), !.
 get_field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
     match_subseq(Subseq), !.
+get_field_constraint(Field, String, Re, (regex_constraint, (String, Field))) :-
+    match_re(Re), !.
 
 %% none is used to denote constraints which are not provided
 add_field_constraint(_, none, _, Constraints, Constraints) :- !.
