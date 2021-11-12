@@ -65,9 +65,9 @@ Or:
 Our POC focuses on demonstrating our ability to search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply a scoring algorithm.
 
 It allows the user to:
-1. Specify functions, including their signatures and documentation, via [JSON files](), [a REST API](), [or command line input]().
-2. Search for individual functions with a [particular set of features](), and [sort these by a computed score]() 
-3. Generate a [sequence of functions]() which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of constraints]().
+1. Specify functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/function.pl#L34), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/server.pl#L89), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/main.pl#L153).
+2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/constraint.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L51). 
+3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L10) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/constraint.pl#L102).
 
 This represents the core functionality our product aims to provide:
 1. a user interface where users can easily define new functions and perform searches over the knowledge base, using constraints to find the most appropriate functions
@@ -82,12 +82,13 @@ During development, we found that Prolog's depth-first search by default is not 
 
 ## Files
 - [constraint.pl](prolog/constraint.pl): This file contains function and path constraints, as well as functionality for defining and composing said constraints. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
-- [function.pl](prolog/function.pl): This file contains a set of basic function definitions, and functionality for serializing/deserializing functions from JSON.
+- [function.pl](prolog/function.pl): This file contains a set of sample function definitions, and functionality for serializing/deserializing functions from JSON.
 - [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list commands and find instructions for how particular commands are used.
 - [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow finding individual functions, or generating chains of functions that transform inputs into outputs. All of these functions accept constraints to filter functions and paths.
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
 - [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations, including subsequence detection, substring matching, Levenshtien distance, and joining lists of strings.
 
+For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`.
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
 code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
@@ -122,3 +123,65 @@ If you include instructions different from these, be **absolutely sure** that th
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
  
+This program provides a REPL, which can be run using `swipl main.pl`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+Enter a command.
+|: 
+```
+
+Use `swipl main.pl --help` for help information:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl --help
+Use `help command` for help with a particular command
+Available commands: 
+    define
+    clear
+    search
+    path
+    store
+    load
+    launch
+    quit
+```
+
+and `swipl main.pl --help COMMAND` for instructions for a particular command.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl --help define
+Defines a function from user input.
+Example: define `fnName` arg1, arg2 :: output1, output2 | doc
+```
+
+Additionally, it is possible to launch the server for the REST API:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
+% Started server at http://localhost:5000/
+Enter a command.
+|: 
+```
+
+The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters.
+
+Example usage with Python's requests library:
+
+```python
+# Finds a function with the letters "pat" in sequential order
+>>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
+b'Found func: parseInt2 :: ([str]) -> ([int]) | documentation\n'
+# Deletes the parseInt2 function
+>>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2"}).content
+b'Removed func parseInt2\n'
+# Check that parseInt2 is gone
+>>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "exact"}).content
+b'No matching func found: parseInt2 :: (?) -> (?) | none\n'
+# Insert new parseInt2
+>>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).content
+b'Created func parseInt2\n'
+# parseInt2 is restored
+>>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "exact"}).content
+b'Found func: parseInt2 :: ([str]) -> ([int]) | too cool for documentation\n'
+```
+
+This API supports "name_cmp" and "doc_cmp" for function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), and "exact" (exact string match).
+
+Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
