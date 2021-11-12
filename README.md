@@ -69,6 +69,8 @@ It allows the user to:
 2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/constraint.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L51). 
 3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L10) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/constraint.pl#L102).
 
+For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`. A high level description of the modules in the prolog directory is provided below.
+
 This represents the core functionality our product aims to provide:
 1. a user interface where users can easily define new functions and perform searches over the knowledge base, using constraints to find the most appropriate functions
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort.
@@ -88,7 +90,6 @@ During development, we found that Prolog's depth-first search by default is not 
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
 - [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations, including subsequence detection, substring matching, Levenshtien distance, and joining lists of strings.
 
-For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`.
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
 code may take an extra 4 minutes. (Your guidance and links should make it easy for us to work through the code.)
