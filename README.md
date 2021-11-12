@@ -19,14 +19,14 @@ We call ourselves: Pattern Match This.
 
 The software development industry continues to grow and with it so does the demand for programmers. Many companies require their software developers to work harder and longer in order to increase productivity. This mismanagement can lead to overbearing crunch times, lowering workers' quality of life. Fortunately this industry is populated by adapters, innovators and outside the box thinkers who are ready to learn new technologies to make their workflows easier and more efficient. Modern IDEs already provide simple auto-complete as users type, and services like GitHub's Copilot try to help programmers quickly complete their programs by predicting their intent. FastFuncs is an evolution of these technologies, which gives programmers highly customizable, feature-rich code discovery and autocompletion tools, which avoid many of the pitfalls of existing tools.
 
-FastFuncs is a next generation programming assistant that helps users quickly find and compose functions to perform particular tasks, using state-of-the-art natural language processing techniques to interpret intent and search databases of functions. Users can quickly import their codebases into FastFuncs, with a variety of easy-to-use interfaces which can be adapted to any user's particular needs. Once this is done, they can:
+FastFuncs is a next generation programming assistant that helps users quickly find and compose functions to perform particular tasks, using state-of-the-art natural language processing techniques to interpret intent and search databases of functions, returning only the most relevant results. Users can quickly import their codebases into FastFuncs, with a variety of easy-to-use interfaces which can be adapted to any user's particular needs. Once this is done, they can:
 1. Search their entire codebase with FastFuncs' own predicates, and with their own predicates, with minimal effort
 2. Use a natural language description to automatically generate a sequence of functions to accomplish a particular task
 3. Provide code-completion which can take into account the surrounding context, including functions and documentation
 
-First, FastFuncs will find all possible chains of functions that will take a given input and produce a desired output. Then, using intelligent AI scoring algorithms and the user's description, FastFuncs will sort these options and suggest which newly created function is right for the user.
+FastFuncs not only makes it easy to quickly design novel functions, but also makes it possible to improve programs by finding better ways to transform inputs into outputs. Programmers can use this functionality to simplify their programs, or make them more efficient, reducing maintenance burden and costly software bugs.
 
-FastFuncs not only makes designing novel functions quick and easy, it can help improve programs by finding shorter ways to convert given inputs to desired outputs. This means that programmers can quickly and easily simplify their programs to improve their efficiency. It doesn't just make programming quicker and easier. FastFuncs will help make your programs faster and less complicated. Investing in your employees toolkit with the addition of FastFuncs will allow you to maximize their efficiency and, most importantly, their quality of life.
+Investing in your employees' tools with the addition of FastFuncs will allow your employees to maximize their efficiency and, most importantly, their quality of life.
 
 
 ## Minimal Viable Project
@@ -34,12 +34,12 @@ FastFuncs not only makes designing novel functions quick and easy, it can help i
 Our MVP will deliver 3 core features necessary to build the product above:
 
 1. Consolidation of all functions available given imported and standard libraries into a single knowledge-base.
-2. Natural language processing of user descriptions about what they want to do
+2. Processing of natural language descriptions to identify suitable functions to satisfy said description
 3. A scoring feature which will sort the possible approaches by what is most likely the best option
 
-Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces, either by example, or by hooking into the REST API.
+Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces, either by example, or by hooking into the REST API. A full implementation of our product pitch would also incorporate powerful NLP models to work with complex user descriptions, and utilize NLP to improve the quality of searches - for example, by automatically detecting synonyms and allowing these to be incorporated into queries.
 
-Prolog makes defining knowledge bases and constraint satisfaction problems very intuitive as its ability to search for terms that make a predicate true is a core feature of it's proof procedure.
+Prolog is very suitable for this task, as it makes it intuitive to define knowledge bases and implement search by describing constraint satisfication problems. 
 
 By building systems of constraints, we have already begun to learn the best designs for a search algorithm in Prolog. We also anticipate that building functions for scoring paths can be used to train machine learning models to more intelligently explore the space of user defined functions.
 
@@ -74,34 +74,19 @@ This represents the core functionality our product aims to provide:
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort.
 
 We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
-Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy to personally
-add new constraint functions, but also, it makes it easy for users themselves to define and compose their own constraints. In addition, it provides a 
-powerful terminal interface which makes use of some of our constraint functionality to make commands easily discoverable. 
-We believe that our proof of concept goes above and beyond the requirements, and only requires polishing to become an MVP.
+Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy for us to add new constraint functions, but also makes it easy for users themselves to define and compose their own constraints. In addition, since we cleanly separated the user interfaces from the core functionality, it is very easy to modify one or the other - or even create an entirely new interface, as with our REST API. Accordingly, we have two interfaces - a powerful terminal interface which makes use of our constraint functionality to make commands easily discoverable, and a REST API which allows adding, deleting, and searching functions. We believe that our proof of concept goes above and beyond the requirements, and could easily be considered an MVP.
 
-Being able to implement searches with parameterized constraints gives us confidence that we could extend the search
-functionality with more powerful constraints, which utilize information derived through natural language processing of the input.
-Additionally, having implemented path-level constraints and function scoring makes us confident that we could develop interesting
-path scoring functionality, as this naturally follows.
+Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input. Our proof of concept does not currently assign a score to the paths that it generates, which means that users would have to manually evaluate the paths themselves. However, we believe that having implemented scoring for functions, and constraints over paths has given us the necessary knowledge to implement scoring functions for paths as well, without too much additional effort. We would like to combine this with depth-first / best-first search to present the best paths to the user.
 
-Additionally, the simplicity of Prolog's http library demonstrates that we can provide a powerful REST API with minimal effort.
-
-However, we have found that Prolog's depth-first search by default is not always
-the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths.
-The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which
-can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
-
-Our proof of concept does not currently assign a score to the paths that it generates, which means that the end user would
-have to manually evaluate all generated paths, which can be time-consuming and overwhelming when they have large code bases.
-In the future, we would to use a best-first search and a scoring function to present the best paths first.
+During development, we found that Prolog's depth-first search by default is not always the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths. The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
 
 ## Files
-- [constraint.pl](prolog/constraint.pl): This file contains functionality for defining and composing constraints for both individual functions, and for paths. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
+- [constraint.pl](prolog/constraint.pl): This file contains function and path constraints, as well as functionality for defining and composing said constraints. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
 - [function.pl](prolog/function.pl): This file contains a set of basic function definitions, and functionality for serializing/deserializing functions from JSON.
-- [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list and find instructions for how particular commands are used.
-- [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow generating chains of functions or finding individual functions, and accept constraints in order to select the best functions.
-- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions.
-- [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations.
+- [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list commands and find instructions for how particular commands are used.
+- [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow finding individual functions, or generating chains of functions that transform inputs into outputs. All of these functions accept constraints to filter functions and paths.
+- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
+- [string_op.pl](prolog/string_op.pl): This file provides functions for common string operations, including subsequence detection, substring matching, Levenshtien distance, and joining lists of strings.
 
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
