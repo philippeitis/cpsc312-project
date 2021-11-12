@@ -2,7 +2,8 @@
     func_path/3,
     func_path_no_cycles/3,
     find_func/3,
-    find_funcs/2
+    find_funcs/2,
+    func_search/7
 ]).
 :- use_module(function).
 :- use_module(constraint).
@@ -64,4 +65,16 @@ find_funcs(Funcs, FuncConstraints) :-
     ),
     sort(0, @>, FuncsUnsorted, FuncPairs),
     findall(Func, member((_Score, Func), FuncPairs), Funcs).
-    
+
+%% Finds all functions with the constraints.
+func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
+    add_field_constraint(name, FuncName, NameCmp, [], C0),
+    add_field_constraint(docs, Docs, DocCmp, C0, C1),
+    find_funcs(
+        Funcs,
+        [
+            (input_constraint, Inputs)
+            |[(output_constraint, Outputs)|C1]
+        ]
+    ).
+

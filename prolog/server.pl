@@ -23,30 +23,9 @@ server(Port) :-	http_server(http_dispatch, [port(Port)]).
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
 
-get_field_constraint(Field, String, exact, (equality_constraint, (String, Field))).
-get_field_constraint(Field, String, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
-get_field_constraint(Field, String, substr, (substring_constraint, (String, Field))).
-get_field_constraint(Field, String, subseq, (subsequence_constraint, (String, Field))).
-
-add_field_constraint(_, none, _, Constraints, Constraints) :- !.
-add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
-    get_field_constraint(Field, String, Method, Constraint), !.
-
-%% Finds all functions with the constraints.
-func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name) :-
-    add_field_constraint(name, FuncName, StringCmpName, [], C0),
-    add_field_constraint(docs, Docs, StringCmpDocs, C0, C1),
-    find_funcs(
-        [Name|_],
-        [
-            (input_constraint, Inputs)
-            |[(output_constraint, Outputs)|C1]
-        ]
-    ).
-
 %% Finds a single function with the constraints and prints it.
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
-    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
+    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Name|_]),
     format_func(String, Name),
     format("Found func: ~w~n", [String]).
     
@@ -74,8 +53,8 @@ parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpNam
             inputs(Inputs0, [list(string)]),
             outputs(Outputs0, [list(string)]),
             docs(Docs, [string, default(none)]),
-            name_cmp(StringCmpName, [default(lev), oneof([exact, lev, substr, subseq])]),
-            doc_cmp(StringCmpDocs, [default(substr), oneof([exact, lev, substr, subseq])])
+            name_cmp(StringCmpName, [default(lev), oneof([eq, lev, substr, subseq])]),
+            doc_cmp(StringCmpDocs, [default(substr), oneof([eq, lev, substr, subseq])])
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).

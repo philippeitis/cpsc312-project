@@ -1,5 +1,6 @@
 :- module(constraint, [
     func_constraints/4,
+    add_field_constraint/5,
     input_constraint/4,
     output_constraint/4,
     equality_constraint/4,
@@ -77,6 +78,27 @@ input_constraint(Func, Inputs, 0.0, (input_constraint, Outputs)) :-
 
 output_constraint(Func, Outputs, 0.0, (no_constraint, _)) :-
     has_output(Func, Outputs).
+
+%% Helper functions for building searches from user input.
+match_eq(Eq) :- member(Eq, ["eq", "exact", eq, exact]).
+match_lev(Lev) :- member(Lev, ["lev", lev]).
+match_substr(Substr) :- member(Substr, ["substr", substr]).
+match_subseq(Subseq) :- member(Subseq, ["subseq", subseq]).
+
+%% Get the constraint for the field and method
+get_field_constraint(Field, String, Eq, (equality_constraint, (String, Field))) :-
+    match_eq(Eq), !.
+get_field_constraint(Field, String, Lev, (levenshtein_constraint, (String, Field, MaxDis))) :-
+    match_lev(Lev), !, string_length(String, MaxDis).
+get_field_constraint(Field, String, Substr, (substring_constraint, (String, Field))) :-
+    match_substr(Substr), !.
+get_field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
+    match_subseq(Subseq), !.
+
+%% none is used to denote constraints which are not provided
+add_field_constraint(_, none, _, Constraints, Constraints) :- !.
+add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
+    get_field_constraint(Field, String, Method, Constraint), !.
 
 %% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
 % Tests if Func satisfies all constraints, producing a score for this function,

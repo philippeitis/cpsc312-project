@@ -4,6 +4,7 @@
 :- use_module(string_op).
 :- use_module(search).
 :- use_module(server).
+:- use_module(library(dcg/basics)).
 
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
@@ -11,6 +12,38 @@ pretty_print_path([Func]) :-
     write(Func), !.
 pretty_print_path([Head|Tail]) :-
     format("~w -> ", [Head]), pretty_print_path(Tail), !.
+
+wh -->  " ", wh.
+wh -->  "".
+
+%% Find the first key/value pair with the corresponding Key,
+% returning Default if no such key/value pair exists.
+get_key_or_default(List, Key, _, Value) :-
+    member((Key, Value), List), !.
+get_key_or_default(List, Key, Default, Default) :-
+    \+member((Key, _), List), !.
+
+%% Parses options in --key=val format.
+parse_options(String, Options) :-
+    string_codes(String, Codes),
+    phrase((wh, options(Options)), Codes), !.
+
+%% DCG option parsing
+options([(Key, Value)|Rem]) -->
+    single_option(Key, Value), wh, options(Rem).
+options([(Key, Value)]) --> single_option(Key, Value), wh.
+options([]) --> [].
+
+
+single_option(Key, Value) -->
+    "--", string(KeyCodes), wh,
+    {string_codes(Key, KeyCodes)},
+    "=", wh, string(ValueCodes),
+    {string_codes(Value, ValueCodes)}.
+
+single_option(Key, "") -->
+    "--", string(KeyCodes),
+    {string_codes(Key, KeyCodes)}.
 
 %% Listing of available commands.
 command("define").
@@ -31,7 +64,7 @@ assist("clear") :-
     write("Example: clear"), nl, !.
 assist("search") :- 
     write("Finds a function with the given signature."), nl,
-    write("Example: search :: [arg1, arg2] -> [output1, output2]"), nl, !.
+    write("Example: search :: [arg1, arg2] -> [output1, output2] --name=fnname --name_cmp=eq"), nl, !.
 assist("path") :- 
     write("Finds a sequence of functions which transform the input to the output."), nl,
     write("Example: path :: [arg1, arg2] -> [output1, output2]"), nl, !.
@@ -85,8 +118,14 @@ execute_command("clear") :-
 
 execute_command(String) :-
     split_left(String, " ", 1, ["search", Rest]),
-    parse_types(Rest, InputTypes, OutputTypes),
-    findnsols(5, Func, func_path_no_cycles(InputTypes, OutputTypes, [Func]), Solns),
+    parse_types(Rest, InputTypes, OutputTypes, OptionStr),
+    parse_options(OptionStr, Options),
+    get_key_or_default(Options, "name", none, Name),
+    get_key_or_default(Options, "docs", none, Docs),
+    get_key_or_default(Options, "name_cmp", lev, NameCmp),
+    get_key_or_default(Options, "doc_cmp", substr, DocCmp),
+    func_search(Name, InputTypes, OutputTypes, Docs, NameCmp, DocCmp, Funcs),
+    findnsols(5, Func, member(Func, Funcs), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (format("Function: ~w", [Soln]), nl)), !.

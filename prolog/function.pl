@@ -9,6 +9,7 @@
     read_json_funcs/1,
     parse_signature/5,
     parse_types/3,
+    parse_types/4,
     format_func/2,
     format_skeleton/5
 ]).
@@ -105,12 +106,19 @@ parse_signature(String, Name, Inputs, Outputs, Docs) :-
 
 %% Parse a type signature.
 parse_types(String, Inputs, Outputs) :-
-    string_codes(String, Codes),
-    phrase(parse_type_sig(Inputs, Outputs), Codes).
+    parse_types(String, Inputs, Outputs, _).
 
+%% Parse a type signature from String and return the remainder in Rest.
+parse_types(String, Inputs, Outputs, Rest) :-
+    string_codes(String, Codes),
+    phrase(parse_type_sig(Inputs, Outputs), Codes, RestCodes),
+    string_codes(Rest, RestCodes).
+
+%% Formats the function with the given name
 format_func(String, Name) :-
     function(Name, Inputs, Outputs, Docs),
     format_skeleton(String, Name, Inputs, Outputs, Docs).
 
+%% Formats the function skeleton.
 format_skeleton(String, Name, Inputs, Outputs, Docs) :-
     format(string(String), '~w :: ~w -> ~w | ~w', [Name, Inputs, Outputs, Docs]).
