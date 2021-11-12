@@ -65,9 +65,9 @@ Or:
 Our POC focuses on demonstrating our ability to search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply a scoring algorithm.
 
 It allows the user to:
-1. Specify functions, including their signatures and documentation, via [JSON files](), [a REST API](), [or command line input]().
-2. Search for individual functions with a [particular set of features](), and [sort these by a computed score]() 
-3. Generate a [sequence of functions]() which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of constraints]().
+1. Specify functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/function.pl#L34), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/server.pl#L89), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/main.pl#L153).
+2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/constraint.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L51). 
+3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/search.pl#L10) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/d62d4681a7e6b645c0b623fb3bea6aa9324d67fc/prolog/constraint.pl#L102).
 
 This represents the core functionality our product aims to provide:
 1. a user interface where users can easily define new functions and perform searches over the knowledge base, using constraints to find the most appropriate functions
