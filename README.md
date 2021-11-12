@@ -161,3 +161,23 @@ Enter a command.
 ```
 
 The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters.
+
+Example usage with Python's requests library:
+
+```python
+# Finds a function with the letters "pat" in sequential order
+>>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
+b'Found func: parseInt2 [str] :: [int] | documentation\n'
+# Deletes the parseInt2 function
+>>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2"}).content
+b'Removed func parseInt2\n'
+# Check that parseInt2 is gone
+>>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
+b'No matching func found: parseInt2 ? :: ? | none\n'
+# Insert new parseInt2
+>>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).content
+b'Created func parseInt2\n'
+# parseInt2 is restored
+>>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
+b'Found func: parseInt2 [str] :: [int] | too cool for documentation\n'
+```
