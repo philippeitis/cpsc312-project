@@ -28,6 +28,7 @@ render_param(Param, Param) :- !.
 get_field_constraint(Field, String, exact, (equality_constraint, (String, Field))).
 get_field_constraint(Field, String, lev, (levenshtein_constraint, (String, Field, MaxDis))) :- string_length(String, MaxDis).
 get_field_constraint(Field, String, substr, (substring_constraint, (String, Field))).
+get_field_constraint(Field, String, subseq, (subsequence_constraint, (String, Field))).
 
 add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
@@ -66,8 +67,8 @@ parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpNam
             inputs(Inputs0, [list(string)]),
             outputs(Outputs0, [list(string)]),
             docs(Docs, [string, default(none)]),
-            string_cmp_name(StringCmpName, [default(lev), oneof([exact, lev, substr, subseq])]),
-            string_cmp_docs(StringCmpDocs, [default(substr), oneof([exact, lev, substr, subseq])])
+            name_cmp(StringCmpName, [default(lev), oneof([exact, lev, substr, subseq])]),
+            doc_cmp(StringCmpDocs, [default(substr), oneof([exact, lev, substr, subseq])])
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).

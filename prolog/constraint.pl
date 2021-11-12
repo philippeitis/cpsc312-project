@@ -5,6 +5,7 @@
     equality_constraint/4,
     substring_constraint/4,
     levenshtein_constraint/4,
+    subsequence_constraint/4,
     path_constraints/3,
     cycle_constraint/3,
     length_constraint/3,
@@ -30,24 +31,39 @@ get_field(Func, docs, Field) :- docs(Func, Field).
 get_field(Func, inputs, Field) :- inputs(Func, Field).
 get_field(Func, outputs, Field) :- outputs(Func, Field).
 
-equality_constraint(Func, (Target, Field), 1.0, (no_constraint, _)) :-
-    get_field(Func, Field, Target), !.
-equality_constraint(Func, (Target, Field), 0.0, (equality_constraint, (Target, Field))) :-
-    \+get_field(Func, Field, Target), !.
+wrapper(Func, (Self, Args), Score, NewConstraint) :-
+    wrap_core(Self, Func, Args, Score, NewConstraint).
 
-substring_constraint(Func, (Needle, Field), 1.0, (no_constraint, _)) :-
+wrap_core(Core, Func, Args, Score, (no_constraint, _)) :-
+    call(Core, Func, Args, Score), !.
+
+wrap_core(Core, Func, Args, 0.0, (wrapper, (Core, Args))) :-
+    \+call(Core, Func, Args, _), !.
+
+equality_core(Func, (Target, Field), 1.0) :-
+    get_field(Func, Field, Target), !.
+equality_constraint(Func, Args, Score, NewConstraint) :-
+    wrap_core(equality_core, Func, Args, Score, NewConstraint).
+
+sub_core(Func, (Needle, Field), 1.0) :-
     get_field(Func, Field, String),
     sub_string(String, _, _, _, Needle), !.
-substring_constraint(Func, (Needle, Field), 1.0, (substring_constraint, (Needle, Field))) :-
-    get_field(Func, Field, String),
-    \+sub_string(String, _, _, _, Needle), !.
+substring_constraint(Func, Args, Score, NewConstraint) :-
+    wrap_core(sub_core, Func, Args, Score, NewConstraint).
 
-levenshtein_constraint(Func, (Target, Field, MaxDistance), Score, (no_constraint, _)) :-
+lev_core(Func, (Target, Field, MaxDistance), Score) :-
     get_field(Func, Field, String),
     levenshtein_distance(Target, String, Distance),
     Distance =< MaxDistance,
     Score is MaxDistance - Distance, !.
-levenshtein_constraint(_, Args, 0.0, (levenshtein_constraint, Args)) :- !.
+levenshtein_constraint(Func, Args, Score, NewConstraint) :-
+    wrap_core(lev_core, Func, Args, Score, NewConstraint).
+
+seq_core(Func, (Sequence, Field), 1.0) :-
+    get_field(Func, Field, Source),
+    sequence_match(Sequence, Source), !.
+subsequence_constraint(Func, Args, Score, NewConstraint) :-
+    wrap_core(seq_core, Func, Args, Score, NewConstraint).
 
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),
