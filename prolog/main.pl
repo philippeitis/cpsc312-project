@@ -95,6 +95,9 @@ assist("launch") :-
     write("Example: launch 5000"), nl, !.
 assist("quit") :-
     write("Terminates the program."), nl, !.
+assist("os") :-
+    write("Prints the currently running OS."), nl, !.
+
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
     available_commands(), !.
@@ -177,6 +180,21 @@ execute_command(String) :-
 
 execute_command("quit") :- halt(0).
 
+execute_command("os") :-
+    current_prolog_flag(unix, true),
+    format("Unix~n"), !.
+
+execute_command("os") :-
+    current_prolog_flag(apple, true),
+    format("MacOS~n"), !.
+
+execute_command("os") :-
+    current_prolog_flag(windows, true),
+    format("Windows~n"), !.
+
+execute_command("os") :-
+    format("Unknown~n"), !.
+
 execute_command("help") :-
     write("Use `help command` for help with a particular command"), nl,
     available_commands(), !.
@@ -199,7 +217,7 @@ execute_command(String) :- assist(String), !.
 
 %% Core event loop.
 input_loop() :-
-    write("Enter a command."), nl,
+    write("Enter a command."), nl, write(">>> "),
     read_line_to_string(current_input, Command), nl,
     execute_command(Command),
     input_loop().
@@ -209,6 +227,13 @@ main(['--help']) :- execute_command("help"), !.
 main(['--help', CommandAtom]) :-
     atom_string(CommandAtom, Command),
     assist(Command), !.
+main(['--quit'|Command]) :-
+    findall(String, (
+        member(Atom, Command),
+        atom_string(Atom, String)
+    ), Args),
+    join(Args, " ", CommandStr),
+    execute_command(CommandStr), !.
 main([CommandAtom|AtomArgs]) :-
     atom_string(CommandAtom, Command),
     findall(String, (

@@ -28,14 +28,14 @@ find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs)
     func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Name|_]),
     format_func(String, Name),
     format("Found func: ~w~n", [String]).
-    
+
 find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     render_param(FuncName0, FuncName),
     render_param(Inputs0, Inputs),
     render_param(Outputs0, Outputs),
     render_param(Docs0, Docs),
     format_skeleton(String, FuncName, Inputs, Outputs, Docs),
-    format('No matching func found: ~w~n', [String]), !.
+    format("No matching func found: ~w~n", [String]), !.
 
 %% Helper for correctly constraining lists.
 nonempty_list([], true, []) :- !.
@@ -77,20 +77,29 @@ parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
 %% REST API
 func(get, Request) :-
     parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
-    format('Content-type: text/plain~n~n'),
+    format("Content-type: text/plain~n~n"),
     find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs).
 
 func(post, Request) :-
     parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs),
     assertz(function(FuncName, Inputs, Outputs, Docs)),
-    format('Content-type: text/plain~n~n'),
-    format('Created func ~w~n', [FuncName]).
+    format("Content-type: text/plain~n~n"),
+    format("Created func ~w~n", [FuncName]).
 
 func(delete, Request) :-
     parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
-    foreach(
-        func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Name),
-        retractall(function(Name, _, _, _))
+    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, Names),
+    findall(
+        Name,
+        (
+            member(Name, Names),
+            retractall(function(Name, _, _, _))
+        ),
+        [First|_]
     ),
-    format('Content-type: text/plain~n~n'),
-    format('Removed func ~w~n', [FuncName]).
+    format("Content-type: text/plain~n~n"),
+    format("Removed func ~w~n", [First]), !.
+
+func(delete, _) :-
+    format("Content-type: text/plain~n~n"),
+    format("Deletion failed~n", []), !.

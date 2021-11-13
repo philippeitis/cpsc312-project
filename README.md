@@ -123,7 +123,9 @@ If you include instructions different from these, be **absolutely sure** that th
 ### How to test and run the code: Prolog
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
- 
+
+Please note that we also test the REST API using a small Python script [prolog/server_test.py](prolog/server_test.py). This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously.
+
 This program provides a REPL, which can be run using `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
