@@ -1,5 +1,14 @@
 :- use_module(library(http/http_client)).
 
+newline("\r\n").
+newline("\n").
+
+ends_with_newline(RootA, StringA) :-
+    newline(NL),
+    atom_string(RootA, Root),
+    atom_string(StringA, String),
+    string_concat(Root, NL, String), !.
+
 %% Checks that posting parseInt55 works correctly
 post_ok :-
     http_post([
@@ -14,9 +23,10 @@ post_ok :-
             outputs="int",
             docs="Hello world!"
         ]),
-        'Created func parseInt55\n',
+        Reply,
         []
-    ).
+    ),
+    ends_with_newline('Created func parseInt55', Reply). 
 
 %% Runs a request which gets parseInt55 and unfies the response with Rpely
 get(Reply) :-
@@ -54,21 +64,46 @@ subprocess(Write) :-
 test('Runs an example client session', [nondet]) :-
     % When server starts, parseInt55 does not exist, so it fails.
     delete(DeleteMissing),
-    assertion(DeleteMissing == 'Deletion failed\n'),
+    assertion(
+        ends_with_newline(
+            'Deletion failed',
+            DeleteMissing
+        )
+    ),
     % parseInt55 does not exist and should not be found
     get(GetMissing),
-    assertion(GetMissing == 'No matching func found: parseInt[0-9][0-9] :: ? -> ? | none\n'),
+    assertion(
+        ends_with_newline(
+            'No matching func found: parseInt[0-9][0-9] :: ? -> ? | none',
+            GetMissing
+        )
+    ),
     % Adding items should be fine even if repeated.
     post_ok,
     post_ok,
     % parseInt55 should now exist.
     get(GetFound),
-    assertion(GetFound == 'Found func: parseInt55 :: [str] -> [int] | Hello world!\n'),
+    assertion(
+        ends_with_newline(
+            'Found func: parseInt55 :: [str] -> [int] | Hello world!',
+            GetFound
+        )
+    ),
     % Delete all copies of parseInt55.
     delete(DeleteFound),
-    assertion(DeleteFound == 'Removed func parseInt55\n'),
+    assertion(
+        ends_with_newline(
+            'Removed func parseInt55',
+            DeleteFound
+        )
+    ),
     % Check that we did in fact delete parseInt55
     get(GetAfterDelete),
-    assertion(GetAfterDelete == 'No matching func found: parseInt[0-9][0-9] :: ? -> ? | none\n').
+    assertion(
+        ends_with_newline(
+            'No matching func found: parseInt[0-9][0-9] :: ? -> ? | none',
+            GetAfterDelete
+        )
+    ).
 
 :- end_tests('end-to-end test').
