@@ -179,6 +179,10 @@ Adding function: pow
 Found 1 solutions:
 Function: pow
 >>> store ./funcs.json
+>>> clear
+All functions have been erased.
+>>> path [int] -> [int]
+Found 0 solutions:
 >>> load ./funcs.json
 >>> os
 Unix
