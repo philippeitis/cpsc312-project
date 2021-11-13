@@ -158,7 +158,7 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
-An example session with the CLI:
+An example session with the CLI, which demonstrates the usage of everything except help and launch:
 
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
@@ -184,6 +184,13 @@ All functions have been erased.
 >>> path [int] -> [int]
 Found 0 solutions:
 >>> load ./funcs.json
+>>> path [int] -> [int]
+Found 5 solutions:
+increment
+increment -> decrement
+increment -> decrement -> pow
+increment -> pow
+increment -> pow -> decrement
 >>> os
 Unix
 >>> quit
