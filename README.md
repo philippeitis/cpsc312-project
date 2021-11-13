@@ -186,6 +186,8 @@ Unix
 >>> quit
 ```
 
+Both the CLI and REST API support "name_cmp" and "doc_cmp" for searching function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), "eq" (exact string match), and "re" (regex match).
+
 #### REST API Overview
 Additionally, it is possible to launch the server for the REST API:
 ```console
@@ -218,7 +220,5 @@ b'Created func parseInt2\n'
 >>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).content
 b'Found func: parseInt2 :: [str] -> [int] | too cool for documentation\n'
 ```
-
-This API supports "name_cmp" and "doc_cmp" for function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), "eq" (exact string match), and "re" (regex match).
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
