@@ -132,7 +132,6 @@ Please note that using `make prolog-eval` / `make test` will run a a small Pytho
 This program provides a REPL, which can be run using `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
-Enter a command.
 >>> 
 ```
 
