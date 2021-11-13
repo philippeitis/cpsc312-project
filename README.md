@@ -126,13 +126,14 @@ In the `prolog` directory, you can run `make test` to run the unit tests. You ca
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that we also test the REST API using a small Python script [prolog/server_test.py](prolog/server_test.py). This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously.
+Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously.
 
+#### CLI Overview
 This program provides a REPL, which can be run using `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 Enter a command.
-|: 
+>>> 
 ```
 
 Use `swipl main.pl --help` for help information:
@@ -148,6 +149,7 @@ Available commands:
     load
     launch
     quit
+    os
 ```
 
 and `swipl main.pl --help COMMAND` for instructions for a particular command.
@@ -157,15 +159,18 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
+#### REST API Overview
 Additionally, it is possible to launch the server for the REST API:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
 Enter a command.
-|: 
+>>> 
 ```
 
-The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters.
+Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate processes. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
+
+The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters. 
 
 Example usage with Python's requests library:
 
