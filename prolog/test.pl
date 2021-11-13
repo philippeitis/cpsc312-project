@@ -63,3 +63,8 @@ test('output getter fails', [nondet]) :-
 
 :- end_tests('func_constraints').
 
+:- begin_tests('path_constraints').
+:- use_module(path_constraints).
+
+:- end_tests('path_constraints').
+
