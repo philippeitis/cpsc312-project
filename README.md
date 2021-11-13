@@ -203,7 +203,6 @@ Additionally, it is possible to launch the server for the REST API:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
-Enter a command.
 >>> 
 ```
 
