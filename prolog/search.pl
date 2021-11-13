@@ -6,9 +6,13 @@
     func_search/7
 ]).
 :- use_module(function).
-:- use_module(constraint).
+:- use_module(func_constraints).
+:- use_module(path_constraints).
 
-%% func_path(?InputTypeList, ?OutputTypeList, ?Path)
+% TODO: Make this a breadth-first search which expands highest priority
+% items first (eg. items with highest score) - look @ A*.
+
+%% func_path(InputTypeList, OutputTypeList, Path:list)
 % Path is a sequence of functions, which when applied in sequence,
 % accept InputTypeList and produce OutputTypeList. 
 % try funcPath(["str"], ["None"], Path). (use ; to get more than one path)
@@ -21,11 +25,7 @@ func_path(InputTypes, OutputTypes, Path) :-
         Path
     ).
 
-% TODO: Make this a breadth-first search which expands highest priority
-% items first (eg. items with highest score) - look @ A*.
-% TODO: Add path length constraint and/or threshold to this.
-
-%% func_path(?Visited, ?FuncConstraints, ?PathConstraints, ?Path)
+%% func_path(Visited:list, FuncConstraints, PathConstraints, Path:list)
 % Path is a sequence of functions, which satisfy FuncConstraints
 % and its continuations, and in aggregate, satisfy PathConstraints.
 func_path(Visited, FuncConstraints, PathConstraints, []) :-
@@ -77,4 +77,3 @@ func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
             |[(output_constraint, Outputs)|C1]
         ]
     ).
-

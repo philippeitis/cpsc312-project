@@ -8,9 +8,10 @@
 :- use_module(library(http/http_parameters)).
 
 :- use_module(function).
-:- use_module(constraint).
+:- use_module(func_constraints).
 :- use_module(search).
 
+%% Initialize server
 :- http_handler(
     root(func),
     func(Method),
@@ -100,6 +101,7 @@ func(delete, Request) :-
     format("Content-type: text/plain~n~n"),
     format("Removed func ~w~n", [First]), !.
 
+% Fallthrough when delete fails.
 func(delete, _) :-
     format("Content-type: text/plain~n~n"),
     format("Deletion failed~n", []), !.

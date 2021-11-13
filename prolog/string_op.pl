@@ -26,7 +26,7 @@ sequence_match([Head|Tail], [Head|Tail1]) :-
 sequence_match(Sequence, [_|Tail1]) :-
     sequence_match(Sequence, Tail1).
 
-% split_left/4(String, Sep, N, Substrings)
+%% split_left/4(String, Sep, N, Substrings)
 % split_left splits the provided string on the characters in Sep,
 % up to a maximum of N times into Substrings. Multiple seperator characters
 % will be treated as one.
@@ -62,8 +62,8 @@ split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
 split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
     split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
 
-%%levenshtein_distance(A, B, Distance)
-%% Returns the Levenshtein distance between A and B
+%% levenshtein_distance(A, B, Distance)
+% Returns the Levenshtein distance between A and B
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 levenshtein_distance(A, B, Distance) :-
     string(A),

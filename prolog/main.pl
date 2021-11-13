@@ -217,8 +217,8 @@ execute_command(String) :- assist(String), !.
 
 %% Core event loop.
 input_loop() :-
-    write("Enter a command."), nl, write(">>> "),
-    read_line_to_string(current_input, Command), nl,
+    write(">>> "),
+    read_line_to_string(current_input, Command),
     execute_command(Command),
     input_loop().
 

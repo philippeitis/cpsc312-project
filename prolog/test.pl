@@ -53,3 +53,13 @@ test('output getter fails', [nondet]) :-
 
 :- end_tests('function').
 
+:- begin_tests('search').
+:- use_module(search).
+
+:- end_tests('search').
+
+:- begin_tests('func_constraints').
+:- use_module(func_constraints).
+
+:- end_tests('func_constraints').
+

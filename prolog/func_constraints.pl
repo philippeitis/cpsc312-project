@@ -1,4 +1,4 @@
-:- module(constraint, [
+:- module(func_constraints, [
     func_constraints/4,
     add_field_constraint/5,
     input_constraint/4,
@@ -7,16 +7,14 @@
     substring_constraint/4,
     levenshtein_constraint/4,
     subsequence_constraint/4,
-    regex_constraint/4,
-    path_constraints/3,
-    cycle_constraint/3,
-    length_constraint/3,
-    path_output_constraint/3,
-    no_constraints_left/1
+    regex_constraint/4
 ]).
 :- use_module(function).
 :- use_module(string_op).
 :- use_module(library(pcre)).
+
+%% Function Constraint Common API
+% Func, Args, Score, NewConstraint
 
 %% list_subset(?List1, ?List2)
 % Returns true if List1 is a subset of List2.
@@ -29,7 +27,8 @@ list_subset([First|Rest], B) :-
 % The empty constraint.
 no_constraint(_, _, 0.0, (no_constraint, _)).
 
-%% Wrapper for string comparision methods
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Wrappers for string comparision methods
 wrapper(Func, (Self, Args), Score, NewConstraint) :-
     wrap_core(Self, Func, Args, Score, NewConstraint).
 
@@ -39,7 +38,10 @@ wrap_core(Core, Func, Args, Score, (no_constraint, _)) :-
 wrap_core(Core, Func, Args, 0.0, (wrapper, (Core, Args))) :-
     \+call(Core, Func, Args, _), !.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% String comparison methods
+% x_core: Func, Args, Score
+% x_constraint: Func, Args, Score, NewConstraint
 equality_core(Func, (Target, Field), 1.0) :-
     get_field(Func, Field, Target), !.
 equality_constraint(Func, Args, Score, NewConstraint) :-
@@ -72,6 +74,7 @@ regex_core(Func, (Regex, Field), 1.0) :-
 regex_constraint(Func, Args, Score, NewConstraint) :-
     wrap_core(regex_core, Func, Args, Score, NewConstraint).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),
@@ -87,6 +90,7 @@ input_constraint(Func, Inputs, 0.0, (input_constraint, Outputs)) :-
 output_constraint(Func, Outputs, 0.0, (no_constraint, _)) :-
     has_output(Func, Outputs).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Helper functions for building searches from user input.
 match_eq(Eq) :- member(Eq, ["eq", "exact", eq, exact]).
 match_lev(Lev) :- member(Lev, ["lev", lev]).
@@ -111,6 +115,7 @@ add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
     get_field_constraint(Field, String, Method, Constraint), !.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
 % Tests if Func satisfies all constraints, producing a score for this function,
 % ScoreOut, and a set of constraints which follow Constraints, NewConstraints.
@@ -129,49 +134,3 @@ func_constraints(
     call(ConstraintFn, Func, Args, ThisScore, NewConstraint),
     ScoreIn2 is ScoreIn + ThisScore,
     func_constraints(Func, Rest, ScoreIn2, ScoreOut, NewConstraints).
-
-
-%% no_constraints_left(Constraints)
-% Produces true if all constraints are satisfied, or would be satisfied
-% in conjunction with path_output_constraint.
-no_constraints_left([]) :- !.
-no_constraints_left([(no_constraint, _)|Rest]) :- 
-    no_constraints_left(Rest), !.
-no_constraints_left([(input_constraint, _)|Rest]) :- 
-    no_constraints_left(Rest), !.
-
-%% path_constraints(Path, Func, Constraints)
-% Evaluates all of the provided path-level constraints on the path.
-path_constraints(_, _, []) :- !.
-
-path_constraints(Path, Func, [(ConstraintFn, Args)|Rest]) :-
-    call(ConstraintFn, Path, Func, Args),
-    path_constraints(Path, Func, Rest), !.
-
-% Contraint *args, Func, Score
-% Constraint -> Score
-% Constraint, Func -> Optional(Constraint)
-% Path -> Length, membership
-
-% Constraint: Func -> Args -> Score
-%% cycle_constraint(?Path, ?Func, ?)
-% Produces true if adding Func to Path will not introduce a cycle.
-cycle_constraint(_, none, _) :- !.
-cycle_constraint(Path, Func, _) :-
-    \+member(Func, Path).
-
-%% length_constraint(?Path, ?Func, ?Length:int)
-% Produces true if adding Func to Path will not cause Path's length to
-% exceed Length.
-length_constraint(Path, none, Length) :-
-    length(Path, PathLength),
-    PathLength =< Length, !.
-length_constraint(Path, _, Length) :-
-    length(Path, PathLength),
-    PathLength < Length, !.
-
-%% path_output_constraint(?Path, ?Func, ?Length:int)
-% Produces true if the last function in Path produces OutputTypes.
-path_output_constraint([LastFn|_], none, OutputTypes) :-
-    has_output(LastFn, OutputTypes).
-path_output_constraint(_, Value, _) :- \+(Value=none).
