@@ -35,21 +35,31 @@ test('levenshtein_distance right empty', [nondet]) :-
 :- begin_tests('function').
 :- use_module(function).
 
-define_helper(Expr) :-
-    assertz(function("example-fn", ["type1"], ["type2"], "documentation")),
+define_helper(Expr, Uuid) :-
+    add_function(Uuid, "example-fn", _, ["type1"], ["type2"], "documentation"),
     Expr,
-    retract(function("example-fn", ["type1"], ["type2"], "documentation")).
+    retract(function(Uuid, _, _, _, _, _)).
 
 test('name getter', [nondet]) :-
-    define_helper(name("example-fn", "example-fn")).
+    define_helper(fname(Uuid, "example-fn"), Uuid).
 test('doc getter', [nondet]) :-
-    define_helper(docs("example-fn", "documentation")).
+    define_helper(docs(Uuid, "documentation"), Uuid).
 test('input getter', [nondet]) :-
-    define_helper(inputs("example-fn", ["type1"])).
+    define_helper(inputs(Uuid, ["type1"]), Uuid).
 test('output getter', [nondet]) :-
-    define_helper(outputs("example-fn", ["type2"])).
+    define_helper(outputs(Uuid, ["type2"]), Uuid).
 test('output getter fails', [nondet]) :-
-    define_helper(not(outputs("example-a", ["type2"]))).
+    define_helper(not(outputs("example-a", ["type2"])), _).
+
+%% Parsing
+test('parse signature succeeds docs', [nondet]) :-
+    parse_signature("f :: [x] -> [y] | docs", "f", [], ["x"], ["y"], "docs").
+test('parse signature succeeds empty docs', [nondet]) :-
+    parse_signature("f :: [x] -> [y] | ", "f", [], ["x"], ["y"], "").
+test('parse signature succeeds no docs', [nondet]) :-
+    parse_signature("f :: [x] -> [y]", "f", [], ["x"], ["y"], "").
+test('parse signature generics', [nondet]) :-
+    parse_signature("f<X: T + Q> :: [x] -> [y]", "f", [generic("X", ["T", "Q"])], ["x"], ["y"], "").
 
 :- end_tests('function').
 

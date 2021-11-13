@@ -66,7 +66,7 @@ test('Runs an example client session', [nondet]) :-
     delete(DeleteMissing),
     assertion(
         ends_with_newline(
-            'Deletion failed',
+            'No matches found',
             DeleteMissing
         )
     ),
@@ -93,7 +93,7 @@ test('Runs an example client session', [nondet]) :-
     delete(DeleteFound),
     assertion(
         ends_with_newline(
-            'Removed func parseInt55',
+            'Removed func parseInt55, parseInt55',
             DeleteFound
         )
     ),

@@ -9,9 +9,11 @@
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
 pretty_print_path([Func]) :-
-    write(Func), !.
-pretty_print_path([Head|Tail]) :-
-    format("~w -> ", [Head]), pretty_print_path(Tail), !.
+    fname(Func, Name),
+    write(Name), !.
+pretty_print_path([Func|Tail]) :-
+    fname(Func, Name),
+    format("~w -> ", [Name]), pretty_print_path(Tail), !.
 
 wh -->  " ", wh.
 wh -->  "".
@@ -127,12 +129,12 @@ available_commands() :-
 %% Executes the user input - assist has examples of usage.
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
-    parse_signature(Rest, FnName, InputTypes, OutputTypes, Docs),
+    parse_signature(Rest, FnName, Generics, InputTypes, OutputTypes, Docs),
     format("Adding function: ~w", [FnName]), nl,
-    assertz(function(FnName, InputTypes, OutputTypes, Docs)), !.
+    add_function(_, FnName, Generics, InputTypes, OutputTypes, Docs), !.
 
 execute_command("clear") :-
-    retractall(function(_, _, _, _)),
+    clear_funcs,
     write("All functions have been erased."), nl, !.
 
 execute_command(String) :-
@@ -144,7 +146,7 @@ execute_command(String) :-
     get_key_or_default(Options, "name_cmp", lev, NameCmp),
     get_key_or_default(Options, "doc_cmp", substr, DocCmp),
     func_search(Name, InputTypes, OutputTypes, Docs, NameCmp, DocCmp, Funcs),
-    findnsols(5, Func, member(Func, Funcs), Solns),
+    findnsols(5, FName, (member(Func, Funcs), fname(Func, FName)), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (format("Function: ~w", [Soln]), nl)), !.
@@ -169,13 +171,13 @@ execute_command(String) :-
 execute_command(String) :-
     split_left(String, " ", 1, ["store", Path]),
     open(Path, write, Stream),
-    write_json_funcs(Stream),
+    write_json_metadata(Stream),
     close(Stream), !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["load", Path]),
     open(Path, read, Stream),
-    read_json_funcs(Stream),
+    read_json_metadata(Stream),
     close(Stream), !.
 
 execute_command("quit") :- halt(0).

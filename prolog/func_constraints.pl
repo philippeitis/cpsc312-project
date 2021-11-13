@@ -79,6 +79,7 @@ regex_constraint(Func, Args, Score, NewConstraint) :-
 has_input(Func, TargetInputs) :-
     inputs(Func, Inputs),
     list_subset(TargetInputs, Inputs).
+
 has_output(Func, TargetOutputs) :-
     outputs(Func, Outputs),
     list_subset(TargetOutputs, Outputs).
