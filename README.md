@@ -158,7 +158,7 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
-An example session with the CLI:
+An example session with the CLI, which demonstrates the usage of everything except help and launch:
 
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
@@ -179,7 +179,18 @@ Adding function: pow
 Found 1 solutions:
 Function: pow
 >>> store ./funcs.json
+>>> clear
+All functions have been erased.
+>>> path [int] -> [int]
+Found 0 solutions:
 >>> load ./funcs.json
+>>> path [int] -> [int]
+Found 5 solutions:
+increment
+increment -> decrement
+increment -> decrement -> pow
+increment -> pow
+increment -> pow -> decrement
 >>> os
 Unix
 >>> quit
@@ -192,7 +203,6 @@ Additionally, it is possible to launch the server for the REST API:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
-Enter a command.
 >>> 
 ```
 
