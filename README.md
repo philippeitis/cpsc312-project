@@ -65,9 +65,9 @@ Or:
 Our POC focuses on demonstrating our ability to search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply a scoring algorithm.
 
 It allows the user to:
-1. Specify functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/function.pl#L47), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/server.pl#L77), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/main.pl#L184).
-2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/constraint.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/search.pl#L58). 
-3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/search.pl#L11) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/19bc50a25f262560d911be4dd67ce6e74c3a1697/prolog/constraint.pl#L123).
+1. Specify functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/function.pl#L47), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/server.pl#L77), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/main.pl#L200).
+2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/constraint.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/search.pl#L58). 
+3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/search.pl#L11) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a71ff650e6aa328576e17a03ee58f173f5ea7649/prolog/constraint.pl#L123).
 
 For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`. A high level description of the modules in the prolog directory is provided below.
 
@@ -123,6 +123,8 @@ If you include instructions different from these, be **absolutely sure** that th
 ### How to test and run the code: Prolog
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
+
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
 Please note that we also test the REST API using a small Python script [prolog/server_test.py](prolog/server_test.py). This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously.
 
