@@ -159,6 +159,33 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
+An example session with the CLI:
+
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> pxth [int] -> [int]
+Did you mean path? Type y or n: path [int] -> [int]
+Found 4 solutions:
+increment
+increment -> decrement
+decrement
+decrement -> increment
+>>> search [str] -> [int] --name=pant --name_cmp=subseq
+Found 2 solutions:
+Function: parseInt2
+Function: parseInt
+>>> define pow :: [int, int] -> [int] | Raises x to the power of e
+Adding function: pow
+>>> search [int] -> [int] --docs=power --doc_cmp=substr
+Found 1 solutions:
+Function: pow
+>>> store ./funcs.json
+>>> load ./funcs.json
+>>> os
+Unix
+>>> quit
+```
+
 #### REST API Overview
 Additionally, it is possible to launch the server for the REST API:
 ```console
