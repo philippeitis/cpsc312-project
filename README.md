@@ -132,7 +132,6 @@ Please note that using `make prolog-eval` / `make test` will run a a small Pytho
 This program provides a REPL, which can be run using `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
-Enter a command.
 >>> 
 ```
 
@@ -158,6 +157,35 @@ user:~/cpsc312-project/prolog$ swipl main.pl --help define
 Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
+
+An example session with the CLI:
+
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> pxth [int] -> [int]
+Did you mean path? Type y or n: path [int] -> [int]
+Found 4 solutions:
+increment
+increment -> decrement
+decrement
+decrement -> increment
+>>> search [str] -> [int] --name=pant --name_cmp=subseq
+Found 2 solutions:
+Function: parseInt2
+Function: parseInt
+>>> define pow :: [int, int] -> [int] | Raises x to the power of e
+Adding function: pow
+>>> search [int] -> [int] --docs=power --doc_cmp=substr
+Found 1 solutions:
+Function: pow
+>>> store ./funcs.json
+>>> load ./funcs.json
+>>> os
+Unix
+>>> quit
+```
+
+Both the CLI and REST API support "name_cmp" and "doc_cmp" for searching function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), "eq" (exact string match), and "re" (regex match).
 
 #### REST API Overview
 Additionally, it is possible to launch the server for the REST API:
@@ -191,7 +219,5 @@ b'Created func parseInt2\n'
 >>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).content
 b'Found func: parseInt2 :: [str] -> [int] | too cool for documentation\n'
 ```
-
-This API supports "name_cmp" and "doc_cmp" for function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), "eq" (exact string match), and "re" (regex match).
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
