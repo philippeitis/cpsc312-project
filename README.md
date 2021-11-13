@@ -149,6 +149,7 @@ Available commands:
     load
     launch
     quit
+    os
 ```
 
 and `swipl main.pl --help COMMAND` for instructions for a particular command.
