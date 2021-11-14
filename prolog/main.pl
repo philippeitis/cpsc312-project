@@ -3,7 +3,7 @@
 :- use_module(function/parse).
 :- use_module(function/serde).
 
-:- use_module(string_op).
+:- use_module(sequence_ops).
 :- use_module(search).
 :- use_module(server).
 :- use_module(library(dcg/basics)).

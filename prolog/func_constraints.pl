@@ -10,18 +10,11 @@
     regex_constraint/4
 ]).
 :- use_module(function).
-:- use_module(string_op).
+:- use_module(sequence_ops).
 :- use_module(library(pcre)).
 
 %% Function Constraint Common API
 % Func, Args, Score, NewConstraint
-
-%% list_subset(?List1, ?List2)
-% Returns true if List1 is a subset of List2.
-list_subset([], _).
-list_subset([First|Rest], B) :-
-    member(First, B),
-    list_subset(Rest, B), !.
 
 %% no_constraint(?, ?, ?Score, ?NewConstraint)
 % The empty constraint.

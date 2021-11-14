@@ -1,5 +1,18 @@
-:- module(string_op, [split_left/4, levenshtein_distance/3, sequence_match/2, join/3]).
+:- module(sequence_ops, [
+    split_left/4,
+    levenshtein_distance/3,
+    sequence_match/2,
+    join/3,
+    list_subset/2
+]).
 :- table levenshtein_distance/3.
+
+%% list_subset(?List1, ?List2)
+% Returns true if List1 is a subset of List2.
+list_subset([], _).
+list_subset([First|Rest], B) :-
+    member(First, B),
+    list_subset(Rest, B), !.
 
 %% Joins the string with the provided separator string
 join([], _Sep, "") :- !.

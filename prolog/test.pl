@@ -6,8 +6,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-:- begin_tests('string_ops').
-:- use_module(string_op).
+:- begin_tests('sequence_ops').
+:- use_module(sequence_ops).
 
 test('split_left base case', [nondet]) :-
     split_left("Hello world !", " ", 0, ["Hello world !"]).
@@ -29,7 +29,22 @@ test('levenshtein_distance left empty', [nondet]) :-
 test('levenshtein_distance right empty', [nondet]) :-
     levenshtein_distance("abcdef", "", 6).
 
-:- end_tests('string_ops').
+test('list_subset two empty lists', [nondet]) :-
+    list_subset([], []).
+test('list_subset empty sublist', [nondet]) :-
+    list_subset([], [1,2,3]).
+test('list_subset identical lists', [nondet]) :-
+    list_subset([1,2,3], [1,2,3]).
+test('list_subset has subset in order', [nondet]) :-
+    list_subset([1,2,3], [1,2,3,4,5,6]).
+test('list_subset has subset out of order', [nondet]) :-
+    list_subset([1,3,2], [6,3,4,2,5,1]).
+test('list_subset empty main list', [nondet]) :-
+    \+list_subset([1,2,3], []).
+test('list_subset not a subset') :-
+    \+list_subset([1,2,3], [4,5,6]).
+
+:- end_tests('sequence_ops').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -129,21 +144,6 @@ test('No paths for types which do not exist', [nondet]) :-
 
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
-
-% test('list_subset two empty lists', [nondet]) :-
-%     list_subset([], []).
-% test('list_subset empty sublist', [nondet]) :-
-%     list_subset([], [1,2,3]).
-% test('list_subset identical lists', [nondet]) :-
-%     list_subset([1,2,3], [1,2,3]).
-% test('list_subset has subset in order', [nondet]) :-
-%     list_subset([1,2,3], [1,2,3,4,5,6]).
-% test('list_subset has subset out of order', [nondet]) :-
-%     list_subset([1,3,2], [6,3,4,2,5,1]).
-% test('list_subset empty main list', [nondet]) :-
-%     \+list_subset([1,2,3], []).
-% test('list_subset not a subset') :-
-%     \+list_subset([1,2,3], [4,5,6]).
 
 test('func_constraints no constraints succeeds with score of 0.0') :-
     function:fname(Uuid, "parseInt"),
