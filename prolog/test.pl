@@ -130,6 +130,32 @@ test('No paths for types which do not exist', [nondet]) :-
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
 
+test('list_subset two empty lists', [nondet]) :-
+    list_subset([], []).
+test('list_subset empty sublist', [nondet]) :-
+    list_subset([], [1,2,3]).
+test('list_subset identical lists', [nondet]) :-
+    list_subset([1,2,3], [1,2,3]).
+test('list_subset has subset in order', [nondet]) :-
+    list_subset([1,2,3], [1,2,3,4,5,6]).
+test('list_subset has subset out of order', [nondet]) :-
+    list_subset([1,3,2], [6,3,4,2,5,1]).
+test('list_subset empty main list', [fail]) :-
+    list_subset([1,2,3], []).
+test('list_subset not a subset', [fail]) :-
+    list_subset([1,2,3], [4,5,6]).
+
+test('func_constraints no constraints', [nondet]) :-
+    func_constraints(parseInt, [], 0, []).
+test('func constraints substring constraint', [nondet]) :-
+    func_constraints(parseInt, [(name_substring_constraint, "parse")], 0, []).
+test('func constraints substring constraint fail', [fail]) :-
+    func_constraints(parseInt, [(name_substring_constraint, "dsdsfdwa")], 0, []).
+test('func constraints input constraint', [nondet]) :-
+    func_constraints(increment, [(input_constraint, ["int"])], 0, []).
+test('func constraints input constraint fail', [fail]) :-
+    func_constraints(parseInt, [(input_constraint, ["int"])], 0, []).
+
 :- end_tests('func_constraints').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
