@@ -130,7 +130,14 @@ In the `prolog` directory, you can run `make test` to run the unit tests. You ca
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously. If, by chance, the default port collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
+Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script takes `PORT` as an argument, and calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. If, by chance, the default port used in the Makefile collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
+
+Example usage of [prolog/server_test.py](prolog/server_test.py):
+```console
+user:~/cpsc312-project/prolog$ python3 server_test.py 9999
+% PL-Unit: end-to-end test . done
+% test passed
+```
 
 #### CLI Overview
 This program provides a REPL, which can be run using `swipl main.pl`:
@@ -210,7 +217,7 @@ user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 >>> 
 ```
 
-Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate processes. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
+Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate process. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
 
 The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters. 
 
