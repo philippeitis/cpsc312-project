@@ -9,40 +9,40 @@
 :- begin_tests('sequence_ops').
 :- use_module(sequence_ops).
 
-test('split_left base case', [nondet]) :-
+test('split_left base case') :-
     split_left("Hello world !", " ", 0, ["Hello world !"]).
-test('split_left split once', [nondet]) :-
+test('split_left split once') :-
     split_left("Hello   world !", " ", 1, ["Hello", "world !"]).
-test('split_left split once multiple sep', [nondet]) :-
+test('split_left split once multiple sep') :-
     split_left("Hello  : world :!", ": ", 1, ["Hello", "world :!"]).
-test('split_left split many times', [nondet]) :-
+test('split_left split many times') :-
     split_left("Hello    world  ! a a   a", " ", 999, ["Hello", "world", "!", "a", "a", "a"]).
 
-test('levenshtein_distance all equal', [nondet]) :-
+test('levenshtein_distance all equal') :-
     levenshtein_distance("kitten", "kitten", 0).
-test('levenshtein_distance insert and replace', [nondet]) :-
+test('levenshtein_distance insert and replace') :-
     levenshtein_distance("kitten", "knitting", 3).
-test('levenshtein_distance no similarity', [nondet]) :-
+test('levenshtein_distance no similarity') :-
     levenshtein_distance("abcdef", "zzzzzz", 6).
-test('levenshtein_distance left empty', [nondet]) :-
+test('levenshtein_distance left empty') :-
     levenshtein_distance("", "zzzzzz", 6).
-test('levenshtein_distance right empty', [nondet]) :-
+test('levenshtein_distance right empty') :-
     levenshtein_distance("abcdef", "", 6).
 
-test('list_subset two empty lists', [nondet]) :-
+test('list_subset two empty lists') :-
     list_subset([], []).
-test('list_subset empty sublist', [nondet]) :-
+test('list_subset empty sublist') :-
     list_subset([], [1,2,3]).
-test('list_subset identical lists', [nondet]) :-
+test('list_subset identical lists') :-
     list_subset([1,2,3], [1,2,3]).
-test('list_subset has subset in order', [nondet]) :-
+test('list_subset has subset in order') :-
     list_subset([1,2,3], [1,2,3,4,5,6]).
-test('list_subset has subset out of order', [nondet]) :-
+test('list_subset has subset out of order') :-
     list_subset([1,3,2], [6,3,4,2,5,1]).
-test('list_subset empty main list', [nondet]) :-
-    \+list_subset([1,2,3], []).
-test('list_subset not a subset') :-
-    \+list_subset([1,2,3], [4,5,6]).
+test('list_subset empty main list', [fail]) :-
+    list_subset([1,2,3], []).
+test('list_subset not a subset', [fail]) :-
+    list_subset([1,2,3], [4,5,6]).
 
 :- end_tests('sequence_ops').
 
@@ -74,24 +74,24 @@ test('output getter fails', [nondet]) :-
 :- begin_tests('function/parse').
 :- use_module(function/parse).
 
-test('parse signature succeeds docs', [nondet]) :-
+test('parse signature succeeds docs') :-
     parse_signature("f :: [x] -> [y] | docs", "f", [], ["x"], ["y"], "docs").
-test('parse signature succeeds empty docs', [nondet]) :-
+test('parse signature succeeds empty docs') :-
     parse_signature("f :: [x] -> [y] | ", "f", [], ["x"], ["y"], "").
-test('parse signature succeeds no docs', [nondet]) :-
+test('parse signature succeeds no docs') :-
     parse_signature("f :: [x] -> [y]", "f", [], ["x"], ["y"], "").
-test('parse signature generics', [nondet]) :-
+test('parse signature generics') :-
     parse_signature("f<X: T + Q> :: [x] -> [y]", "f", [generic("X", ["T", "Q"])], ["x"], ["y"], "").
 
-test('parse one impl', [nondet]) :-
+test('parse one impl') :-
     parse_impls("str impls Add", "str", ["Add"]).
-test('parse two impls', [nondet]) :-
+test('parse two impls') :-
     parse_impls("str impls Add + Sub", "str", ["Add", "Sub"]).
 
 
-test('parse trait bounds', [nondet]) :-
+test('parse trait bounds') :-
     parse_trait("X: X + Y", trait("X", ["X", "Y"])).
-test('parse trait no bounds', [nondet]) :-
+test('parse trait no bounds') :-
     parse_trait("X", trait("X", [])).
 
 :- end_tests('function/parse').
@@ -125,15 +125,15 @@ test('json roundtrip succeeds', [nondet]) :-
 :- begin_tests('search').
 :- use_module(search).
 
-test('specialization of add is not skipped', [nondet]) :-
+test('specialization of add is not skipped') :-
     findall(
         Path,
         func_path_no_cycles(["int"], ["int"], Path),
         Paths
     ),
     length(Paths, 15).
-test('No paths for types which do not exist', [nondet]) :-
-    \+func_path_no_cycles(
+test('No paths for types which do not exist', [fail]) :-
+    func_path_no_cycles(
         ["not a real type"],
         ["also not a real type"],
     _).
