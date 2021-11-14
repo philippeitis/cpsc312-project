@@ -51,7 +51,10 @@ test('output getter', [nondet]) :-
 test('output getter fails', [nondet]) :-
     define_helper(not(outputs("example-a", ["type2"])), _).
 
-%% Parsing
+:- end_tests('function').
+
+:- begin_tests('function/parse').
+:- use_module(function/parse).
 test('parse signature succeeds docs', [nondet]) :-
     parse_signature("f :: [x] -> [y] | docs", "f", [], ["x"], ["y"], "docs").
 test('parse signature succeeds empty docs', [nondet]) :-
@@ -61,7 +64,42 @@ test('parse signature succeeds no docs', [nondet]) :-
 test('parse signature generics', [nondet]) :-
     parse_signature("f<X: T + Q> :: [x] -> [y]", "f", [generic("X", ["T", "Q"])], ["x"], ["y"], "").
 
-:- end_tests('function').
+test('parse one impl', [nondet]) :-
+    parse_impls("str impls Add", "str", ["Add"]).
+test('parse two impls', [nondet]) :-
+    parse_impls("str impls Add + Sub", "str", ["Add", "Sub"]).
+
+
+test('parse trait bounds', [nondet]) :-
+    parse_trait("X: X + Y", trait("X", ["X", "Y"])).
+test('parse trait no bounds', [nondet]) :-
+    parse_trait("X", trait("X", [])).
+
+:- end_tests('function/parse').
+
+:- begin_tests('function/serde').
+:- use_module(function/serde).
+:- use_module(library(http/json)).
+
+test('json roundtrip succeeds', [nondet]) :-
+    with_output_to(string(String0), (
+        current_output(Stream0),
+        write_json_metadata(Stream0)
+    )),
+    open_string(String0, Stream1),
+    function:clear_funcs,
+    read_json_metadata(Stream1),
+    with_output_to(string(String1), (
+        current_output(Stream2),
+        write_json_metadata(Stream2)
+    )),
+    open_string(String0, Stream3),
+    open_string(String1, Stream4),
+    json_read_dict(Stream3, First),
+    json_read_dict(Stream4, Second),
+    assertion(First = Second).
+
+:- end_tests('function/serde').
 
 :- begin_tests('search').
 :- use_module(search).
