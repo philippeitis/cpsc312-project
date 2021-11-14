@@ -139,7 +139,7 @@ execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
     parse_impls(Rest, Type, Impls),
     update_type_trait_impl(Type, Impls),
-    format("Add impls for ~w: ~w", [Type, Impls]), nl, !.
+    format("Adding impls for ~w: ~w", [Type, Impls]), nl, !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
@@ -158,16 +158,21 @@ execute_command(String) :-
     get_key_or_default(Options, "docs", none, Docs),
     get_key_or_default(Options, "name_cmp", lev, NameCmp),
     get_key_or_default(Options, "doc_cmp", substr, DocCmp),
+    get_key_or_default(Options, "limit", "5", Count),
+    number_string(N, Count),
     func_search(Name, InputTypes, OutputTypes, Docs, NameCmp, DocCmp, Funcs),
-    findnsols(5, FName, (member(Func, Funcs), fname(Func, FName)), Solns),
+    findnsols(N, FName, (member(Func, Funcs), fname(Func, FName)), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (format("Function: ~w", [Soln]), nl)), !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["path", Rest]),
-    parse_types(Rest, InputTypes, OutputTypes),
-    findnsols(5, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
+    parse_types(Rest, InputTypes, OutputTypes, OptionStr),
+    parse_options(OptionStr, Options),
+    get_key_or_default(Options, "limit", "5", Count),
+    number_string(N, Count),
+    findnsols(N, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.
