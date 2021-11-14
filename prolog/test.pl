@@ -136,6 +136,22 @@ test('No paths for types which do not exist', [nondet]) :-
 
 :- begin_tests('path_constraints').
 :- use_module(path_constraints).
+test('cycle_constraint does not allow cycles', [nondet]) :-
+    \+cycle_constraint([a, b, c, d], d, _).
+test('cycle_constraint allows none', [nondet]) :-
+    cycle_constraint([a, b, c, d], none, _).
+test('cycle_constraint allows non-cycle', [nondet]) :-
+    cycle_constraint([a, b, c, d], e, _).
+
+test('length_constraint fails on overly long path', [nondet]) :-
+    \+length_constraint([a, b, c], d, 3).
+test('length_constraint is fine when path is short', [nondet]) :-
+    length_constraint([a, b, c], d, 4).
+
+test('length_constraint does not allow excessively long path at end', [nondet]) :-
+    \+length_constraint([a, b, c, d], none, 3).
+test('length_constraint is fine testing end', [nondet]) :-
+    length_constraint([a, b, c], none, 3).
 
 :- end_tests('path_constraints').
 
