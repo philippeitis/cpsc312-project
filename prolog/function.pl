@@ -17,6 +17,19 @@
 :- dynamic trait/2.
 :- dynamic type/3.
 
+%% Getters for function.
+get_field(Func, name, Field) :- fname(Func, Field).
+get_field(Func, docs, Field) :- docs(Func, Field).
+get_field(Func, inputs, Field) :- inputs(Func, Field).
+get_field(Func, outputs, Field) :- outputs(Func, Field).
+
+uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
+fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).
+inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
+generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
+outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
+docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
+
 list_subset([], _).
 list_subset([First|Rest], B) :-
     member(First, B),
@@ -107,16 +120,3 @@ specialize(Func, Interp, Uuid) :-
     \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
     uuid(Uuid),
     assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)).
-
-%% Getters for function.
-get_field(Func, name, Field) :- fname(Func, Field).
-get_field(Func, docs, Field) :- docs(Func, Field).
-get_field(Func, inputs, Field) :- inputs(Func, Field).
-get_field(Func, outputs, Field) :- outputs(Func, Field).
-
-uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
-fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).
-inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
-generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
-outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
-docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).

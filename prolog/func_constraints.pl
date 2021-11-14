@@ -80,13 +80,15 @@ inputs_to_interp([], []).
 inputs_to_interp([Input|Inputs], [(_, Input)|Rest]) :-
     inputs_to_interp(Inputs, Rest).
 
-has_input(Func, TargetInputs) :-
-    generics(Func, []),
-    inputs(Func, Inputs),
-    list_subset(TargetInputs, Inputs).
+%% Specialize the function if necessary, and fail so that
+% we only visit this function once.
+% Otherwise, we vist the specialized function once (without fail),
+% or not at all until the next try (if specialize comes second).
+candidate_fn(Func) :- specialize(_, _, Func), fail.
+candidate_fn(Func) :- generics(Func, []).
 
 has_input(Func, TargetInputs) :-
-    specialize(_, _, Func),
+    candidate_fn(Func),
     inputs(Func, Inputs),
     list_subset(TargetInputs, Inputs).
 
@@ -110,21 +112,21 @@ match_subseq(Subseq) :- member(Subseq, ["subseq", subseq]).
 match_re(Re) :- member(Re, ["re", re]).
 
 %% Get the constraint for the field and method
-get_field_constraint(Field, String, Eq, (equality_constraint, (String, Field))) :-
+field_constraint(Field, String, Eq, (equality_constraint, (String, Field))) :-
     match_eq(Eq), !.
-get_field_constraint(Field, String, Lev, (levenshtein_constraint, (String, Field, MaxDis))) :-
+field_constraint(Field, String, Lev, (levenshtein_constraint, (String, Field, MaxDis))) :-
     match_lev(Lev), !, string_length(String, MaxDis).
-get_field_constraint(Field, String, Substr, (substring_constraint, (String, Field))) :-
+field_constraint(Field, String, Substr, (substring_constraint, (String, Field))) :-
     match_substr(Substr), !.
-get_field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
+field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
     match_subseq(Subseq), !.
-get_field_constraint(Field, String, Re, (regex_constraint, (String, Field))) :-
+field_constraint(Field, String, Re, (regex_constraint, (String, Field))) :-
     match_re(Re), !.
 
 %% none is used to denote constraints which are not provided
 add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
-    get_field_constraint(Field, String, Method, Constraint), !.
+    field_constraint(Field, String, Method, Constraint), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
@@ -133,7 +135,7 @@ add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints
 func_constraints(Func, Constraints, ScoreOut, NewConstraints) :-
     func_constraints(Func, Constraints, 0.0, ScoreOut, NewConstraints).
 
-func_constraints(_Func, [], Score, Score, _) :- !.
+func_constraints(_Func, [], Score, Score, []) :- !.
 
 func_constraints(
     Func,
