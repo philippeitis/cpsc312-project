@@ -130,31 +130,35 @@ test('No paths for types which do not exist', [nondet]) :-
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
 
-test('list_subset two empty lists', [nondet]) :-
-    list_subset([], []).
-test('list_subset empty sublist', [nondet]) :-
-    list_subset([], [1,2,3]).
-test('list_subset identical lists', [nondet]) :-
-    list_subset([1,2,3], [1,2,3]).
-test('list_subset has subset in order', [nondet]) :-
-    list_subset([1,2,3], [1,2,3,4,5,6]).
-test('list_subset has subset out of order', [nondet]) :-
-    list_subset([1,3,2], [6,3,4,2,5,1]).
-test('list_subset empty main list', [fail]) :-
-    list_subset([1,2,3], []).
-test('list_subset not a subset', [fail]) :-
-    list_subset([1,2,3], [4,5,6]).
+% test('list_subset two empty lists', [nondet]) :-
+%     list_subset([], []).
+% test('list_subset empty sublist', [nondet]) :-
+%     list_subset([], [1,2,3]).
+% test('list_subset identical lists', [nondet]) :-
+%     list_subset([1,2,3], [1,2,3]).
+% test('list_subset has subset in order', [nondet]) :-
+%     list_subset([1,2,3], [1,2,3,4,5,6]).
+% test('list_subset has subset out of order', [nondet]) :-
+%     list_subset([1,3,2], [6,3,4,2,5,1]).
+% test('list_subset empty main list', [nondet]) :-
+%     \+list_subset([1,2,3], []).
+% test('list_subset not a subset') :-
+%     \+list_subset([1,2,3], [4,5,6]).
 
-test('func_constraints no constraints', [nondet]) :-
-    func_constraints(parseInt, [], 0, []).
+test('func_constraints no constraints succeeds with score of 0.0') :-
+    function:fname(Uuid, "parseInt"),
+    func_constraints(Uuid, [], 0.0, []).
 test('func constraints substring constraint', [nondet]) :-
-    func_constraints(parseInt, [(name_substring_constraint, "parse")], 0, []).
-test('func constraints substring constraint fail', [fail]) :-
-    func_constraints(parseInt, [(name_substring_constraint, "dsdsfdwa")], 0, []).
+    function:fname(Uuid, "parseInt"),
+    func_constraints(Uuid, [(substring_constraint, ("parse", name))], 1.0, _).
+test('func constraints substring constraint fail') :-
+    function:fname(Uuid, "parseInt"),
+    func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 0.0, _).
 test('func constraints input constraint', [nondet]) :-
-    func_constraints(increment, [(input_constraint, ["int"])], 0, []).
+    function:fname(Uuid, "increment"),
+    func_constraints(Uuid, [(input_constraint, ["int"])], 0.0, _).
 test('func constraints input constraint fail', [fail]) :-
-    func_constraints(parseInt, [(input_constraint, ["int"])], 0, []).
+    func_constraints(parseInt, [(input_constraint, ["int"])], 0.0, []).
 
 :- end_tests('func_constraints').
 
@@ -162,21 +166,21 @@ test('func constraints input constraint fail', [fail]) :-
 
 :- begin_tests('path_constraints').
 :- use_module(path_constraints).
-test('cycle_constraint does not allow cycles', [nondet]) :-
-    \+cycle_constraint([a, b, c, d], d, _).
-test('cycle_constraint allows none', [nondet]) :-
+test('cycle_constraint does not allow cycles', [fail]) :-
+    cycle_constraint([a, b, c, d], d, _).
+test('cycle_constraint allows none') :-
     cycle_constraint([a, b, c, d], none, _).
-test('cycle_constraint allows non-cycle', [nondet]) :-
+test('cycle_constraint allows non-cycle') :-
     cycle_constraint([a, b, c, d], e, _).
 
-test('length_constraint fails on overly long path', [nondet]) :-
-    \+length_constraint([a, b, c], d, 3).
-test('length_constraint is fine when path is short', [nondet]) :-
+test('length_constraint fails on overly long path', [fail]) :-
+    length_constraint([a, b, c], d, 3).
+test('length_constraint is fine when path is short') :-
     length_constraint([a, b, c], d, 4).
 
-test('length_constraint does not allow excessively long path at end', [nondet]) :-
-    \+length_constraint([a, b, c, d], none, 3).
-test('length_constraint is fine testing end', [nondet]) :-
+test('length_constraint does not allow excessively long path at end', [fail]) :-
+    length_constraint([a, b, c, d], none, 3).
+test('length_constraint is fine testing end') :-
     length_constraint([a, b, c], none, 3).
 
 :- end_tests('path_constraints').
