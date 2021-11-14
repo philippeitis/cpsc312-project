@@ -130,7 +130,7 @@ In the `prolog` directory, you can run `make test` to run the unit tests. You ca
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously.
+Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script launches the REST API ([prolog/main.pl](prolog/main.pl)) and a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)) in two separate processes. It does not do any testing of its own, and is only used to run the server and client simultaneously. If, by chance, the default port collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
 
 #### CLI Overview
 This program provides a REPL, which can be run using `swipl main.pl`:
