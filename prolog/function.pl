@@ -30,11 +30,6 @@ generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
 outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
 docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
 
-list_subset([], _).
-list_subset([First|Rest], B) :-
-    member(First, B),
-    list_subset(Rest, B), !.
-
 clear_funcs :- retractall(function(_, _, _, _, _, _)).
 
 %% Update or add new types and functions
