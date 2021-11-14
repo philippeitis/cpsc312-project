@@ -151,14 +151,30 @@ test('func_constraints no constraints succeeds with score of 0.0') :-
 test('func constraints substring constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(substring_constraint, ("parse", name))], 1.0, _).
-test('func constraints substring constraint fail') :-
+test('func constraints substring constraint fail', [fail]) :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 0.0, _).
+test('func constraints subsequence constraint', [nondet]) :-
+    function:fname(Uuid, "parseInt"),
+    func_constraints(Uuid, [(subsequence_constraint, ("pre", name))], 1.0, _).
+test('func constraints subsequence constraint fail', [fail]) :-
+    function:fname(Uuid, "parseInt"),
+    func_constraints(Uuid, [(subsequence_constraint, ("tspkn", name))], 0.0, _).
 test('func constraints input constraint', [nondet]) :-
     function:fname(Uuid, "increment"),
     func_constraints(Uuid, [(input_constraint, ["int"])], 0.0, _).
 test('func constraints input constraint fail', [fail]) :-
+    function:fname(Uuid, "increment"),
     func_constraints(parseInt, [(input_constraint, ["int"])], 0.0, []).
+test('func constraints regex constraint', [nondet]) :-
+    function:fname(Uuid, "decrement"),
+    func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 1.0, _).
+test('func constraints regex constraint', [nondet]) :-
+    function:fname(Uuid, "decrement"),
+    func_constraints(Uuid, [(regex_constraint, ("de.*", name))], 1.0, _).
+test('func constraints regex constraint fail', [fail]) :-
+    function:fname(Uuid, "decrement"),
+    func_constraints(Uuid, [(regex_constraint, ("d.*A", name))], 0.0, _).
 
 :- end_tests('func_constraints').
 
