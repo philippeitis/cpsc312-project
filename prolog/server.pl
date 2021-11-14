@@ -8,6 +8,7 @@
 :- use_module(library(http/http_parameters)).
 
 :- use_module(function).
+:- use_module(function/parse).
 :- use_module(func_constraints).
 :- use_module(search).
 

@@ -7,6 +7,7 @@
     format_func/2,
     format_skeleton/6
 ]).
+:- use_module(function).
 :- use_module(library(dcg/basics)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
