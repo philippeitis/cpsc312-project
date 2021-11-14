@@ -6,7 +6,7 @@
     inputs/2,
     outputs/2,
     docs/2,
-    specialize/2,
+    specialize/3,
     get_field/3,
     write_json_metadata/1,
     read_json_metadata/1,
@@ -78,22 +78,6 @@ ez_function(Name, Inputs, Outputs, Docs) :-
 :- add_function(_, "add", [generic("X", ["Add"])], [gen("X"), gen("X")], [gen("X")], "Adds two generics").
 
 %% Type processing
-subst(_, [], []).
-subst(Interp, [gen(Name)|GenRest], [ConcreteType|Rest]) :-
-    member((Name, ConcreteType), Interp),
-    subst(Interp, GenRest, Rest), !.
-subst(Interp, [ConcreteType|GenRest], [ConcreteType|Rest]) :-
-    subst(Interp, GenRest, Rest), !.
-
-specialize(Func, _) :- generics(Func, []).
-specialize(Func, Interp) :-
-    fn_interp_valid(Func, Interp),
-    function(_, Func, _, Inputs, Outputs, Docs),
-    subst(Interp, Inputs, SpecInputs),
-    subst(Interp, Outputs, SpecOutputs),
-    uuid(Uuid),
-    assertz(function(Uuid, Func, [], SpecInputs, SpecOutputs, Docs)).
-
 type_is_compat_with_generic(Name, generic(_, GImpls)) :-
     type(Name, _, Impls),
     subset(GImpls, Impls).
@@ -113,6 +97,23 @@ fn_interp_valid(Func, Interp) :-
     generics(Func, Generics),
     test_interp_against_all(Interp, Generics),
     sort(Interp, Interp).
+
+subst(_, [], []).
+subst(Interp, [gen(Name)|GenRest], [ConcreteType|Rest]) :-
+    member((Name, ConcreteType), Interp),
+    subst(Interp, GenRest, Rest), !.
+subst(Interp, [ConcreteType|GenRest], [ConcreteType|Rest]) :-
+    subst(Interp, GenRest, Rest), !.
+
+specialize(Func, Interp, Uuid) :-
+    function(Func, Name, Generics, Inputs, Outputs, Docs),
+    \+(Generics=[]),
+    fn_interp_valid(Func, Interp),
+    subst(Interp, Inputs, SpecInputs),
+    subst(Interp, Outputs, SpecOutputs),
+    \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
+    uuid(Uuid),
+    assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)).
 
 %% Getters for function.
 get_field(Func, name, Field) :- fname(Func, Field).

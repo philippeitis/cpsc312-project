@@ -76,17 +76,27 @@ regex_constraint(Func, Args, Score, NewConstraint) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
+inputs_to_interp([], []).
+inputs_to_interp([Input|Inputs], [(_, Input)|Rest]) :-
+    inputs_to_interp(Inputs, Rest).
+
 has_input(Func, TargetInputs) :-
+    generics(Func, []),
     inputs(Func, Inputs),
     list_subset(TargetInputs, Inputs).
 
-has_output(Func, TargetOutputs) :-
-    outputs(Func, Outputs),
-    list_subset(TargetOutputs, Outputs).
+has_input(Func, TargetInputs) :-
+    specialize(_, _, Func),
+    inputs(Func, Inputs),
+    list_subset(TargetInputs, Inputs).
 
 input_constraint(Func, Inputs, 0.0, (input_constraint, Outputs)) :-
     has_input(Func, Inputs),
     outputs(Func, Outputs).
+
+has_output(Func, TargetOutputs) :-
+    outputs(Func, Outputs),
+    list_subset(TargetOutputs, Outputs).
 
 output_constraint(Func, Outputs, 0.0, (no_constraint, _)) :-
     has_output(Func, Outputs).
