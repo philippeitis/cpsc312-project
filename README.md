@@ -217,7 +217,7 @@ user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 >>> 
 ```
 
-Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate processes. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
+Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate process. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
 
 The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters. 
 
