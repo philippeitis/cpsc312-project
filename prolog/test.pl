@@ -1,12 +1,11 @@
-% Make a group of tests with begin_tests/end_tests.
-% Make a test with test/2.
-% Run your tests with run_tests/0.
-
 % After you load this file in swipl, run with: run_tests.
 % On the command line:
 % * Use `make test-repl` to enter a repl with this file loaded.
 % * Use `make test` to run the unit tests.
 % * At the project run, use `make prolog-eval` to run the unit tests.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 :- begin_tests('string_ops').
 :- use_module(string_op).
 
@@ -32,6 +31,8 @@ test('levenshtein_distance right empty', [nondet]) :-
 
 :- end_tests('string_ops').
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 :- begin_tests('function').
 :- use_module(function).
 
@@ -53,8 +54,11 @@ test('output getter fails', [nondet]) :-
 
 :- end_tests('function').
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 :- begin_tests('function/parse').
 :- use_module(function/parse).
+
 test('parse signature succeeds docs', [nondet]) :-
     parse_signature("f :: [x] -> [y] | docs", "f", [], ["x"], ["y"], "docs").
 test('parse signature succeeds empty docs', [nondet]) :-
@@ -76,6 +80,8 @@ test('parse trait no bounds', [nondet]) :-
     parse_trait("X", trait("X", [])).
 
 :- end_tests('function/parse').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('function/serde').
 :- use_module(function/serde).
@@ -104,12 +110,29 @@ test('json roundtrip succeeds', [nondet]) :-
 :- begin_tests('search').
 :- use_module(search).
 
+test('specialization of add is not skipped', [nondet]) :-
+    findall(
+        Path,
+        func_path_no_cycles(["int"], ["int"], Path),
+        Paths
+    ),
+    length(Paths, 15).
+test('No paths for types which do not exist', [nondet]) :-
+    \+func_path_no_cycles(
+        ["not a real type"],
+        ["also not a real type"],
+    _).
+
 :- end_tests('search').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
 
 :- end_tests('func_constraints').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('path_constraints').
 :- use_module(path_constraints).
