@@ -1,15 +1,18 @@
 from multiprocessing import Process
+from os import environ
 import subprocess
+from sys import argv
 import time
 
 """ Utility script for launching server via main.pl and client via server_test.pl in separate
 processes to facilitate end-to-end test."""
 
-def launch_server():
-    """Launches the server via main.pl on port 5000, waits 5 seconds, and then closes it."""
+def launch_server(port):
+    """Launches the server via main.pl on a specified port,
+    waits 5 seconds, and then closes it."""
     with subprocess.Popen(
         # swipl main.pl launch 5000 - as in README.md
-        ["swipl", "main.pl", "launch", "5000"],
+        ["swipl", "main.pl", "launch", port],
         # Intercept pipes.
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
@@ -21,12 +24,13 @@ def launch_server():
 
 
 if __name__ == "__main__":
-    # Launches server in background process
-    p = Process(target=launch_server)
+    # Launches server in background process listening on port from CLI
+    p = Process(target=launch_server, args=(argv[-1],))
     p.start()
     # Give server time to come online
     time.sleep(2)
-    # Run unit tests in server_test.pl
+    # Run unit tests in server_test.pl, using port from CLI
+    environ["FASTFUNC_SERVER_PORT"] = argv[-1]
     process = subprocess.run(
         ["swipl", "-g", "run_tests", "-t", "halt", "server_test.pl"],
         stdout=subprocess.PIPE,

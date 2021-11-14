@@ -3,6 +3,11 @@
 newline("\r\n").
 newline("\n").
 
+get_port(Port) :-
+    getenv("FASTFUNC_SERVER_PORT", PortS),
+    atom_number(PortS, Port), !.
+get_port(5000).
+
 ends_with_newline(RootA, StringA) :-
     newline(NL),
     atom_string(RootA, Root),
@@ -11,10 +16,11 @@ ends_with_newline(RootA, StringA) :-
 
 %% Checks that posting parseInt55 works correctly
 post_ok :-
+    get_port(Port),
     http_post([
             protocol(http),
             host(localhost),
-            port(5000),
+            port(Port),
             path('/func')
         ],
         form_data([
@@ -30,10 +36,11 @@ post_ok :-
 
 %% Runs a request which gets parseInt55 and unfies the response with Rpely
 get(Reply) :-
+    get_port(Port),
     http_get([
             protocol(http),
             host(localhost),
-            port(5000),
+            port(Port),
             path('/func?name=parseInt[0-9][0-9]&name_cmp=re')
         ],
         Reply,
@@ -42,10 +49,11 @@ get(Reply) :-
 
 %% Runs a request which deletes parseInt55 and unfies the response with Rpely
 delete(Reply) :-
+    get_port(Port),
     http_delete([
             protocol(http),
             host(localhost),
-            port(5000),
+            port(Port),
             path('/func?name=parseInt[0-9][0-9]&name_cmp=re')
         ],
         Reply,
@@ -53,9 +61,11 @@ delete(Reply) :-
     ).
 
 subprocess(Write) :-
+    get_port(Port),
+    number_string(Port, PortS),
     process_create(
         path(swipl),
-        ['main.pl', 'launch', '5000'],
+        ['main.pl', 'launch', PortS],
         [stdin(Write)]
     ).
 
