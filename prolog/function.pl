@@ -11,8 +11,11 @@
     write_json_metadata/1,
     read_json_metadata/1,
     parse_signature/6,
+    update_type_trait_impl/2,
     parse_types/3,
     parse_types/4,
+    parse_trait/2,
+    parse_impls/3,
     format_func/2,
     format_skeleton/6,
     clear_funcs/0,
@@ -41,8 +44,8 @@ update_type_trait_impl(Name, NewImpls) :-
     assertz(type(Name, Bounds, ReducedImpls)), !.
 
 update_type_trait_impl(Name, NewImpls) :-
-    sort(NewImpls, ImplS),
-    assertz(type(Name, [], ImplS)).
+    sort(NewImpls, Impls),
+    assertz(type(Name, [], Impls)).
 
 try_add_type(Type, Implements) :-
     update_type_trait_impl(Type, Implements).
@@ -55,7 +58,7 @@ add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
 %% type(Name, Generics:list, Implements:list)
 type("int", [], ["Add"]).
 type("Optional", [], []).
-type("str", [], ["Add"]).
+type("str", [], []).
 type("List", [generic(_, _)], ["Add"]).
 
 %% trait(Name, Bounds:list)
@@ -207,6 +210,7 @@ wh -->  " ", wh.
 wh -->  "".
 
 %% DCG: Parse a single type
+% List<X + Y + Z>
 single_type(type(Name, Generics, _)) -->
     ez_str(Name),
     wh, "<", wh, 
@@ -215,27 +219,32 @@ single_type(type(Name, Generics, _)) -->
 single_type(Name) --> ez_str(Name).
 
 %% DCG: Parse a list of types
+% int, str, ...
 list_of_types([Type|Rem]) -->
     single_type(Type), wh, ",", wh, list_of_types(Rem).
 list_of_types([Type]) --> single_type(Type).
 list_of_types([]) --> [].
 
+% Parse a generic in a function signature:
+% X: Add + Sub
 single_gen(generic(Name, Bounds)) -->
     ez_str(Name), wh, ":", wh, parse_bounds(Bounds).
 single_gen(generic(Name, [])) --> ez_str(Name).
 
-%% DCG: Parse a list of types
+%% DCG: Parse a list of generics
 list_of_gen([Gen|Rem]) -->
     single_gen(Gen), wh, ",", wh, list_of_gen(Rem).
 list_of_gen([Gen]) --> single_gen(Gen).
 list_of_gen([]) --> [].
 
+%% List of bounds: X + Y + Z
 parse_bounds([First|Rest]) -->
     single_type(First), wh, "+", wh, parse_bounds(Rest).
 parse_bounds([Bound]) -->
     single_type(Bound).
 parse_bounds([]) --> [].
 
+%% Trait: X: Add + Sub...
 parse_trait_(trait(Name, Bounds)) -->
     ez_str(Name), wh,
     ":", wh, parse_bounds(Bounds).
@@ -293,3 +302,7 @@ format_skeleton(String, Name, [], Inputs, Outputs, Docs) :-
     format(string(String), '~w :: ~w -> ~w | ~w', [Name, Inputs, Outputs, Docs]).
 format_skeleton(String, Name, Generics, Inputs, Outputs, Docs) :-
     format(string(String), '~w<~w> :: ~w -> ~w | ~w', [Name, Generics, Inputs, Outputs, Docs]).
+
+parse_impls(String, Type, Impls) :-
+    string_codes(String, Codes),
+    phrase((ez_str(Type), wh, "impls", wh, parse_bounds(Impls)), Codes), !.

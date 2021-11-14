@@ -133,6 +133,17 @@ execute_command(String) :-
     format("Adding function: ~w", [FnName]), nl,
     add_function(_, FnName, Generics, InputTypes, OutputTypes, Docs), !.
 
+execute_command(String) :-
+    split_left(String, " ", 1, ["define", Rest]),
+    parse_impls(Rest, Type, Impls),
+    update_type_trait_impl(Type, Impls),
+    format("Add impls for ~w: ~w", [Type, Impls]), nl, !.
+
+execute_command(String) :-
+    split_left(String, " ", 1, ["define", Rest]),
+    parse_trait(Rest, Trait),
+    format("User tried to define trait: ~w", [Trait]), nl, !.
+
 execute_command("clear") :-
     clear_funcs,
     write("All functions have been erased."), nl, !.
