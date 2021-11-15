@@ -59,10 +59,10 @@ write_json_metadata(Stream) :-
     %     name:Name,
     %     bounds: Bounds
     % }, trait(Name, Bounds), Traits),
-    write_json_metadata(Stream, Functions, Types, Traits).
+    write_json_metadata(Stream, Functions, _Types, _Traits).
 
 %% Writes the provided functions into the stream in JSON format.
-write_json_metadata(Stream, Functions, Types, Traits) :-
+write_json_metadata(Stream, Functions, _Types, _Traits) :-
     jsonify_funcs(Functions, JsonFuncs),
     json_write_dict(Stream, _{functions:JsonFuncs}).
 
