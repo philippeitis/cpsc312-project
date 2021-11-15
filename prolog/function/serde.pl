@@ -14,6 +14,7 @@ get_function(function(Uuid, Name, Generics, Inputs, Outputs, Docs)) :-
 jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}).
 jsonify_type(Type, Type) :- string(Type).
 jsonify_type(gen(Type), _{generic:Type}).
+jsonify_type(unbound, _{unbound:true}).
 
 jsonify_list_of_generics([], []).
 jsonify_list_of_generics([Generic|Generics], [JGeneric, JGenerics]) :-
