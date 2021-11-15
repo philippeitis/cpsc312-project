@@ -46,15 +46,19 @@ By building systems of constraints, we have already begun to learn the best desi
 Likewise, we are making use of Prolog's definite clause grammars to make it possible for users to specify their functions in a natural style, reminiscent of Haskell - a few examples follow:
 
 print is a function which takes an `int`, and produces nothing:
+
 `print :: [int] -> []`
 
 `increment` is a function which takes an `int`, and produces another `int`:
+
 `increment :: [int] -> [int]`
 
 `add` is a generic function which takes two instances of Add, and produces another instance of Add:
+
 `add<X: Add> :: [x, x] -> [x]` 
 
 Documentation can optionally be appended, by using ` | Documentation` at the end of a function signature:
+
 `add<X: Add> :: [x, x] -> [x] | Adds two items.` 
 
 <!-- Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
