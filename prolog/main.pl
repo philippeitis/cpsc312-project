@@ -147,8 +147,8 @@ execute_command(String) :-
     format("User tried to define trait: ~w", [Trait]), nl, !.
 
 execute_command("clear") :-
-    clear_funcs,
-    write("All functions have been erased."), nl, !.
+    clear_kb,
+    write("Database has been erased."), nl, !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["search", Rest]),

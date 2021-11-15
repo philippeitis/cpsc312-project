@@ -108,7 +108,7 @@ test('json roundtrip succeeds', [nondet]) :-
         write_json_metadata(Stream0)
     )),
     open_string(String0, Stream1),
-    function:clear_funcs,
+    function:clear_kb,
     read_json_metadata(Stream1),
     with_output_to(string(String1), (
         current_output(Stream2),
@@ -116,9 +116,12 @@ test('json roundtrip succeeds', [nondet]) :-
     )),
     open_string(String0, Stream3),
     open_string(String1, Stream4),
-    json_read_dict(Stream3, First),
-    json_read_dict(Stream4, Second),
-    assertion(First = Second).
+    json_read_dict(Stream3, JsonMetadata),
+    json_read_dict(Stream4, JsonMetadata),
+    % Should only have 4 types, 1 trait, and 8 functions
+    aggregate_all(count, function:type(_, _, _), 4),
+    aggregate_all(count, function:trait(_, _), 1),
+    aggregate_all(count, function:function(_, _, _, _, _, _), 8).
 
 :- end_tests('function/serde').
 
@@ -126,12 +129,11 @@ test('json roundtrip succeeds', [nondet]) :-
 :- use_module(search).
 
 test('specialization of add is not skipped') :-
-    findall(
-        Path,
-        func_path_no_cycles(["int"], ["int"], Path),
-        Paths
-    ),
-    length(Paths, 15).
+    aggregate_all(
+        count,
+        func_path_no_cycles(["int"], ["int"], _Path),
+        15
+    ).
 test('No paths for types which do not exist', [fail]) :-
     func_path_no_cycles(
         ["not a real type"],

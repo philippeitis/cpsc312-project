@@ -1,5 +1,7 @@
 :- module(function, [
     function/6,
+    type/3,
+    trait/2,
     uuid/2,
     fname/2,
     generics/2,
@@ -9,7 +11,7 @@
     specialize/3,
     get_field/3,
     update_type_trait_impl/2,
-    clear_funcs/0,
+    clear_kb/0,
     add_function/6
 ]).
 :- use_module(library(http/json)).
@@ -30,7 +32,10 @@ generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
 outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
 docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
 
-clear_funcs :- retractall(function(_, _, _, _, _, _)).
+clear_kb :-
+    retractall(function(_, _, _, _, _, _)),
+    retractall(type(_, _, _)),
+    retractall(trait(_, _)).
 
 %% Update or add new types and functions
 update_type_trait_impl(Name, NewImpls) :-
@@ -57,7 +62,7 @@ add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
 type("int", [], ["Add"]).
 type("Optional", [], []).
 type("str", [], []).
-type("List", [generic(_, _)], ["Add"]).
+type("List", [generic("X", _)], ["Add"]).
 
 %% trait(Name, Bounds:list)
 trait("Add", []).
@@ -75,7 +80,7 @@ ez_function(Name, Inputs, Outputs, Docs) :-
 :- ez_function("print2", ["int"], ["None"], "documentation").
 :- ez_function("increment", ["int"], ["int"], "The increment function, or inc, or incr, will take an integer, or int, and increase its value by 1, or add 1 to it and then return the sum.").
 :- ez_function("decrement", ["int"], ["int"], "The decrement function or dec, or decr, will take an integer, or int, and decrease its value by 1, or subtract 1 from it and then return the difference.").
-% :- add_function(_, "sum", [generic("X")], [type("List", ["int"], _)], ["int"], "Sum, or add integers, or add ints, will take in a list of integers or ints, and adds up all of the numerical values in the list. It returns a single integer which is the sum of this addition.").
+:- add_function(_, "sum", [], [type("List", ["int"], _)], ["int"], "Sum, or add integers, or add ints, will take in a list of integers or ints, and adds up all of the numerical values in the list. It returns a single integer which is the sum of this addition.").
 :- add_function(_, "add", [generic("X", ["Add"])], [gen("X"), gen("X")], [gen("X")], "Adds two generics").
 
 %% Type processing
