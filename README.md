@@ -43,6 +43,20 @@ Prolog is very suitable for this task, as it makes it intuitive to define knowle
 
 By building systems of constraints, we have already begun to learn the best designs for a search algorithm in Prolog. We also anticipate that building functions for scoring paths can be used to train machine learning models to more intelligently explore the space of user defined functions.
 
+Likewise, we are making use of Prolog's definite clause grammars to make it possible for users to specify their functions in a natural style, reminiscent of Haskell - a few examples follow:
+
+print is a function which takes an `int`, and produces nothing:
+`print :: [int] -> []`
+
+`increment` is a function which takes an `int`, and produces another `int`:
+`increment :: [int] -> [int]`
+
+`add` is a generic function which takes two instances of Add, and produces another instance of Add:
+`add<X: Add> :: [x, x] -> [x]` 
+
+Documentation can optionally be appended, by using ` | Documentation` at the end of a function signature:
+`add<X: Add> :: [x, x] -> [x] | Adds two items.` 
+
 <!-- Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
 It may be as short as a few paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
 to read carefully and thoroughly.
@@ -169,24 +183,45 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
+The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same style as described in the MVP, though we omit the function name and documentation, as these are optional. The `--KEY=VALUE` arguments are parsed using a simple definite clause grammar. An example of the `path` and `search` commands follows:
+
+If you want to find at most 3 function paths, which accept an `int`, and produce an `int`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> path [int] -> [int] --limit=3
+Found 3 solutions:
+increment
+increment -> decrement
+increment -> decrement -> add
+```
+
+If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> search [str] -> [int] --name=p.*a.*n.*t.*[0-9] --name_cmp=re
+Found 1 solutions:
+Function: parseInt2
+```
+
 An example session with the CLI, which demonstrates the usage of everything except help and launch:
 
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> pxth [int] -> [int]
 Did you mean path? Type y or n: path [int] -> [int]
-Found 4 solutions:
+Found 5 solutions:
 increment
 increment -> decrement
-decrement
-decrement -> increment
+increment -> decrement -> add
+increment -> add
+increment -> add -> decrement
 >>> search [str] -> [int] --name=pant --name_cmp=subseq
 Found 2 solutions:
 Function: parseInt2
 Function: parseInt
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
 Adding function: pow
->>> search [int] -> [int] --docs=power --doc_cmp=substr
+>>> search [int] -> [int] --docs=power --doc_cmp=substr        
 Found 1 solutions:
 Function: pow
 >>> store ./funcs.json
@@ -200,8 +235,8 @@ Found 5 solutions:
 increment
 increment -> decrement
 increment -> decrement -> pow
-increment -> pow
-increment -> pow -> decrement
+increment -> decrement -> pow -> add
+increment -> decrement -> add
 >>> os
 Unix
 >>> quit
