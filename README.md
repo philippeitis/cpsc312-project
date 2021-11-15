@@ -37,11 +37,29 @@ Our MVP will deliver 3 core features necessary to build the product above:
 2. Processing of natural language descriptions to identify suitable functions to satisfy said description
 3. A scoring feature which will sort the possible approaches by what is most likely the best option
 
-Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces, either by example, or by hooking into the REST API. A full implementation of our product pitch would also incorporate powerful NLP models to work with complex user descriptions, and utilize NLP to improve the quality of searches - for example, by automatically detecting synonyms and allowing these to be incorporated into queries.
+Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces for their language or IDE, and they could either extend the CLI with a language specific module, or use the REST API to provide the required features. A full implementation of our product pitch would also incorporate powerful NLP models to work with complex user descriptions, and utilize NLP to improve the quality of searches - for example, by automatically detecting synonyms and allowing these to be incorporated into queries. Our MVP does not incorporate these, but makes it easy to add these through a simple constraint interface, which can easily be extended to allow this functionality. 
 
-Prolog is very suitable for this task, as it makes it intuitive to define knowledge bases and implement search by describing constraint satisfication problems. 
+Prolog is very suitable for representing a codebases' API, and performing searches over it, as it is possible to use simple predicates to compose a complete description of a function or path you want to discover - for example, the user could compose an input constraint, an output constraint, and a regex constraint on the function name to find a function which takes a particular input, produces a particular output, and matches the given regex. Our constraint API also makes it possible to assign scores to particular constraints being satisfied, which makes it possible for users to prioritize a particular feature when performing searches. 
 
-By building systems of constraints, we have already begun to learn the best designs for a search algorithm in Prolog. We also anticipate that building functions for scoring paths can be used to train machine learning models to more intelligently explore the space of user defined functions.
+By building systems of constraints, we have already begun to learn the necessary techniques to effectively use Prolog for implementing search algorithms, and have learned about features such as cut, and where they can be used to avoid repeating or producing unexpected results. We have also learned more about Prolog's module system in order to effectively organize all of the individual components for easy discovery. Additionally, we can make use of Prolog's definite clause grammars to make it possible for users to specify their functions in whichever programming style they prefer - the default style we will use is reminiscent of Haskell - a few examples follow:
+
+print is a function which takes an `int`, and produces nothing:
+
+`print :: [int] -> []`
+
+`increment` is a function which takes an `int`, and produces another `int`:
+
+`increment :: [int] -> [int]`
+
+`add` is a generic function which takes two instances of Add, and produces another instance of Add:
+
+`add<X: Add> :: [x, x] -> [x]` 
+
+Documentation can optionally be appended, by using ` | Documentation` at the end of a function signature:
+
+`add<X: Add> :: [x, x] -> [x] | Adds two items.` 
+
+We also anticipate that building functions for scoring paths can be used to train machine learning models to more intelligently explore the space of user defined functions, which would help in the development of the full product.
 
 <!-- Replace this with a description of the minimal viable project you will actually build for CPSC 312 (if this becomes your final project).
 It may be as short as a few paragraphs, or it may be longer. It should **definitely** take less than 4 minutes
@@ -62,7 +80,7 @@ Or:
 
 ## Proof of Concept
 
-Our POC focuses on demonstrating our ability to search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply scoring algorithms to prioritize the most relevant search results.
+Our POC demonstrates our ability to define and search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply scoring algorithms to prioritize the most relevant search results. It also demonstrates the usage of DCGs to parse user input and subsequently define functions and options via the CLI.
 
 It allows the user to:
 1. Define functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/server.pl#L79), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/main.pl#L238). These functions can be specified with generic arguments.
@@ -76,9 +94,11 @@ This represents the core functionality our product aims to provide:
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort
 
 We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
-Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy for us to add new constraint functions, but also makes it easy for users themselves to define and compose their own constraints. In addition, since we cleanly separated the user interfaces from the core functionality, it is very easy to modify one or the other - or even create an entirely new interface, as with our REST API. Accordingly, we have two interfaces - a powerful terminal interface which makes use of our constraint functionality to make commands easily discoverable, and a REST API which allows adding, deleting, and searching functions. We believe that our proof of concept goes above and beyond the requirements, and could easily be considered an MVP.
+Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy for us to add new constraint functions, but also makes it easy for users themselves to define and compose their own constraints. In addition, since we cleanly separated the user interfaces from the core functionality, it is very easy to modify one or the other - or even create an entirely new interfaces, as with our REST API. Accordingly, we have two interfaces - a powerful terminal interface which makes use of our constraint functionality to make commands easily discoverable, and a REST API which allows adding, deleting, and searching functions. We believe that our proof of concept goes above and beyond the requirements, and could easily be considered an MVP.
 
-Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input. Our proof of concept does not currently assign a score to the paths that it generates, which means that users would have to manually evaluate the paths themselves. However, we believe that having implemented scoring for functions, and constraints over paths has given us the necessary knowledge to implement scoring functions for paths as well, without too much additional effort. We would like to combine this with depth-first / best-first search to present the best paths to the user.
+Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input. Our proof of concept also does not currently assign a score to the paths that it generates, which means that users would have to manually evaluate the paths themselves. However, we believe that having implemented scoring for functions, and constraints over paths has given us the necessary knowledge to implement scoring functions for paths as well, without too much additional effort. We would like to also implement depth-first / best-first search to present the best paths to the user, and we believe that our current experience with implementing recursive functions and accumulators in Prolog should make this task easier.
+
+In addition, definite clauses grammers make it very easy to parse function signatures, and given our experience with the initial DCG implementation for parsing Haskell-style function signatures, it should, in principle, be relatively simple to add additional DCGs for syntax from other languages, such as `Python` or `Java`.
 
 During development, we found that Prolog's depth-first search by default is not always the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths. The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
 
@@ -130,7 +150,7 @@ In the `prolog` directory, you can run `make test` to run the unit tests. You ca
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script takes `PORT` as an argument, and calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. If, by chance, the default port used in the Makefile collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
+Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script takes `PORT` as an argument. It then calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. If, by chance, the default port used in the Makefile collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
 
 Example usage of [prolog/server_test.py](prolog/server_test.py):
 ```console
@@ -140,7 +160,7 @@ user:~/cpsc312-project/prolog$ python3 server_test.py 9999
 ```
 
 #### CLI Overview
-This program provides a REPL, which can be run using `swipl main.pl`:
+This program provides a REPL, which can be initialized by running `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> 
@@ -168,6 +188,25 @@ user:~/cpsc312-project/prolog$ swipl main.pl --help define
 Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
+The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same style as described in the MVP, though we omit the function name and documentation, as these are optional. The `--KEY=VALUE` arguments are parsed using a simple definite clause grammar. An example of the `path` and `search` commands follows:
+
+If you want to find at most 3 function paths, which accept an `int`, and produce an `int`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> path [int] -> [int] --limit=3
+Found 3 solutions:
+increment
+increment -> decrement
+increment -> decrement -> add
+```
+
+If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]`:
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> search [str] -> [int] --name=p.*a.*n.*t.*[0-9] --name_cmp=re
+Found 1 solutions:
+Function: parseInt2
+```
 
 An example session with the CLI, which demonstrates the usage of everything except help and launch:
 
@@ -175,18 +214,19 @@ An example session with the CLI, which demonstrates the usage of everything exce
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> pxth [int] -> [int]
 Did you mean path? Type y or n: path [int] -> [int]
-Found 4 solutions:
+Found 5 solutions:
 increment
 increment -> decrement
-decrement
-decrement -> increment
+increment -> decrement -> add
+increment -> add
+increment -> add -> decrement
 >>> search [str] -> [int] --name=pant --name_cmp=subseq
 Found 2 solutions:
 Function: parseInt2
 Function: parseInt
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
 Adding function: pow
->>> search [int] -> [int] --docs=power --doc_cmp=substr
+>>> search [int] -> [int] --docs=power --doc_cmp=substr        
 Found 1 solutions:
 Function: pow
 >>> store ./funcs.json
@@ -200,8 +240,8 @@ Found 5 solutions:
 increment
 increment -> decrement
 increment -> decrement -> pow
-increment -> pow
-increment -> pow -> decrement
+increment -> decrement -> pow -> add
+increment -> decrement -> add
 >>> os
 Unix
 >>> quit
