@@ -145,36 +145,42 @@ test('No paths for types which do not exist', [fail]) :-
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
 
+%% Constraint detail: Some constraints have hard failures, while some have
+% soft failures, allowing a path to continue. In this case,
+% string constraints simply repeat themselves, as they can be satisfied
+% at any point, and we simply check that there are no constraints left
+% when the path is complete. However, input constraints will fail if
+% the input does not match, as this would allow an invalid path.
 test('func_constraints no constraints succeeds with score of 0.0') :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [], 0.0, []).
 test('func constraints substring constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(substring_constraint, ("parse", name))], 1.0, _).
-test('func constraints substring constraint fail', [fail]) :-
+test('func constraints substring constraint fail') :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 0.0, _).
 test('func constraints subsequence constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(subsequence_constraint, ("pre", name))], 1.0, _).
-test('func constraints subsequence constraint fail', [fail]) :-
+test('func constraints subsequence constraint fail') :-
     function:fname(Uuid, "parseInt"),
     func_constraints(Uuid, [(subsequence_constraint, ("tspkn", name))], 0.0, _).
 test('func constraints input constraint', [nondet]) :-
     function:fname(Uuid, "increment"),
-    func_constraints(Uuid, [(input_constraint, ["int"])], 0.0, _).
-test('func constraints input constraint fail', [fail]) :-
+    input_constraint(Uuid, ["int"], 0.0, (input_constraint, ["int"])).
+test('func constraints input constraint fails when input does not match', [fail]) :-
     function:fname(Uuid, "increment"),
-    func_constraints(parseInt, [(input_constraint, ["int"])], 0.0, []).
+    input_constraint(Uuid, ["str"], 0.0, _).
 test('func constraints regex constraint', [nondet]) :-
     function:fname(Uuid, "decrement"),
     func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 1.0, _).
-test('func constraints regex constraint', [nondet]) :-
+test('func constraints regex constraint') :-
     function:fname(Uuid, "decrement"),
-    func_constraints(Uuid, [(regex_constraint, ("de.*", name))], 1.0, _).
-test('func constraints regex constraint fail', [fail]) :-
+    regex_constraint(Uuid, ("de.*", name), 1.0, (no_constraint, _)).
+test('func constraints regex constraint fail') :-
     function:fname(Uuid, "decrement"),
-    func_constraints(Uuid, [(regex_constraint, ("d.*A", name))], 0.0, _).
+    regex_constraint(Uuid, ("d.*A", name), 0.0, _).
 
 :- end_tests('func_constraints').
 
