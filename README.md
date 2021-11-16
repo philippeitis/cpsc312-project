@@ -37,7 +37,7 @@ Our MVP will deliver 3 core features necessary to build the product above:
 2. Processing of natural language descriptions to identify suitable functions to satisfy said description
 3. A scoring feature which will sort the possible approaches by what is most likely the best option
 
-Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces for their language or IDE, and they could either extend the CLI with a language specific module, or use the REST API to provide the required features. A full implementation of our product pitch would also incorporate powerful NLP models to work with complex user descriptions, and utilize NLP to improve the quality of searches - for example, by automatically detecting synonyms and allowing these to be incorporated into queries. Our MVP does not incorporate these, but makes it easy to add these through a simple constraint interface, which can easily be extended to allow this functionality. 
+Our MVP omits a GUI, but provides a command line UI and a REST API, which makes it easy for users to build their own interfaces for their language or IDE, and they could either extend the CLI with a language specific module, or use the REST API to provide the required features. A full implementation of our product pitch would also incorporate powerful NLP models to work with complex user descriptions, and utilize NLP to improve the quality of searches - for example, by automatically detecting synonyms and allowing these to be incorporated into queries. Our MVP does not incorporate these, but will make it easy to add these through a simple constraint interface, which can easily be extended to allow this functionality. 
 
 Prolog is very suitable for representing a codebases' API, and performing searches over it, as it is possible to use simple predicates to compose a complete description of a function or path you want to discover - for example, the user could compose an input constraint, an output constraint, and a regex constraint on the function name to find a function which takes a particular input, produces a particular output, and matches the given regex. Our constraint API also makes it possible to assign scores to particular constraints being satisfied, which makes it possible for users to prioritize a particular feature when performing searches. 
 
@@ -96,9 +96,9 @@ This represents the core functionality our product aims to provide:
 We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
 Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy for us to add new constraint functions, but also makes it easy for users themselves to define and compose their own constraints. In addition, since we cleanly separated the user interfaces from the core functionality, it is very easy to modify one or the other - or even create an entirely new interfaces, as with our REST API. Accordingly, we have two interfaces - a powerful terminal interface which makes use of our constraint functionality to make commands easily discoverable, and a REST API which allows adding, deleting, and searching functions. We believe that our proof of concept goes above and beyond the requirements, and could easily be considered an MVP.
 
-Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input. Our proof of concept also does not currently assign a score to the paths that it generates, which means that users would have to manually evaluate the paths themselves. However, we believe that having implemented scoring for functions, and constraints over paths has given us the necessary knowledge to implement scoring functions for paths as well, without too much additional effort. We would like to also implement depth-first / best-first search to present the best paths to the user, and we believe that our current experience with implementing recursive functions and accumulators in Prolog should make this task easier.
+Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input. Our proof of concept implements breadth, depth, and best-first search methods, which gives users a variety of options for discovering paths of interest. However, we do not currently provide a mechanism to assign weights to each of the user provided constraints, which means that the user has to manually order the results if they are not satisfied with equal weighting. However, given our experience with making Prolog functions more generic, it should be relatively simple to define a wrapper predicate which increases or decreases the weight of a particular constraint.
 
-In addition, definite clauses grammers make it very easy to parse function signatures, and given our experience with the initial DCG implementation for parsing Haskell-style function signatures, it should, in principle, be relatively simple to add additional DCGs for syntax from other languages, such as `Python` or `Java`.
+In addition, definite clause grammars make it very easy to parse function signatures, and given our experience with the initial DCG implementation for parsing Haskell-style function signatures, it should, in principle, be relatively simple to add additional DCGs for syntax from other languages, such as `Python` or `Java`.
 
 During development, we found that Prolog's depth-first search by default is not always the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths. The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
 
@@ -195,9 +195,9 @@ If you want to find at most 3 function paths, which accept an `int`, and produce
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> path [int] -> [int] --limit=3
 Found 3 solutions:
+add
+decrement
 increment
-increment -> decrement
-increment -> decrement -> add
 ```
 
 If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]`:
@@ -215,15 +215,15 @@ user:~/cpsc312-project/prolog$ swipl main.pl
 >>> pxth [int] -> [int]
 Did you mean path? Type y or n: path [int] -> [int]
 Found 5 solutions:
+add
+decrement
 increment
-increment -> decrement
-increment -> decrement -> add
-increment -> add
-increment -> add -> decrement
+add -> decrement
+add -> increment
 >>> search [str] -> [int] --name=pant --name_cmp=subseq
 Found 2 solutions:
-Function: parseInt2
 Function: parseInt
+Function: parseInt2
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
 Adding function: pow
 >>> search [int] -> [int] --docs=power --doc_cmp=substr        
@@ -235,19 +235,42 @@ Database has been erased.
 >>> path [int] -> [int]
 Found 0 solutions:
 >>> load ./funcs.json
->>> path [int] -> [int]
+>>> path [int] -> [int] --strategy=dfs
 Found 5 solutions:
 increment
 increment -> decrement
-increment -> decrement -> pow
-increment -> decrement -> pow -> add
 increment -> decrement -> add
+increment -> decrement -> add -> pow
+increment -> decrement -> pow
 >>> os
 Unix
 >>> quit
 ```
 
-Both the CLI and REST API support "name_cmp" and "doc_cmp" for searching function names and documentation, respectively, and compares these against the target fields "name" and "docs". Supported comparision keys are "lev" (Levenshtein), "subseq" (subsequence), "substr" (substring), "eq" (exact string match), and "re" (regex match).
+Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a list of supported values for each key:
+
+| Key         | Description                        | CLI Support | REST API Support |
+| :---------- | :----------                        | :--: | :--: |
+| name        | Search for a particular name       | ✅ | ✅ |
+| docs        | Search for documentation           | ✅ | ✅ |
+| name_cmp    | Comparison method when comparing the string specified by `name` to a particular function name | ✅ | ✅ |
+| doc_cmp     | Comparison method when comparing the string specified by `docs` to specific documentation | ✅ | ✅ |
+| strategy    | Strategy used when generating sequences of functions | ✅ | ❌ |
+
+`name/docs`: Any string. If you want to use a string containing whitespace, wrap the string with double quotes and use backslashes to escape backslashes and double quotes.
+
+`strategy` options:
+- dfs: Search for a path using depth-first search
+- bfs: Search for a path using breadth-first search
+- bestfs: Search for a path using best-first search.
+
+`*_cmp` options:
+- lev: Levenshtein
+- subseq: Subsequence matching (all letters in source appear in same order in target)
+- substr: Substring matching (all letters in source appear in same order and adjacent in target).
+- eq: Equality
+- re: Regex match
+
 
 #### REST API Overview
 Additionally, it is possible to launch the server for the REST API:

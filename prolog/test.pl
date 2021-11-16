@@ -131,11 +131,25 @@ test('json roundtrip succeeds', [nondet]) :-
 test('specialization of add is not skipped') :-
     aggregate_all(
         count,
-        func_path_no_cycles(["int"], ["int"], _Path),
+        func_path_no_cycles(dfs, ["int"], ["int"], _Path),
         15
     ).
+test('bfs works') :-
+    aggregate_all(
+        count,
+        func_path_no_cycles(bfs, ["int"], ["int"], _Path),
+        15
+    ).
+test('bestfs works') :-
+    aggregate_all(
+        count,
+        func_path_no_cycles(bestfs, ["int"], ["int"], _Path),
+        15
+    ).
+
 test('No paths for types which do not exist', [fail]) :-
     func_path_no_cycles(
+        dfs,
         ["not a real type"],
         ["also not a real type"],
     _).
@@ -158,31 +172,31 @@ test('func_constraints no constraints succeeds with score of 0.0') :-
     func_constraints(Uuid, [], 0.0, []).
 test('func constraints substring constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(substring_constraint, ("parse", name))], 1.0, _).
+    func_constraints(Uuid, [(substring_constraint, ("parse", name))], 0.0, _).
 test('func constraints substring constraint fail') :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 0.0, _).
+    func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 1.0, _).
 test('func constraints subsequence constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(subsequence_constraint, ("pre", name))], 1.0, _).
+    func_constraints(Uuid, [(subsequence_constraint, ("pre", name))], 0.0, _).
 test('func constraints subsequence constraint fail') :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(subsequence_constraint, ("tspkn", name))], 0.0, _).
+    func_constraints(Uuid, [(subsequence_constraint, ("tspkn", name))], 1.0, _).
 test('func constraints input constraint', [nondet]) :-
     function:fname(Uuid, "increment"),
     input_constraint(Uuid, ["int"], 0.0, (input_constraint, ["int"])).
 test('func constraints input constraint fails when input does not match', [fail]) :-
     function:fname(Uuid, "increment"),
-    input_constraint(Uuid, ["str"], 0.0, _).
+    input_constraint(Uuid, ["str"], 1.0, _).
 test('func constraints regex constraint', [nondet]) :-
     function:fname(Uuid, "decrement"),
-    func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 1.0, _).
+    func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 0.0, _).
 test('func constraints regex constraint') :-
     function:fname(Uuid, "decrement"),
-    regex_constraint(Uuid, ("de.*", name), 1.0, (no_constraint, _)).
+    regex_constraint(Uuid, ("de.*", name), 0.0, (no_constraint, _)).
 test('func constraints regex constraint fail') :-
     function:fname(Uuid, "decrement"),
-    regex_constraint(Uuid, ("d.*A", name), 0.0, _).
+    regex_constraint(Uuid, ("d.*A", name), 1.0, _).
 
 :- end_tests('func_constraints').
 

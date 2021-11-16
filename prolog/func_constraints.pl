@@ -14,58 +14,57 @@
 :- use_module(library(pcre)).
 
 %% Function Constraint Common API
-% Func, Args, Score, NewConstraint
+% Func, Args, Cost, NewConstraint
 
-%% no_constraint(?, ?, ?Score, ?NewConstraint)
+%% no_constraint(?, ?, ?Cost, ?NewConstraint)
 % The empty constraint.
 no_constraint(_, _, 0.0, (no_constraint, _)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrappers for string comparision methods
-wrapper(Func, (Self, Args), Score, NewConstraint) :-
-    wrap_core(Self, Func, Args, Score, NewConstraint).
+wrapper(Func, (Self, Args), Cost, NewConstraint) :-
+    wrap_core(Self, Func, Args, Cost, NewConstraint).
 
-wrap_core(Core, Func, Args, Score, (no_constraint, _)) :-
-    call(Core, Func, Args, Score), !.
+wrap_core(Core, Func, Args, Cost, (no_constraint, _)) :-
+    call(Core, Func, Args, Cost), !.
 
-wrap_core(Core, Func, Args, 0.0, (wrapper, (Core, Args))) :-
+wrap_core(Core, Func, Args, 1.0, (wrapper, (Core, Args))) :-
     \+call(Core, Func, Args, _), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% String comparison methods
-% x_core: Func, Args, Score
-% x_constraint: Func, Args, Score, NewConstraint
-equality_core(Func, (Target, Field), 1.0) :-
+% x_core: Func, Args, Cost
+% x_constraint: Func, Args, Cost, NewConstraint
+equality_core(Func, (Target, Field), 0.0) :-
     get_field(Func, Field, Target), !.
-equality_constraint(Func, Args, Score, NewConstraint) :-
-    wrap_core(equality_core, Func, Args, Score, NewConstraint).
+equality_constraint(Func, Args, Cost, NewConstraint) :-
+    wrap_core(equality_core, Func, Args, Cost, NewConstraint).
 
-sub_core(Func, (Needle, Field), 1.0) :-
+sub_core(Func, (Needle, Field), 0.0) :-
     get_field(Func, Field, String),
     sub_string(String, _, _, _, Needle), !.
-substring_constraint(Func, Args, Score, NewConstraint) :-
-    wrap_core(sub_core, Func, Args, Score, NewConstraint).
+substring_constraint(Func, Args, Cost, NewConstraint) :-
+    wrap_core(sub_core, Func, Args, Cost, NewConstraint).
 
-lev_core(Func, (Target, Field, MaxDistance), Score) :-
+lev_core(Func, (Target, Field, MaxDistance), Distance) :-
     get_field(Func, Field, String),
     levenshtein_distance(Target, String, Distance),
-    Distance =< MaxDistance,
-    Score is MaxDistance - Distance, !.
-levenshtein_constraint(Func, Args, Score, NewConstraint) :-
-    wrap_core(lev_core, Func, Args, Score, NewConstraint).
+    Distance =< MaxDistance, !.
+levenshtein_constraint(Func, Args, Cost, NewConstraint) :-
+    wrap_core(lev_core, Func, Args, Cost, NewConstraint).
 
-seq_core(Func, (Sequence, Field), 1.0) :-
+seq_core(Func, (Sequence, Field), 0.0) :-
     get_field(Func, Field, String),
     sequence_match(Sequence, String), !.
-subsequence_constraint(Func, Args, Score, NewConstraint) :-
-    wrap_core(seq_core, Func, Args, Score, NewConstraint).
+subsequence_constraint(Func, Args, Cost, NewConstraint) :-
+    wrap_core(seq_core, Func, Args, Cost, NewConstraint).
 
-regex_core(Func, (Regex, Field), 1.0) :-
+regex_core(Func, (Regex, Field), 0.0) :-
     get_field(Func, Field, String),
     re_match(Regex, String).
 
-regex_constraint(Func, Args, Score, NewConstraint) :-
-    wrap_core(regex_core, Func, Args, Score, NewConstraint).
+regex_constraint(Func, Args, Cost, NewConstraint) :-
+    wrap_core(regex_core, Func, Args, Cost, NewConstraint).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
@@ -122,21 +121,21 @@ add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints
     field_constraint(Field, String, Method, Constraint), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% func_constraints(Func, Constraints, ScoreOut, NewConstraints)
-% Tests if Func satisfies all constraints, producing a score for this function,
-% ScoreOut, and a set of constraints which follow Constraints, NewConstraints.
-func_constraints(Func, Constraints, ScoreOut, NewConstraints) :-
-    func_constraints(Func, Constraints, 0.0, ScoreOut, NewConstraints).
+%% func_constraints(Func, Constraints, CostOut, NewConstraints)
+% Tests if Func satisfies all constraints, producing a cost for this function,
+% CostOut, and a set of constraints which follow Constraints, NewConstraints.
+func_constraints(Func, Constraints, CostOut, NewConstraints) :-
+    func_constraints(Func, Constraints, 0.0, CostOut, NewConstraints).
 
-func_constraints(_Func, [], Score, Score, []) :- !.
+func_constraints(_Func, [], Cost, Cost, []) :- !.
 
 func_constraints(
     Func,
     [(ConstraintFn, Args)|Rest],
-    ScoreIn,
-    ScoreOut,
+    CostIn,
+    CostOut,
     [NewConstraint|NewConstraints]
     ) :-
-    call(ConstraintFn, Func, Args, ThisScore, NewConstraint),
-    ScoreIn2 is ScoreIn + ThisScore,
-    func_constraints(Func, Rest, ScoreIn2, ScoreOut, NewConstraints).
+    call(ConstraintFn, Func, Args, ThisCost, NewConstraint),
+    CostIn2 is CostIn + ThisCost,
+    func_constraints(Func, Rest, CostIn2, CostOut, NewConstraints).

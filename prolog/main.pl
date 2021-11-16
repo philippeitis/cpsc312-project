@@ -172,7 +172,19 @@ execute_command(String) :-
     parse_options(OptionStr, Options),
     get_key_or_default(Options, "limit", "5", Count),
     number_string(N, Count),
-    findnsols(N, Path, func_path_no_cycles(InputTypes, OutputTypes, Path), Solns),
+    get_key_or_default(Options, "strategy", "bestfs", StrategyString),
+    atom_string(Strategy, StrategyString),
+    findnsols(
+        N,
+        Path,
+        func_path_no_cycles(
+            Strategy,
+            InputTypes,
+            OutputTypes,
+            Path
+        ),
+        Solns
+    ),
     length(Solns, Len),
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.
