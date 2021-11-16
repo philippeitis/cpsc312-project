@@ -46,10 +46,13 @@ func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
 %% func_path_dfs(Visited:list, FuncConstraints, PathConstraints, Path:list)
 % Path is a sequence of functions, which satisfy FuncConstraints
 % and its continuations, and in aggregate, satisfy PathConstraints.
-func_path_dfs(Visited, FnConstraints, PathConstraints, Path) :-
+test_path(Visited, FnConstraints, PathConstraints, Path) :-
     path_constraints(Visited, none, PathConstraints),
     no_constraints_left(FnConstraints),
     reverse(Visited, Path).
+
+func_path_dfs(Visited, FnConstraints, PathConstraints, Path) :-
+    test_path(Visited, FnConstraints, PathConstraints, Path).
 
 func_path_dfs(Visited, FnConstraints, PathConstraints, Path) :-
     func_constraints(StartFn, FnConstraints, _, NewConstraints),
@@ -62,11 +65,9 @@ func_path_dfs(Visited, FnConstraints, PathConstraints, Path) :-
 func_path_bfs([], _, _) :- fail.
 
 % Return suitable candidate
-func_path_bfs([(FnConstraints, RPath)|_], PathConstraints, Path) :-
+func_path_bfs([(FnConstraints, Visited)|_], PathConstraints, Path) :-
     % If no constraints left, add path to paths
-    no_constraints_left(FnConstraints),    
-    path_constraints(RPath, none, PathConstraints),
-    reverse(RPath, Path).
+    test_path(Visited, FnConstraints, PathConstraints, Path).
 
 %% Adds all paths which can be reached from the current candidate to the queue,
 % and continues bfs iteration.
@@ -91,10 +92,9 @@ cmp_candidate(Cmp, (Cost1, _, L1), (Cost2, _, L2)) :-
 
 func_path_best_fs([], _, _) :- fail.
 
-func_path_best_fs([(_, FnConstraints, Path)|_], PathConstraints, Path) :-
+func_path_best_fs([(_, FnConstraints, Visited)|_], PathConstraints, Path) :-
     % If no constraints left, add path to paths
-    no_constraints_left(FnConstraints),
-    path_constraints(Path, none, PathConstraints).
+    test_path(Visited, FnConstraints, PathConstraints, Path).
 
 % NOTE: additive score does not work with best-first search
 % Cost: # of constraints unsat, weighed by importance of constraint,
