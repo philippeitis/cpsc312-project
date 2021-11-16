@@ -207,9 +207,9 @@ If you want to find at most 3 function paths, which accept an `int`, and produce
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> path [int] -> [int] --limit=3
 Found 3 solutions:
-add
-decrement
 increment
+decrement
+add
 ```
 
 If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]`:
@@ -226,11 +226,11 @@ user:~/cpsc312-project/prolog$ swipl main.pl
 >>> pxth [int] -> [int]
 Did you mean path? Type y or n: path [int] -> [int]
 Found 5 solutions:
-add
-decrement
 increment
-decrement -> add
-increment -> add
+decrement
+add
+decrement -> increment
+add -> increment
 ```
 
 You can define new functions, and then search for them:
@@ -238,16 +238,16 @@ You can define new functions, and then search for them:
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
 Adding function: pow
->>> search [int] -> [int] --docs=power --doc_cmp=substr        
+>>> search [int] -> [int] --docs=power --doc_cmp=substr
 Found 1 solutions:
 Function: pow
 >>> path [int] -> [int]
 Found 5 solutions:
-decrement
 increment
-pow
+decrement
 add
-increment -> decrement
+pow
+decrement -> increment
 ```
 
 You can store the current knowledge base and then load it from disk for later usage. In this example, we also show the clear command, which will clear the knowledge base, and the usage of `--strategy=dfs`, which will make the path command generate paths using depth-first search.
@@ -279,8 +279,8 @@ Adding impls for str: [Add]
 Found 4 solutions:
 add
 listify -> sum
-listify -> sum -> add
 add -> listify -> sum
+listify -> sum -> add
 ```
 
 In this final example, we demonstrate a few other features. In particular, `os` will print out the current operating system, and `quit` will shut the program down. `define trait ...` provides a mechanism for defining type classes, but this feature is not complete:
@@ -311,20 +311,20 @@ Example usage with Python's requests library:
 
 ```python
 # Finds a function with the letters "pat" in sequential order
->>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).content
-b'Found func: parseInt2 :: [str] -> [int] | documentation\n'
+>>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).json()
+{'functions': [{'name': 'parseInt', ...}, {'name': 'parseInt2', ...}], 'msg': 'Found functions'}
 # Deletes the parseInt2 function
->>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2"}).content
-b'Removed func parseInt2\n'
+>>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
+{'msg': 'Removed these functions', 'uuids': ['961fa304-46b9-11ec-97d1-2f160e86c2d9']}
 # Check that parseInt2 is gone
->>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).content
-b'No matching func found: parseInt2 :: ? -> ? | none\n'
+>>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
+{'msg': 'No matching func found: parseInt2 :: ? -> ? | none'}
 # Insert new parseInt2
->>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).content
-b'Created func parseInt2\n'
+>>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).json()
+{'msg': 'Created func parseInt2', 'uuid': '3b09fb56-46b7-11ec-ba2b-b7cea82a1c5b'}
 # parseInt2 is restored
->>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).content
-b'Found func: parseInt2 :: [str] -> [int] | too cool for documentation\n'
+>>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
+{'functions': [{'name': 'parseInt2', ...}], 'msg': 'Found functions'}
 ```
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
