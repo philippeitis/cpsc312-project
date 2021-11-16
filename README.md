@@ -341,6 +341,7 @@ Below is a table which describes support for each key/value pair in the CLI and 
 | strategy    | Strategy used when generating sequences of functions | ✅ | ❌ |
 | no_inputs   | Used in the REST API to specify lack of inputs. In CLI, use `[]`. | ❌ | ✅ |
 | no_outputs  | Used in the REST API to specify lack of outputs. In CLI, use `[]`. | ❌ | ✅ |
+
 `name/docs`: Any string. If you want to use a string containing whitespace, wrap the string with double quotes and use backslashes to escape backslashes and double quotes.
 
 `strategy` options:
