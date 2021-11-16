@@ -90,7 +90,7 @@ test('parse two impls') :-
 
 
 test('parse trait bounds') :-
-    parse_trait("X: X + Y", trait("X", ["X", "Y"])).
+    parse_trait("trait X: X + Y", trait("X", ["X", "Y"])).
 test('parse trait no bounds') :-
     parse_trait("X", trait("X", [])).
 
