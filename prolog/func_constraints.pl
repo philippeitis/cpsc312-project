@@ -76,6 +76,7 @@ inputs_to_interp([Input|Inputs], [(_, Input)|Rest]) :-
 % we only visit this function once.
 % Otherwise, we vist the specialized function once (without fail),
 % or not at all until the next try (if specialize comes second).
+% Keeps specialized functions around.
 candidate_fn(Func) :- specialize(_, _, Func), fail.
 candidate_fn(Func) :- generics(Func, []).
 

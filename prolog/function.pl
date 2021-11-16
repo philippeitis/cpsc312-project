@@ -9,6 +9,7 @@
     outputs/2,
     docs/2,
     specialize/3,
+    specialized/2,
     get_field/3,
     update_type_trait_impl/2,
     clear_kb/0,
@@ -21,6 +22,7 @@
 :- dynamic function/6.
 :- dynamic trait/2.
 :- dynamic type/3.
+:- dynamic specialized/2.
 
 %% Getters for function.
 get_field(Func, name, Field) :- fname(Func, Field).
@@ -140,4 +142,5 @@ specialize(Func, Interp, Uuid) :-
     subst(Interp, Outputs, SpecOutputs),
     \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
     uuid(Uuid),
-    assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)).
+    assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)),
+    assertz(specialized(Func, Uuid)).

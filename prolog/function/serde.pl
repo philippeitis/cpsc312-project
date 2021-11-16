@@ -70,7 +70,7 @@ jsonify_funcs([Func|Funcs], [JFunc|JFuncs]) :-
 %% JSON persistence
 %% Writes knowledge-base into the stream in JSON format.
 write_json_metadata(Stream) :-
-    findall(Func, get_function(Func), Functions),
+    findall(Func, (get_function(Func), \+specialized(_, Func)), Functions),
     findall(Type, get_type(Type), Types),
     findall(Trait, get_trait(Trait), Traits),
     write_json_metadata(Stream, Functions, Types, Traits).

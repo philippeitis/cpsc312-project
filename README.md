@@ -307,15 +307,15 @@ After launching the server, you can test the REST API by running `swipl -g run_t
 
 The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters, and the avaiable parameters are described in `CLI, REST API Parameters` below. 
 
-Example usage with Python's requests library:
+Example usage with Python's requests library (some portions omitted for brevity):
 
 ```python
 # Finds a function with the letters "pat" in sequential order
 >>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).json()
-{'functions': [{'name': 'parseInt', ...}, {'name': 'parseInt2', ...}], 'msg': 'Found functions'}
+{'functions': [{'name': 'parseInt', ...}, {'name': 'parseInt2', 'uuid':'a514694a-46c7-11ec-b2a6-07793d83fe3e', ...}], 'msg': 'Found functions'}
 # Deletes the parseInt2 function
->>> requests.delete("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
-{'msg': 'Removed these functions', 'uuids': ['961fa304-46b9-11ec-97d1-2f160e86c2d9']}
+>>> requests.delete("http://localhost:5000/func", params={"uuid": 'a514694a-46c7-11ec-b2a6-07793d83fe3e'}).json()
+{'msg': 'Removed', 'uuid': 'a514694a-46c7-11ec-b2a6-07793d83fe3e'}
 # Check that parseInt2 is gone
 >>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
 {'msg': 'No matching func found: parseInt2 :: ? -> ? | none'}

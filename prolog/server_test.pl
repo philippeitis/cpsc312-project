@@ -55,13 +55,14 @@ get(Reply) :-
     json_read_dict(ReplyStream, Reply).
 
 %% Runs a request which deletes parseInt55 and unfies the response with Rpely
-delete(Reply) :-
+delete(Uuid, Reply) :-
     get_port(Port),
+    atom_concat('/func?uuid=', Uuid, Path),
     http_delete([
             protocol(http),
             host(localhost),
             port(Port),
-            path('/func?name=parseInt[0-9][0-9]&name_cmp=re')
+            path(Path)
         ],
         ReplyString,
         []
@@ -80,56 +81,49 @@ subprocess(Write) :-
 
 :- begin_tests('end-to-end test').
 
+test('Tries to delete nonexistent uuid results in 404', [error(existence_error(_, _))]) :-
+    % Should give status 404
+    delete('0', _{
+        msg:"No matches found for provided query."
+    }).
+
+test('Tries to get nonexistent function results in 404', [error(existence_error(_, _))]) :-
+    get(_{
+        msg:"No matching func found: parseInt[0-9][0-9] :: ? -> ? | none"
+    }).
+
 test('Runs an example client session', [nondet]) :-
-    % When server starts, parseInt55 does not exist, so it fails.
-    assertion(
-        delete(_{
-            msg:"No matches found for provided query."
-        })
-    ),
     % parseInt55 does not exist and should not be found
-    assertion(
-        get(_{
-            msg:"No matching func found: parseInt[0-9][0-9] :: ? -> ? | none"
-        })
-    ),
     % Adding items should be fine even if repeated.
     post_ok,
     post_ok,
     % parseInt55 should now exist.
-    assertion(
-        get(_{msg:"Found functions", functions:[
-            _{
-                uuid:_,
-                name:"parseInt55",
-                generics:[],
-                inputs:["str"],
-                outputs:["int"],
-                docs:"Hello world!"
-            },
-            _{
-                uuid:_,
-                name:"parseInt55",
-                generics:[],
-                inputs:["str"],
-                outputs:["int"],
-                docs:"Hello world!"
-            }
-        ]})
-    ),
+    get(_{msg:"Found functions", functions:[
+        _{
+            uuid:Uuid1,
+            name:"parseInt55",
+            generics:[],
+            inputs:["str"],
+            outputs:["int"],
+            docs:"Hello world!"
+        },
+        _{
+            uuid:Uuid2,
+            name:"parseInt55",
+            generics:[],
+            inputs:["str"],
+            outputs:["int"],
+            docs:"Hello world!"
+        }
+    ]}),
     % Delete all copies of parseInt55.
     assertion(
-        delete(_{
-            msg:"Removed these functions",
-            uuids:[_, _]
-        })
+        delete(Uuid1, _{msg: "Removed", uuid:Uuid1})
     ),
-    % Check that we did in fact delete parseInt55
-    get(GetAfterDelete),
     assertion(
-        GetAfterDelete=_{
-            msg:"No matching func found: parseInt[0-9][0-9] :: ? -> ? | none"
-        }
-    ).
+        delete(Uuid2, _{msg: "Removed", uuid:Uuid2})
+    ),
+    % Check that we did in fact delete parseInt55 - this should be 404
+    catch(get(_), _, true).
 
 :- end_tests('end-to-end test').
