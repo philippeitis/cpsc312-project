@@ -34,8 +34,8 @@ uuids_to_funcs([Uuid|Uuids], [Func|Funcs]) :-
 
 %% Finds a single function with the constraints and prints it.
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
-    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Uiid|Uuids]),
-    uuids_to_funcs([Uiid|Uuids], Funcs),
+    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Uuid|Uuids]),
+    uuids_to_funcs([Uuid|Uuids], Funcs),
     jsonify_funcs(Funcs, JsonFuncs),
     reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}).
 
