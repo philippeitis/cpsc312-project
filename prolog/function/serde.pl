@@ -15,10 +15,12 @@ get_trait(trait(Name, Bounds)) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Serializing and deserializing functions, types, and traits
-jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}).
-
-jsonify_type(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
+jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
     is_list(Bounds), !.
+jsonify_generic(generic(Name, _), _{name:Name}).
+
+jsonify_type(Generic, JsonGeneric) :-
+    jsonify_generic(Generic, JsonGeneric), !.
 jsonify_type(generic(Name, _), _{name:Name}).
 jsonify_type(Type, Type) :- string(Type).
 jsonify_type(gen(Type), _{generic:Type}).

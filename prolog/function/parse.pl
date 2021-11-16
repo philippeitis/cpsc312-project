@@ -58,9 +58,9 @@ parse_bounds([Bound]) -->
     single_type(Bound).
 parse_bounds([]) --> [].
 
-%% Trait: X: Add + Sub...
+%% Trait: trait X: Add + Sub...
 parse_trait_(trait(Name, Bounds)) -->
-    ez_str(Name), wh,
+    "trait", " ", wh, ez_str(Name), wh,
     ":", wh, parse_bounds(Bounds).
 parse_trait_(trait(Name, [])) --> ez_str(Name).
 

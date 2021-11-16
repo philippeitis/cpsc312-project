@@ -119,9 +119,9 @@ test('json roundtrip succeeds', [nondet]) :-
     json_read_dict(Stream3, JsonMetadata),
     json_read_dict(Stream4, JsonMetadata),
     % Should only have 4 types, 1 trait, and 8 functions
-    aggregate_all(count, function:type(_, _, _), 4),
-    aggregate_all(count, function:trait(_, _), 1),
-    aggregate_all(count, function:function(_, _, _, _, _, _), 8).
+    assertion(aggregate_all(count, function:type(_, _, _), 4)),
+    assertion(aggregate_all(count, function:trait(_, _), 1)),
+    assertion(aggregate_all(count, function:function(_, _, _, _, _, _), 9)).
 
 :- end_tests('function/serde').
 
@@ -132,19 +132,19 @@ test('specialization of add is not skipped') :-
     aggregate_all(
         count,
         func_path_no_cycles(dfs, ["int"], ["int"], _Path),
-        15
+        64
     ).
 test('bfs works') :-
     aggregate_all(
         count,
         func_path_no_cycles(bfs, ["int"], ["int"], _Path),
-        15
+        64
     ).
 test('bestfs works') :-
     aggregate_all(
         count,
         func_path_no_cycles(bestfs, ["int"], ["int"], _Path),
-        15
+        64
     ).
 
 test('No paths for types which do not exist', [fail]) :-

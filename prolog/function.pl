@@ -15,6 +15,7 @@
     add_function/6
 ]).
 :- use_module(library(http/json)).
+:- use_module(sequence_ops).
 :- dynamic function/6.
 :- dynamic trait/2.
 :- dynamic type/3.
@@ -80,16 +81,19 @@ ez_function(Name, Inputs, Outputs, Docs) :-
 :- ez_function("print2", ["int"], ["None"], "documentation").
 :- ez_function("increment", ["int"], ["int"], "The increment function, or inc, or incr, will take an integer, or int, and increase its value by 1, or add 1 to it and then return the sum.").
 :- ez_function("decrement", ["int"], ["int"], "The decrement function or dec, or decr, will take an integer, or int, and decrease its value by 1, or subtract 1 from it and then return the difference.").
-:- add_function(_, "sum", [], [type("List", ["int"], _)], ["int"], "Sum, or add integers, or add ints, will take in a list of integers or ints, and adds up all of the numerical values in the list. It returns a single integer which is the sum of this addition.").
+:- add_function(_, "listify", [generic("X", _)], [gen("X")], [type("List", [gen("X")], _)], "Produces a list containing the given value.").
+:- add_function(_, "sum", [generic("X", ["Add"])], [type("List", [gen("X")], _)], [gen("X")], "Sum, or add sequence adds all of the items in the list. It returns a single value which is the sum of this list.").
 :- add_function(_, "add", [generic("X", ["Add"])], [gen("X"), gen("X")], [gen("X")], "Adds two generics").
 
 %% Type processing
+%% Produces true if the given type satisfies the constraints of the given generic.
 type_is_compat_with_generic(Name, generic(_, GImpls)) :-
     type(Name, _, Impls),
-    subset(GImpls, Impls).
+    list_subset(GImpls, Impls).
 
 is_generic(generic(_, _)).
 
+%% Produces true if the key unifies with the generic name and Type satisfies the generic's constraints.
 test_interp((Name, Type), generic(Name, GImpls)) :-
     type_is_compat_with_generic(Type, generic(Name, GImpls)).
 test_interp((Name, unbound), generic(Name, _)).
@@ -99,18 +103,30 @@ test_interp_against_all([Interp|RestInterp], [Generic|Rest]) :-
     test_interp(Interp, Generic),
     test_interp_against_all(RestInterp, Rest).
 
+%% fn_interp_valid(Func, Interp:list)
+% Unifies Interp with an interpration of Func's generics which satisfy all
+% type constraints.
 fn_interp_valid(Func, Interp) :-
     generics(Func, Generics),
     test_interp_against_all(Interp, Generics),
     sort(Interp, Interp).
 
+%% subst(Interp, GenericTypes, ConcreteTypes)
+% Produces true if ConcreteTypes is equivalent to GenericTypes with the given interpretation
 subst(_, [], []).
 subst(Interp, [gen(Name)|GenRest], [ConcreteType|Rest]) :-
     member((Name, ConcreteType), Interp),
     subst(Interp, GenRest, Rest), !.
+subst(Interp, [type(Name, SubTypes, Bounds)|GenRest], [type(Name, ConcreteTypes, Bounds)|Rest]) :-
+    subst(Interp, SubTypes, ConcreteTypes),
+    subst(Interp, GenRest, Rest), !.
 subst(Interp, [ConcreteType|GenRest], [ConcreteType|Rest]) :-
     subst(Interp, GenRest, Rest), !.
 
+%% specialize(Func, Interp, Uuid)
+% Specializes Func with the given interpretation of the generics, and adds
+% the specialized function to the knowledge base. Uuid is unified with the
+% uuid of the newly specialized function.
 specialize(Func, Interp, Uuid) :-
     function(Func, Name, Generics, Inputs, Outputs, Docs),
     \+(Generics=[]),

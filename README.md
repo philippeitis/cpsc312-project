@@ -83,14 +83,14 @@ Or:
 Our POC demonstrates our ability to define and search a knowledge-base of sample functions (such as print()), create a chain or path of functions and apply scoring algorithms to prioritize the most relevant search results. It also demonstrates the usage of DCGs to parse user input and subsequently define functions and options via the CLI.
 
 It allows the user to:
-1. Define functions, including their signatures and documentation, via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/server.pl#L79), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/main.pl#L238). These functions can be specified with generic arguments.
+1. Define functions (with documentation), types, and traits (eg. Haskell typeclasses), via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/server.pl#L79), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/main.pl#L238). Functions and types support generic arguments, allowing for the definition of complex type systems.
 2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/func_constraints.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/search.pl#L58). 
 3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/479d50a2478b6956c5739aef7fd6b25e90924512/prolog/search.pl#L15) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/path_constraints.pl).
 
 For usage details, and a more specific overview of the CLI/Rest API, go to `How to test and run the code: Prolog`. A high level description of the modules in the prolog directory is provided below.
 
 This represents the core functionality our product aims to provide:
-1. a user interface where users can easily define new functions and perform searches over the knowledge base, using constraints to find the most appropriate functions
+1. a user interface where users can easily define new functions, types, and traits, and perform searches over the knowledge base, using constraints to find the most appropriate functions
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort
 
 We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
@@ -188,7 +188,11 @@ user:~/cpsc312-project/prolog$ swipl main.pl --help define
 Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
-The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same style as described in the MVP, though we omit the function name and documentation, as these are optional. The `--KEY=VALUE` arguments are parsed using a simple definite clause grammar. An example of the `path` and `search` commands follows:
+
+We go over a list of examples in the following section, where we provide an explanation of an action, followed by an example of how this action is performed in the FastFunc CLI.
+
+#### CLI Examples
+The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same style as described in the MVP, though we omit the function name and documentation, as these are optional. The `--KEY=VALUE` arguments are parsed using a simple definite clause grammar.
 
 If you want to find at most 3 function paths, which accept an `int`, and produce an `int`:
 ```console
@@ -208,8 +212,7 @@ Found 1 solutions:
 Function: parseInt2
 ```
 
-An example session with the CLI, which demonstrates the usage of everything except help and launch:
-
+If you misspell a command, the CLI will offer to correct it and run the corrected version:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> pxth [int] -> [int]
@@ -218,17 +221,30 @@ Found 5 solutions:
 add
 decrement
 increment
-add -> decrement
-add -> increment
->>> search [str] -> [int] --name=pant --name_cmp=subseq
-Found 2 solutions:
-Function: parseInt
-Function: parseInt2
+decrement -> add
+increment -> add
+```
+
+You can define new functions, and then search for them.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
 Adding function: pow
 >>> search [int] -> [int] --docs=power --doc_cmp=substr        
 Found 1 solutions:
 Function: pow
+>>> path [int] -> [int]
+Found 5 solutions:
+decrement
+increment
+pow
+add
+increment -> decrement
+```
+
+You can store the current knowledge base and then load it from disk for later usage. In this example, we also show the clear command, which will clear the knowledge base, and the usage of `--strategy=dfs`, which will make path generate paths using the depth-first strategy.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
 >>> store ./funcs.json
 >>> clear
 Database has been erased.
@@ -239,15 +255,37 @@ Found 0 solutions:
 Found 5 solutions:
 increment
 increment -> decrement
+increment -> decrement -> listify -> sum
+increment -> decrement -> listify -> sum -> add
 increment -> decrement -> add
-increment -> decrement -> add -> pow
-increment -> decrement -> pow
+```
+
+In this example, we show the usage of `define type impls Trait`, where you can specify that a particular type implements a trait. The knowledge base contains `add`, which takes two instances of `Add` and adds them, and `sum`, which does the same, but with a `List`. `listify` takes any item, and produces a list containing the item. When we specify that `str` impls `Add`, `str` can be used as an argument to `add`, as we see below.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> path [str] -> [str]
+Found 0 solutions:
+>>> define str impls Add
+Adding impls for str: [Add]
+>>> path [str] -> [str]
+Found 4 solutions:
+add
+listify -> sum
+listify -> sum -> add
+add -> listify -> sum
+```
+
+In this final example, we demonstrate a few other features. In particular, `os` will print out the current operating system, and `quit` will shut the program down. `define trait ...` provides a mechanism for defining type classes, but this feature is not complete.
+```console
+user:~/cpsc312-project/prolog$ swipl main.pl
+>>> define trait Example: Bounds
+User tried to define trait: trait(Example,[Bounds])
 >>> os
 Unix
 >>> quit
 ```
 
-Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a list of supported values for each key:
+Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a description of the inputs to each key:
 
 | Key         | Description                        | CLI Support | REST API Support |
 | :---------- | :----------                        | :--: | :--: |
@@ -273,7 +311,7 @@ Below is a table which describes support for each key/value pair in the CLI and 
 
 
 #### REST API Overview
-Additionally, it is possible to launch the server for the REST API:
+It is also possible to launch the server for the REST API:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
