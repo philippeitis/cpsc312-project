@@ -94,13 +94,13 @@ This represents the core functionality our product aims to provide:
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort
 
 We were already confident that Prolog's search features and easy to extend knowledge base would make it very easy to define functions and search them.
-Implementing this POC demonstrates that our belief is indeed correct. We have built the project to be very easy to extend, which makes it easy for us to add new constraint functions, but also makes it easy for users themselves to define and compose their own constraints. In addition, since we cleanly separated the user interfaces from the core functionality, it is very easy to modify one or the other - or even create an entirely new interfaces, as with our REST API. Accordingly, we have two interfaces - a powerful terminal interface which makes use of our constraint functionality to make commands easily discoverable, and a REST API which allows adding, deleting, and searching functions. We believe that our proof of concept goes above and beyond the requirements, and could easily be considered an MVP.
+Implementing this POC demonstrates that our belief is indeed correct. The core of our POC is built on a very flexible search system, which makes use of composable function and path constraints which we (and potential users) can easily define and extend. This search system provides a variety of search methods - depth-first, breadth-first, and best-first, which allows choosing between time/space availability and quality of results. On top of this core, we have implemented two interfaces - a powerful terminal interface CLI which is designed to be user-facing, with easily discoverable interactions, and a REST API, which allows IDEs or programming languages to add, define, and search for functions. We believe that our proof of concept goes above and beyond the requirements, and could be considered an MVP.
 
-Being able to implement searches with parameterized constraints gives us confidence that we could extend the search functionality with more powerful constraints, which utilize information derived through natural language processing of the input, (eg. tokenization, sentence similarity techniques). Our proof of concept implements breadth, depth, and best-first search methods, which gives users a variety of options for discovering paths of interest. However, we do not currently provide a mechanism to assign weights to each of the user provided constraints, which means that the user has to manually order the results if they are not satisfied with equal weighting. However, given our experience with making Prolog functions more generic, it should be relatively simple to define a wrapper predicate which increases or decreases the weight of a particular constraint.
+Since our searches already make use of parameterized constraints, we are confident that we could incorportable constraints built on top of natural language processing, using tokenization or sentence similarity techniques to direct searches. We do not currently assign weights to any of the constraints used during searches, so best-first search will weigh them equally, but given our experience building "generic" functions in Prolog, we believe this should not be overly complex to implement.
 
-In addition, definite clause grammars make it very easy to parse function signatures, and given our experience with the initial DCG implementation for parsing Haskell-style function signatures, it should, in principle, be relatively simple to add additional DCGs for syntax from other languages, such as `Python` or `Java`, which would make it easy for IDEs or end-users to use this as their code search engine.
+We have also used definite clause grammars to parse simple function signatures - so far, this has not been overly difficult, and we believe that we could add additional DCGs for syntax from languages such as `Python` or `Java`, which would make it easy for IDEs or end-users to use this as their code search engine.
 
-During development, we found that Prolog's depth-first search by default is not always the best choice, especially when you want to find the best sequence of functions without having to evaluate all paths. The execution of Prolog programs can also be counter-intuitive at first - for example, "N-1" is lazily evaluated, which can be quite surprising when implementing recursive functions, and it is necessary to use frequently use prolog's cut - `!`.
+During development, we found that the execution of Prolog programs can be counter-intuitive at first - for example, "N-1" is lazily evaluated, which can be quite surprising when implementing recursive functions, and it is necessary to use somewhat frequently use prolog's cut - `!`.
 
 ## Files
 - [func_constraints.pl](prolog/func_constraints.pl), [path_constraints.pl](prolog/path_constraints.pl): These files contain function and path constraints, as well as functionality for defining and composing said constraints. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
@@ -112,7 +112,7 @@ During development, we found that Prolog's depth-first search by default is not 
 - [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
 - [sequence_ops.pl](prolog/sequence_ops.pl): This file provides functions for common sequence operations, including subsequence detection, substring matching, Levenshtien distance, joining lists of strings, and checking for subsets.
 - [server_test.pl](prolog/server_test.pl): A small client, written in Prolog, which sends a series of requests to the REST API implemented in [server.pl](prolog/server.pl) and tests for correct responses.
-- [test.pl](prolog/test.pl): Tests for core functionality related to searching, defining functions, and constraints.
+- [test.pl](prolog/test.pl): Tests for core functionality related to generating paths, defining functions, serializing and deserializing them to/from JSON, and constraints.
 
 <!-- Replace this with a description of your proof-of-concept. This may be as short as a few paragraphs, or it may be longer.
 It should **definitely** take less than 4 minutes to read carefully and thoroughly, though working through and running the
@@ -146,18 +146,26 @@ If you include instructions different from these, be **absolutely sure** that th
 
 ### How to test and run the code: Prolog
 
+In this section, we cover testing, usage of the CLI define functions, types, and traits, and how to perform various queries over them, plus additional features in the system, and usage of the REST API to do the same.
+
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that using `make prolog-eval` / `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API. This script takes `PORT` as an argument. It then calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. If, by chance, the default port used in the Makefile collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT file`, where file is one of `prolog-eval`, `test`, and `PORT` is a currently unused port.
+Please note that using `make prolog-eval` or `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API by coordinating the Prolog server and a Prolog client on the same port.
 
 Example usage of [prolog/server_test.py](prolog/server_test.py):
+
 ```console
 user:~/cpsc312-project/prolog$ python3 server_test.py 9999
 % PL-Unit: end-to-end test . done
 % test passed
 ```
+If, by chance, the default port used to launch the servers collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT makefile` with either `prolog-eval` or `test`, and setting `PORT` to a currently unused port.
+
+If you encounter issues with running the Makefile due to the script, a short description of the script is provided below:
+
+The script takes `PORT` as an argument. It then calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. 
 
 #### CLI Overview
 This program provides a REPL, which can be initialized by running `swipl main.pl`:
@@ -182,17 +190,17 @@ Available commands:
     os
 ```
 
-and `swipl main.pl --help COMMAND` for instructions for a particular command.
+and `swipl main.pl --help COMMAND` for instructions for a particular command:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl --help define
 Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
-We go over a list of examples in the following section, where we provide an explanation of an action, followed by an example of how this action is performed in the FastFunc CLI.
+We go over a number of examples of using the FastFunc CLI interface in the following section, where we provide an explanation of an action, followed by an example of how this action is performed.
 
 #### CLI Examples
-The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same syntax for defining function signatures as described in the MVP, though we omit the function name and documentation, as these are optional. The `--KEY=VALUE` arguments are parsed using a simple definite clause grammar. An example of the `path` and `search` commands follows:
+The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same syntax for defining function signatures as described in the MVP, though function names and documentation are omitted, as these are optional. An example of the `path` and `search` commands follows:
 
 If you want to find at most 3 function paths, which accept an `int`, and produce an `int`:
 ```console
@@ -225,7 +233,7 @@ decrement -> add
 increment -> add
 ```
 
-You can define new functions, and then search for them.
+You can define new functions, and then search for them:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> define pow :: [int, int] -> [int] | Raises x to the power of e
@@ -242,7 +250,7 @@ add
 increment -> decrement
 ```
 
-You can store the current knowledge base and then load it from disk for later usage. In this example, we also show the clear command, which will clear the knowledge base, and the usage of `--strategy=dfs`, which will make path generate paths using the depth-first strategy.
+You can store the current knowledge base and then load it from disk for later usage. In this example, we also show the clear command, which will clear the knowledge base, and the usage of `--strategy=dfs`, which will make the path command generate paths using depth-first search.
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> store ./funcs.json
@@ -260,7 +268,7 @@ increment -> decrement -> listify -> sum -> add
 increment -> decrement -> add
 ```
 
-In this example, we show the usage of `define type impls Trait`, where you can specify that a particular type implements a trait. The knowledge base contains `add`, which takes two instances of `Add` and adds them, and `sum`, which does the same, but with a `List`. `listify` takes any item, and produces a list containing the item. When we specify that `str` impls `Add`, `str` can be used as an argument to `add`, as we see below.
+In this example, we show the usage of `define type impls Trait`, where you can specify that a particular type implements a trait. The knowledge base contains the function `add`, which takes two instances of `Add` and adds them, and `sum`, which does the same, but with a `List`. `listify` takes any item, and produces a list containing the item. When we specify that `str` impls `Add`, `str` can be used as an argument to `add`, and `listify` allows creating a list which is then summed, as we see below:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> path [str] -> [str]
@@ -275,7 +283,7 @@ listify -> sum -> add
 add -> listify -> sum
 ```
 
-In this final example, we demonstrate a few other features. In particular, `os` will print out the current operating system, and `quit` will shut the program down. `define trait ...` provides a mechanism for defining type classes, but this feature is not complete.
+In this final example, we demonstrate a few other features. In particular, `os` will print out the current operating system, and `quit` will shut the program down. `define trait ...` provides a mechanism for defining type classes, but this feature is not complete:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> define trait Example: Bounds
@@ -285,42 +293,19 @@ Unix
 >>> quit
 ```
 
-Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a description of the inputs to each key:
-
-| Key         | Description                        | CLI Support | REST API Support |
-| :---------- | :----------                        | :--: | :--: |
-| name        | Search for a particular name       | ✅ | ✅ |
-| docs        | Search for documentation           | ✅ | ✅ |
-| name_cmp    | Comparison method when comparing the string specified by `name` to a particular function name | ✅ | ✅ |
-| doc_cmp     | Comparison method when comparing the string specified by `docs` to specific documentation | ✅ | ✅ |
-| strategy    | Strategy used when generating sequences of functions | ✅ | ❌ |
-
-`name/docs`: Any string. If you want to use a string containing whitespace, wrap the string with double quotes and use backslashes to escape backslashes and double quotes.
-
-`strategy` options:
-- dfs: Search for a path using depth-first search
-- bfs: Search for a path using breadth-first search
-- bestfs: Search for a path using best-first search.
-
-`*_cmp` options:
-- lev: Levenshtein
-- subseq: Subsequence matching (all letters in source appear in same order in target)
-- substr: Substring matching (all letters in source appear in same order and adjacent in target).
-- eq: Equality
-- re: Regex match
-
+`CLI, REST API Parameters` provides an overview of the parameters available for the `search` and `path` commands, and is found at the end.
 
 #### REST API Overview
-It is also possible to launch the server for the REST API:
+It is also possible to launch the server for the REST API via the CLI:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
 >>> 
 ```
 
-Example usage of this REST API from Prolog can be found at [prolog/server_test.pl](prolog/server_test.pl). To run [prolog/server_test.pl](prolog/server_test.pl), the server must be already be running in a separate process. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py). 
+After launching the server, you can test the REST API by running `swipl -g run_tests -t halt server_test.pl`. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py), which launches the server and the REST API. 
 
-The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters. 
+The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters, and the avaiable parameters are described in `CLI, REST API Parameters` below. 
 
 Example usage with Python's requests library:
 
@@ -343,3 +328,29 @@ b'Found func: parseInt2 :: [str] -> [int] | too cool for documentation\n'
 ```
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
+
+#### CLI, REST API Parameters
+Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a description of the inputs to each key:
+
+| Key         | Description                        | CLI Support | REST API Support |
+| :---------- | :----------                        | :--: | :--: |
+| name        | Search for a particular name       | ✅ | ✅ |
+| docs        | Search for documentation           | ✅ | ✅ |
+| name_cmp    | Comparison method when comparing the string specified by `name` to a particular function name | ✅ | ✅ |
+| doc_cmp     | Comparison method when comparing the string specified by `docs` to specific documentation | ✅ | ✅ |
+| strategy    | Strategy used when generating sequences of functions | ✅ | ❌ |
+| no_inputs   | Used in the REST API to specify lack of inputs. In CLI, use `[]`. | ❌ | ✅ |
+| no_outputs  | Used in the REST API to specify lack of outputs. In CLI, use `[]`. | ❌ | ✅ |
+`name/docs`: Any string. If you want to use a string containing whitespace, wrap the string with double quotes and use backslashes to escape backslashes and double quotes.
+
+`strategy` options:
+- dfs: Search for a path using depth-first search
+- bfs: Search for a path using breadth-first search
+- bestfs: Search for a path using best-first search.
+
+`*_cmp` options:
+- lev: Levenshtein
+- subseq: Subsequence matching (all letters in source appear in same order in target)
+- substr: Substring matching (all letters in source appear in same order and adjacent in target).
+- eq: Equality
+- re: Regex match
