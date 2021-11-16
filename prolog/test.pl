@@ -107,8 +107,8 @@ test('json roundtrip succeeds', [nondet]) :-
         current_output(Stream0),
         write_json_metadata(Stream0)
     )),
-    open_string(String0, Stream1),
     function:clear_kb,
+    open_string(String0, Stream1),
     read_json_metadata(Stream1),
     with_output_to(string(String1), (
         current_output(Stream2),

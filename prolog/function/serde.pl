@@ -1,6 +1,7 @@
 :- module(serde, [
     write_json_metadata/1,
-    read_json_metadata/1
+    read_json_metadata/1,
+    jsonify_funcs/2
 ]).
 :- use_module(function).
 :- use_module(library(http/json)).

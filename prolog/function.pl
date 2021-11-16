@@ -12,8 +12,10 @@
     get_field/3,
     update_type_trait_impl/2,
     clear_kb/0,
-    add_function/6
+    add_function/6,
+    get_function/2
 ]).
+
 :- use_module(library(http/json)).
 :- use_module(sequence_ops).
 :- dynamic function/6.
@@ -57,6 +59,9 @@ try_add_type(Type, Implements) :-
 add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
     uuid(Uuid),
     assertz(function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)).
+
+get_function(Uuid, function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)) :-
+    function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs).
 
 %% generic(Name, Bounds:list).
 %% type(Name, Generics:list, Implements:list)
