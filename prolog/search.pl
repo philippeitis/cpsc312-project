@@ -62,8 +62,6 @@ func_path_dfs(Visited, FnConstraints, PathConstraints, Path) :-
 %% Unifies Path with the next shortest path that transforms InputTypes into OutputTypes
 %% Helper function for initializing breadth-first search.
 
-func_path_bfs([], _, _) :- fail.
-
 % Return suitable candidate
 func_path_bfs([(FnConstraints, Visited)|_], PathConstraints, Path) :-
     % If no constraints left, add path to paths
@@ -88,9 +86,7 @@ func_path_bfs([(FnConstraints, Path)|Candidates], PathConstraints, NextPath) :-
 % Determine Cmp between L1 and L2 cost/constraint/list triples.
 cmp_candidate(Cmp, (Cost1, _, L1), (Cost2, _, L2)) :-
     length(L1, Len1), length(L2, Len2),
-    compare(Cmp, (Cost1, Len1, L2), (Cost2, Len2, L1)).
-
-func_path_best_fs([], _, _) :- fail.
+    compare(Cmp, (Cost1, Len1, L1), (Cost2, Len2, L2)).
 
 func_path_best_fs([(_, FnConstraints, Visited)|_], PathConstraints, Path) :-
     % If no constraints left, add path to paths
