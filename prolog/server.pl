@@ -1,4 +1,4 @@
-:- module(server, [server/1]).
+:- module(server, [server/1, shutdown/1]).
 
 %% Load this file in prolog, and use server(Port). to launch it.
 
@@ -23,6 +23,7 @@
 ).
 
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
+shutdown(Port) :- http_stop_server(Port, []).
 
 %% Hide unconstrained variables.
 render_param(Param, "?") :- var(Param), !.

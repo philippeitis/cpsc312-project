@@ -18,4 +18,4 @@ haskell-run:
 endif
 .PHONY: prolog-eval
 prolog-eval:
-	cd prolog && make FASTFUNC_SERVER_PORT=$(FASTFUNC_SERVER_PORT) test
+	cd prolog && make test
