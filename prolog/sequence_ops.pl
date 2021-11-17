@@ -8,7 +8,7 @@
 
 :- use_module(compat).
 :- if(prolog_version_eight).
-:- table levenshtein_distance/3.
+:- table(levenshtein_distance/3).
 :- endif.
 
 %% list_subset(?List1, ?List2)
