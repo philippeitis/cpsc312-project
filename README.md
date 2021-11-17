@@ -303,9 +303,9 @@ The table below describes all endpoints and support methods.
 
 | Endpoint/Method         | Description                        | Parameters | Errors | Output |
 | :---------- | :----------                        | :--: | :--: | :--- |
-| func/get | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
-| func/post | Add one function with the described features | name, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
-| func/delete | Delete one with the given UUID | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
+| [func/get](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L119) | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
+| [func/post](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L124) | Add one function with the described features | name, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
+| [func/delete](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L137) | Delete one function with the given uuid | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
 
