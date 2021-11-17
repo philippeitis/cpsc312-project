@@ -28,7 +28,7 @@ get(Port, Reply) :-
             protocol(http),
             host(localhost),
             port(Port),
-            path('/func?name=parseInt[0-9][0-9]&name_cmp=re')
+            path('/func?name=pant5&name_cmp=subseq')
         ],
         Reply,
         [json_object(dict)]
@@ -69,7 +69,7 @@ test(
         cleanup(shutdown(Port))
     ]) :-
     get(Port, _{
-        msg:"No matching func found: parseInt[0-9][0-9] :: ? -> ? | none"
+        msg:"No matching func found: pant5 :: ? -> ? | none"
     }).
 
 test(

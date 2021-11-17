@@ -188,13 +188,25 @@ test('func constraints input constraint', [nondet]) :-
 test('func constraints input constraint fails when input does not match', [fail]) :-
     function:fname(Uuid, "increment"),
     input_constraint(Uuid, ["str"], 1.0, _).
-test('func constraints regex constraint', [nondet]) :-
+test(
+    'func constraints regex constraint',
+    [
+        nondet,
+        condition((current_prolog_flag(version, Version), Version > 80000))
+    ]
+    ) :-
     function:fname(Uuid, "decrement"),
     func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 0.0, _).
-test('func constraints regex constraint') :-
+test(
+    'func constraints regex constraint',
+    [condition((current_prolog_flag(version, Version), Version > 80000))]
+    ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("de.*", name), 0.0, (no_constraint, _)).
-test('func constraints regex constraint fail') :-
+test(
+    'func constraints regex constraint fail',
+    [condition((current_prolog_flag(version, Version), Version > 80000))]
+    ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("d.*A", name), 1.0, _).
 
