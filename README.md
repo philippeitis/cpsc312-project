@@ -302,7 +302,7 @@ You can test the REST API by running `swipl -g run_tests -t halt server_test.pl`
 The table below describes all endpoints and support methods.
 
 | Endpoint/Method         | Description                        | Parameters | Errors | Output |
-| :---------- | :----------                        | :--: | :--: |
+| :---------- | :----------                        | :--: | :--: | :--- |
 | func/get | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
 | func/post | Add one function with the described features | name, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
 | func/delete | Delete one with the given UUID | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
