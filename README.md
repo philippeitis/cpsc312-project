@@ -1,4 +1,4 @@
-Our project is currently functional, but the version change removed the pcre library and the http server provided by the http library, so these features do not work on the department servers. 
+Our POC is currently functional, but since Prolog 7.6.4 does not include the PCRE library, and the http library does not include an HTTP server in 7.6.4, the regex matching and the REST API features of our POC are not provided for 7.6.4 (but if you test with Prolog 8.0+, these will work as expected). These are not the main elements of our POC, so details about these features are found in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
 # FastFuncs
 
