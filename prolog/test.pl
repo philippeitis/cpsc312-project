@@ -3,6 +3,7 @@
 % * Use `make test-repl` to enter a repl with this file loaded.
 % * Use `make test` to run the unit tests.
 % * At the project run, use `make prolog-eval` to run the unit tests.
+:- use_module(compat).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -192,20 +193,20 @@ test(
     'func constraints regex constraint',
     [
         nondet,
-        condition((current_prolog_flag(version, Version), Version > 80000))
+        condition(prolog_version_eight)
     ]
     ) :-
     function:fname(Uuid, "decrement"),
     func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 0.0, _).
 test(
     'func constraints regex constraint',
-    [condition((current_prolog_flag(version, Version), Version > 80000))]
+    [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("de.*", name), 0.0, (no_constraint, _)).
 test(
     'func constraints regex constraint fail',
-    [condition((current_prolog_flag(version, Version), Version > 80000))]
+    [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("d.*A", name), 1.0, _).

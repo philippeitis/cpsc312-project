@@ -9,9 +9,13 @@
     subsequence_constraint/4,
     regex_constraint/4
 ]).
+
+:- use_module(compat).
 :- use_module(function).
 :- use_module(sequence_ops).
+:- if(prolog_version_eight).
 :- use_module(library(pcre)).
+:- endif.
 
 %% Function Constraint Common API
 % Func, Args, Cost, NewConstraint
@@ -59,12 +63,14 @@ seq_core(Func, (Sequence, Field), 0.0) :-
 subsequence_constraint(Func, Args, Cost, NewConstraint) :-
     wrap_core(seq_core, Func, Args, Cost, NewConstraint).
 
+:- if(prolog_version_eight).
 regex_core(Func, (Regex, Field), 0.0) :-
     get_field(Func, Field, String),
     re_match(Regex, String).
 
 regex_constraint(Func, Args, Cost, NewConstraint) :-
     wrap_core(regex_core, Func, Args, Cost, NewConstraint).
+:- endif.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
@@ -113,8 +119,10 @@ field_constraint(Field, String, Substr, (substring_constraint, (String, Field)))
     match_substr(Substr), !.
 field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
     match_subseq(Subseq), !.
+:- if(prolog_version_eight).
 field_constraint(Field, String, Re, (regex_constraint, (String, Field))) :-
     match_re(Re), !.
+:- endif.
 
 %% none is used to denote constraints which are not provided
 add_field_constraint(_, none, _, Constraints, Constraints) :- !.
