@@ -3,10 +3,13 @@
 :- use_module(function/parse).
 :- use_module(function/serde).
 
+:- use_module(compat).
 :- use_module(sequence_ops).
 :- use_module(search).
-:- use_module(server).
 :- use_module(library(dcg/basics)).
+:- if(prolog_version_eight).
+:- use_module(server).
+:- endif.
 
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
@@ -72,7 +75,9 @@ command("search").
 command("path").
 command("store").
 command("load").
+:- if(prolog_version_eight).
 command("launch").
+:- endif.
 command("quit").
 
 %% Help strings for available commands.
@@ -94,9 +99,11 @@ assist("store") :-
 assist("load") :- 
     write("Loads the persisted functions from disk at the provided path."), nl,
     write("Example: load ./path/to/file.json"), nl, !.
+:- if(prolog_version_eight).
 assist("launch") :- 
     write("Launches the server on the given port."), nl,
     write("Example: launch 5000"), nl, !.
+:- endif.
 assist("quit") :-
     write("Terminates the program."), nl, !.
 assist("os") :-
@@ -189,6 +196,7 @@ execute_command(String) :-
     format("Found ~w solutions:", [Len]), nl,
     foreach(member(Soln, Solns), (pretty_print_path(Soln), nl)), !.
 
+:- if(prolog_version_eight).
 execute_command(String) :-
     split_left(String, " ", 1, ["launch", PortStr]),
     number_string(Port, PortStr),
@@ -197,6 +205,7 @@ execute_command(String) :-
         error(socket_error(_, 'Address already in use'), _),
         writeln("Port already in use - have you already launched a server?")
     ), !.
+:- endif.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["store", Path]),
