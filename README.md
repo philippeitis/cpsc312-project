@@ -150,11 +150,11 @@ If you include instructions different from these, be **absolutely sure** that th
 
 In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
-In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
+In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests. 
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
 
-Please note that using `make prolog-eval` or `make test` will run a a small Python script [prolog/server_test.py](prolog/server_test.py) which tests the REST API by coordinating the Prolog server and a Prolog client on the same port, and otherwise does no testing of its own. If you have any issues with this script, go to [Testing REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#testing-rest-api).
+Please note that using `make prolog-eval` or `make test` will also test the REST API - for more details, go to [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
 
 #### CLI Overview
 This program provides a REPL, which can be initialized by running `swipl main.pl`:
@@ -297,7 +297,7 @@ user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 >>> 
 ```
 
-After launching the server, you can test the REST API by running `swipl -g run_tests -t halt server_test.pl`. `make test` does this by calling [prolog/server_test.py](prolog/server_test.py), which launches the server and the REST API. 
+You can test the REST API by running `swipl -g run_tests -t halt server_test.pl`. This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
 
 The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters, and the avaiable parameters are described in `CLI, REST API Parameters` below. 
 
@@ -322,19 +322,6 @@ Example usage with Python's requests library (some portions omitted for brevity)
 ```
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
-
-#### Testing REST API
-Example usage of [prolog/server_test.py](prolog/server_test.py):
-
-```console
-user:~/cpsc312-project/prolog$ python3 server_test.py 9999
-% PL-Unit: end-to-end test . done
-% test passed
-```
-
-If, by chance, the default port used to launch the servers collides with ports being used on the computer, do `make FASTFUNC_SERVER_PORT=PORT makefile` with either `prolog-eval` or `test`, and setting `PORT` to a currently unused port. 
-
-Calling [prolog/server_test.py](prolog/server_test.py) will launch the REST API and a client, both written in Prolog, at the same time. This script takes a single argument from the command-line - `PORT`, which is simply any open port on the computer. It then calls `swipl main.pl launch PORT` ([prolog/main.pl](prolog/main.pl)) to launch the REST API on the specified port, and launches a small client which runs some end-to-end tests ([prolog/server_test.pl](prolog/server_test.pl)). The script does not do any testing of its own, and is only used to run the server and client simultaneously in two separate processes. 
 
 #### CLI, REST API Parameters
 Below is a table which describes support for each key/value pair in the CLI and REST API, as well as a description of the inputs to each key:
