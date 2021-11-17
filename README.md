@@ -202,7 +202,7 @@ decrement
 add
 ```
 
-If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]` (other keys are described at [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters)):
+If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]` (other keys and options are described at [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters)):
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> search [str] -> [int] --name=p.*a.*n.*t.*[0-9] --name_cmp=re
