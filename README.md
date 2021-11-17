@@ -1,3 +1,5 @@
+Our project is currently functional, but the version change removed the pcre library and the http server provided by the http library, so these features do not work on the department servers. 
+
 # FastFuncs
 
 Software development is consistently on the leading edge of occupational innovation and process improvement. Advancements in machine learning and prediction are helping development environments save developers time and effort by anticipating their intentions and offering suggestions. FastFuncs is a tool that allows users to quickly find functions and automate function composition.
@@ -111,7 +113,7 @@ We believe that our proof of concept goes well above-and-beyond the requirements
 - [function/parse.pl](prolog/function/parse.pl): functionality for parsing Haskell-style function signatures, trait declarations (eg. typeclasses) and types with optional generics.
 - [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list commands and find instructions for how particular commands are used.
 - [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_func`, and `find_funcs`. These functions allow finding individual functions, or generating chains of functions that transform inputs into outputs. All of these functions accept constraints to filter functions and paths.
-- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text.
+- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions. Responses are currently served as a formatted line of text. Please note that this requires a recent version of SWIPL, as the http library in 7.6.4 does not provide an HTTP server. 
 - [sequence_ops.pl](prolog/sequence_ops.pl): This file provides functions for common sequence operations, including subsequence detection, substring matching, Levenshtien distance, joining lists of strings, and checking for subsets.
 - [server_test.pl](prolog/server_test.pl): A small client, written in Prolog, which sends a series of requests to the REST API implemented in [server.pl](prolog/server.pl) and tests for correct responses.
 - [test.pl](prolog/test.pl): Tests for core functionality related to generating paths, defining functions, serializing and deserializing them to/from JSON, and constraints.
@@ -147,6 +149,8 @@ We should be able to further explore your code's functionality by running `stack
 If you include instructions different from these, be **absolutely sure** that they will work well for us in whatever environment we run your code and that they will be as easy to use as the instructions above!
 
 ### How to test and run the code: Prolog
+
+NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4. 
 
 In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
@@ -202,10 +206,10 @@ decrement
 add
 ```
 
-If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]` (other keys and options are described at [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters)):
+If you want to find a function whose name contains the subsequence `pant2` (other keys and options are described at [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters)):
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
->>> search [str] -> [int] --name=p.*a.*n.*t.*[0-9] --name_cmp=re
+>>> search [str] -> [int] --name=pant2 --name_cmp=subseq
 Found 1 solutions:
 Function: parseInt2
 ```
@@ -234,12 +238,12 @@ user:~/cpsc312-project/prolog$ swipl main.pl
 Found 0 solutions:
 >>> define str impls Add
 Adding impls for str: [Add]
->>> path [str] -> [str]
+>>> path [str] -> [str] --strategy=dfs
 Found 4 solutions:
-add
 listify -> sum
-add -> listify -> sum
 listify -> sum -> add
+add
+add -> listify -> sum
 ```
 
 More examples of other features not explored here are covered in [More CLI Examples](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#more-cli-examples).
@@ -290,6 +294,9 @@ Unix
 ```
 
 #### REST API Overview
+
+NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4. 
+
 It is also possible to launch the server for the REST API via the CLI:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
@@ -297,7 +304,7 @@ user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 >>> 
 ```
 
-You can test the REST API by running `swipl -g run_tests -t halt server_test.pl`. This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
+You can test the REST API by running `swipl -g run_tests -t halt server_test.pl` (on the department computers, these tests will not run). This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
 
 The table below describes all endpoints and support methods.
 
@@ -334,4 +341,4 @@ Below is a table which describes support for each key/value pair in the CLI and 
 - subseq: Subsequence matching (all letters in source appear in same order in target)
 - substr: Substring matching (all letters in source appear in same order and adjacent in target).
 - eq: Equality
-- re: Regex match
+- re: Regex match (NOT SUPPORTED FOR VERSIONS < 8.0)
