@@ -299,27 +299,13 @@ user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 
 You can test the REST API by running `swipl -g run_tests -t halt server_test.pl`. This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
 
-The server provides the `func` endpoint, which supports `get` (find a function), `post` (add a function), and `delete` (delete a function) requests. Arguments for these endpoints are provided as HTTP parameters, and the avaiable parameters are described in `CLI, REST API Parameters` below. 
+The table below describes all endpoints and support methods.
 
-Example usage with Python's requests library (some portions omitted for brevity):
-
-```python
-# Finds a function with the letters "pat" in sequential order
->>> requests.get("http://localhost:5000/func", params={"name": "pat", "name_cmp": "subseq"}).json()
-{'functions': [{'name': 'parseInt', ...}, {'name': 'parseInt2', 'uuid':'a514694a-46c7-11ec-b2a6-07793d83fe3e', ...}], 'msg': 'Found functions'}
-# Deletes the parseInt2 function
->>> requests.delete("http://localhost:5000/func", params={"uuid": 'a514694a-46c7-11ec-b2a6-07793d83fe3e'}).json()
-{'msg': 'Removed', 'uuid': 'a514694a-46c7-11ec-b2a6-07793d83fe3e'}
-# Check that parseInt2 is gone
->>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
-{'msg': 'No matching func found: parseInt2 :: ? -> ? | none'}
-# Insert new parseInt2
->>> requests.post("http://localhost:5000/func", params={"name": "parseInt2", "inputs": ["str"], "outputs": ["int"], "docs": "too cool for documentation"}).json()
-{'msg': 'Created func parseInt2', 'uuid': '3b09fb56-46b7-11ec-ba2b-b7cea82a1c5b'}
-# parseInt2 is restored
->>> requests.get("http://localhost:5000/func", params={"name": "parseInt2", "name_cmp": "eq"}).json()
-{'functions': [{'name': 'parseInt2', ...}], 'msg': 'Found functions'}
-```
+| Endpoint/Method         | Description                        | Parameters | Errors | Output |
+| :---------- | :----------                        | :--: | :--: |
+| func/get | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
+| func/post | Add one function with the described features | name, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
+| func/delete | Delete one with the given UUID | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
 
