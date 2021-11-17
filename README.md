@@ -148,7 +148,7 @@ If you include instructions different from these, be **absolutely sure** that th
 
 ### How to test and run the code: Prolog
 
-In this section, we cover testing, usage of the CLI define functions, types, and traits, and how to perform various queries over them, plus additional features in the system, and usage of the REST API to do the same.
+In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests.
 
@@ -186,11 +186,9 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc 
 ```
 
-We go over a number of examples of using the FastFunc CLI interface in the following section, where we provide an explanation of an action, followed by an example of how this action is performed.
-
 #### CLI Examples
 
-In this section, we go over the most important commands in our CLI, which cover the core elements our POC hopes to demonstrate. This includes defining functions, searching for them, and being able to use generic types and functions.
+In this section, we go over the most important commands in the FastFunc CLI interface, which cover the core elements our POC hopes to demonstrate. This includes defining functions, searching for them, and being able to use generic types and functions.
 
 The primary path composition and search functionality has settings which can be set using `--KEY=VALUE` style arguments, and accepts the same syntax for defining function signatures as described in the MVP, though function names and documentation are omitted, as these are optional, which can be seen in the following examples.
 
@@ -204,7 +202,7 @@ decrement
 add
 ```
 
-If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]`:
+If you want to find a function whose name matches the regex `p.*a.*n.*t.*[0-9]` (other keys are described at [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters)):
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> search [str] -> [int] --name=p.*a.*n.*t.*[0-9] --name_cmp=re
@@ -244,9 +242,11 @@ add -> listify -> sum
 listify -> sum -> add
 ```
 
-More examples of other features not explored here are covered in [More CLI Examples](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#more-cli-examples). For an overview of the parameters available when using the `search` and `path` commands, go to [CLI, REST API Parameters](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#cli-rest-api-parameters).
+More examples of other features not explored here are covered in [More CLI Examples](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#more-cli-examples).
 
 ### Appendix
+This section provides additional examples of using the CLI, which demonstrate additional features. We also cover the REST API and how it is tested, and provide an overview of all the parameters which can be used in both the CLI and REST API.
+
 #### More CLI Examples
 If you misspell a command, the CLI will offer to correct it and run the corrected version:
 ```console
