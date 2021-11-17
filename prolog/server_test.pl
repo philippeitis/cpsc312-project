@@ -47,7 +47,7 @@ delete(Port, Uuid, Reply) :-
         [json_object(dict)]
     ).
 
-:- begin_tests('end-to-end test').
+:- begin_tests('end-to-end test', [condition((current_prolog_flag(version, Version), Version > 80000))]).
 
 test(
     "Trying to delete nonexistent uuid results in 404",
