@@ -85,9 +85,9 @@ Or:
 Our POC demonstrates our ability to define and search a knowledge-base of sample functions (such as print()), create a chain or path of functions and use scoring algorithms in conjunction with search algorithms to prioritize the most relevant search results. It also demonstrates the usage of DCGs to parse user input and subsequently define functions and options via the CLI.
 
 It allows the user to:
-1. Define functions (with documentation), types, and traits (eg. Haskell typeclasses), via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ff7f943340c2071b654beeef6e9d31a66e816b4e/prolog/server.pl#L118), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ff7f943340c2071b654beeef6e9d31a66e816b4e/prolog/main.pl#L250). Functions and types support generic arguments, allowing for the definition of complex type systems.
-2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/func_constraints.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ff7f943340c2071b654beeef6e9d31a66e816b4e/prolog/search.pl#L21). 
-3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/ff7f943340c2071b654beeef6e9d31a66e816b4e/prolog/search.pl#L116) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/path_constraints.pl).
+1. Define functions (with documentation), types, and traits (eg. Haskell typeclasses), via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/server.pl#L119), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/main.pl#L259). Functions and types support generic arguments, allowing for the definition of complex type systems.
+2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/func_constraints.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/search.pl#L21). 
+3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/search.pl#L116) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/path_constraints.pl).
 
 [File Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#file-overview) contains details about all of the Prolog files in this project.
 
@@ -107,6 +107,7 @@ During development, we found that the execution of Prolog programs can be counte
 We believe that our proof of concept goes well above-and-beyond the requirements, and could be considered an MVP. [How to test and run the code: Prolog](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#how-to-test-and-run-the-code-prolog) covers searching, defining, and generating function paths via the CLI. Additional functionality provided by the CLI appears in [Appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix). Since the REST API does not provide new features over the CLI, it also appears in the appendix, at [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
 
 ## File Overview
+- [compat.pl](prolog/compat.pl) - This file is used to check if the currently running version of Prolog includes the necessary libraries for specific functionality to be available.
 - [func_constraints.pl](prolog/func_constraints.pl), [path_constraints.pl](prolog/path_constraints.pl): These files contain function and path constraints, as well as functionality for defining and composing said constraints. Constraints can be used both for rejecting candidate functions and paths, and for scoring them, allowing us to order search results.
 - [function.pl](prolog/function.pl): This file contains a set of sample function definitions, and a primitive type system with generic functions and a limited implementation of typeclasses.
 - [function/serde.pl](prolog/function/serde.pl): functionality for serializing/deserializing functions from/to JSON.
@@ -150,15 +151,15 @@ If you include instructions different from these, be **absolutely sure** that th
 
 ### How to test and run the code: Prolog
 
-NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4. 
+NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4.
 
 In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
 In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests. 
 
-The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries, which appear to be included by default in SWIPL, and did not require any installation steps when running the project locally.
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 
-Please note that using `make prolog-eval` or `make test` will also test the REST API - for more details, go to [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
+Please note that using `make prolog-eval` or `make test` will only test the REST API if run on Prolog 8+. For more details, go to [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
 
 #### CLI Overview
 This program provides a REPL, which can be initialized by running `swipl main.pl`:
@@ -295,18 +296,18 @@ Unix
 
 #### REST API Overview
 
-NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4. 
+NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in SWIPL 7.6.4. This should be available in SWIPL 8.2.4 (http server was added to SWIPL on Nov 13 2020, and SWIPL 8.2.4 was released in Jan 2021).
 
-It is also possible to launch the server for the REST API via the CLI:
+If testing on a supported version of SWIPL, it is possible to launch the server for the REST API via the CLI:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl launch 5000
 % Started server at http://localhost:5000/
 >>> 
 ```
 
-You can test the REST API by running `swipl -g run_tests -t halt server_test.pl` (on the department computers, these tests will not run). This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
+You can test the REST API by running `swipl -g run_tests -t halt server_test.pl` (these tests are only run if SWIPL 8+ is detected). This will launch unique instances of the server for each test, and perform a series of http queries. Each test will automatically select free ports on the machine.
 
-The table below describes all endpoints and support methods.
+The table below describes all endpoints and supported methods.
 
 | Endpoint/Method         | Description                        | Parameters | Errors | Output |
 | :---------- | :----------                        | :--: | :--: | :--- |
