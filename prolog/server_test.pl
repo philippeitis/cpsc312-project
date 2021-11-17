@@ -50,7 +50,7 @@ delete(Port, Uuid, Reply) :-
 :- begin_tests('end-to-end test').
 
 test(
-    'Tries to delete nonexistent uuid results in 404',
+    "Trying to delete nonexistent uuid results in 404",
     [
         setup(server(Port)),
         error(existence_error(_, _)),
@@ -62,7 +62,7 @@ test(
     }).
 
 test(
-    'Tries to get nonexistent function results in 404',
+    "Trying to get nonexistent function results in 404",
     [
         setup(server(Port)),
         error(existence_error(_, _)),
@@ -73,7 +73,7 @@ test(
     }).
 
 test(
-    'Runs an example client session',
+    "Runs an example client session",
     [
         setup(server(Port)),
         nondet,

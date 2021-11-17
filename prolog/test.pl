@@ -234,4 +234,3 @@ test('length_constraint is fine testing end') :-
     length_constraint([a, b, c], none, 3).
 
 :- end_tests('path_constraints').
-
