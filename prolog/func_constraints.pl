@@ -67,10 +67,19 @@ subsequence_constraint(Func, Args, Cost, NewConstraint) :-
 regex_core(Func, (Regex, Field), 0.0) :-
     get_field(Func, Field, String),
     re_match(Regex, String).
-
+:- else.
+regex_core(_, _, _) :-
+    throw(
+        error(
+            unsupported_error,
+            context(
+                regex_core/3, "Regex not supported for current version"
+            )
+        )
+    ).
+:- endif.
 regex_constraint(Func, Args, Cost, NewConstraint) :-
     wrap_core(regex_core, Func, Args, Cost, NewConstraint).
-:- endif.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
