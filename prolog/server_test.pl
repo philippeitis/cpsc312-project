@@ -1,5 +1,9 @@
 :- use_module(library(http/http_client)).
+:- use_module(compat).
+
+:- if(prolog_version_eight).
 :- use_module(server).
+:- endif.
 
 %% Checks that posting parseInt55 works correctly
 post_ok(Port) :-
@@ -47,7 +51,7 @@ delete(Port, Uuid, Reply) :-
         [json_object(dict)]
     ).
 
-:- begin_tests('end-to-end test', [condition((current_prolog_flag(version, Version), Version > 80000))]).
+:- begin_tests('end-to-end test', [condition(prolog_version_eight)]).
 
 test(
     "Trying to delete nonexistent uuid results in 404",
