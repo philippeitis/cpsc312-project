@@ -227,30 +227,39 @@ test('substring constraint succeeds', [nondet]) :-
 test('substring constraint fails') :-
     function:fname(Uuid, "parseInt"),
     substring_constraint("dsdsfdwa", name, Uuid, 1.0, _).
-test('func constraints subsequence constraint', [nondet]) :-
+test('subsequence constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
     subsequence_constraint("pre", name, Uuid, 0.0, no_constraint).
-test('and constraints subsequence constraint fail') :-
+test('subsequence constraint fail') :-
     function:fname(Uuid, "parseInt"),
     subsequence_constraint("tspkn", name, Uuid, 1.0, _).
-test('func constraints input constraint', [nondet]) :-
+test('input constraint', [nondet]) :-
     function:fname(Uuid, "increment"),
     input_constraint(["int"], Uuid, 0.0, input_constraint(["int"])).
-test('func constraints input constraint fails when input does not match', [fail]) :-
+test('input constraint fails when input does not match', [fail]) :-
     function:fname(Uuid, "increment"),
     input_constraint(["str"], Uuid, 1.0, _).
 test(
-    'func constraints regex constraint',
+    'regex constraint',
     [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint("de.*", name, Uuid, 0.0, no_constraint).
 test(
-    'func constraints regex constraint fail',
+    'regex constraint fail',
     [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint("d.*A", name, Uuid, 1.0, _).
+test(
+    'at_most_n fails when it hits 0',
+    [fail]
+    ) :-
+        at_most_n_constraint(0, no_constraint, _, _, _).
+test('at_most_n succeeds if non-zero') :-
+    at_most_n_constraint(1, no_constraint, _, _, at_most_n_constraint(0, no_constraint)).
+test('at_most_n does not decrement if failure') :-
+    at_most_n_constraint(1, [_, _, _]>>(fail), _, _, at_most_n_constraint(1, _)).
 
 :- end_tests('func_constraints').
 

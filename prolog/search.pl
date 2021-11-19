@@ -131,9 +131,11 @@ func_path_best_fs([(OldCost, FnConstraint, Path)|Candidates], PathConstraint, Ne
 func_path(Strategy, InputTypes, OutputTypes, Path) :-
     func_path_init(
         Strategy,
-        input_constraint(InputTypes),
         and_constraint([
-            length_constraint(999),
+            at_most_n_constraint(999, no_constraint),
+            input_constraint(InputTypes)
+        ]),
+        and_constraint([
             output_constraint(OutputTypes)
         ]),
         Path
@@ -155,10 +157,12 @@ func_path_init(bestfs, FnConstraint, PathConstraint, Path) :-
 func_path_no_cycles(Strategy, InputTypes, OutputTypes, Path) :-
     func_path_init(
         Strategy,
-        input_constraint(InputTypes),
+        and_constraint([
+            at_most_n_constraint(999, no_constraint),
+            input_constraint(InputTypes)
+        ]),
         and_constraint([
             cycle_constraint,
-            length_constraint(999),
             output_constraint(OutputTypes)
         ]),
         Path

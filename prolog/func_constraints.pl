@@ -7,7 +7,8 @@
     substring_constraint/5,
     levenshtein_constraint/6,
     subsequence_constraint/5,
-    regex_constraint/5
+    regex_constraint/5,
+    at_most_n_constraint/5
 ]).
 
 :- use_module(compat).
@@ -152,3 +153,12 @@ and_constraint(
     call(Constraint, Fn, Cost, NewConstraint),
     NextCost is CostIn + Cost,
     and_constraint(Rest, Fn, NextCost, CostOut, NewConstraints).
+
+%% at_most_n_constraint(+N, +Constraint, -Func, -Cost, -NewConstraint)
+% Evaluates at most N+1 times (if base case is reached, )
+at_most_n_constraint(N, Constraint, Func, Cost, at_most_n_constraint(NSub, Constraint)) :-
+    call(Constraint, Func, Cost, _), !,
+    NSub is N - 1,
+    NSub >= 0.
+
+at_most_n_constraint(N, Constraint, _, 0.0, at_most_n_constraint(N, Constraint)) :- N >= 0.

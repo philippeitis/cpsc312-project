@@ -21,6 +21,7 @@ no_constraints_left(and_constraint(Constraints)) :-
     ), !.
 no_constraints_left(no_constraint) :- !.
 no_constraints_left(input_constraint(_)) :- !.
+no_constraints_left(at_most_n_constraint(_, _)) :- !.
 
 %% and_constraint(+Constraints, +Path, +Func)
 % Evaluates all of the provided path-level constraints on the path.
@@ -39,6 +40,8 @@ cycle_constraint(Path, Func) :-
 %% length_constraint(Path, Func, Length:int)
 % Produces true if adding Func to Path will not cause Path's length to
 % exceed Length.
+% O(N^2) when generating paths - prefer at_most_n_constraint with no_constraint
+% for tracking length (which is O(N))
 length_constraint(Length, Path, none) :-
     length(Path, PathLength),
     PathLength =< Length, !.
