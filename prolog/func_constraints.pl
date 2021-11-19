@@ -80,9 +80,6 @@ regex_constraint(Func, Args, Cost, NewConstraint) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
-inputs_to_interp([], []).
-inputs_to_interp([Input|Inputs], [(_, Input)|Rest]) :-
-    inputs_to_interp(Inputs, Rest).
 
 %% Specialize the function if necessary, and fail so that
 % we only visit this function once.
