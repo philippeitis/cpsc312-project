@@ -178,12 +178,13 @@ test('storage roundtrip succeeds', [nondet]) :-
 :- begin_tests('search').
 :- use_module(search).
 
-test('specialization of add is not skipped') :-
+test('dfs works') :-
     aggregate_all(
         count,
         func_path_no_cycles(dfs, ["int"], ["int"], _Path),
         64
     ).
+
 test('bfs works') :-
     aggregate_all(
         count,
@@ -217,48 +218,39 @@ test('No paths for types which do not exist', [fail]) :-
 % at any point, and we simply check that there are no constraints left
 % when the path is complete. However, input constraints will fail if
 % the input does not match, as this would allow an invalid path.
-test('func_constraints no constraints succeeds with score of 0.0') :-
+test('and_constraint no constraints succeeds with score of 0.0') :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [], 0.0, []).
-test('func constraints substring constraint', [nondet]) :-
+    and_constraint([], Uuid, 0.0, and_constraint([])).
+test('substring constraint succeeds', [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(substring_constraint, ("parse", name))], 0.0, _).
-test('func constraints substring constraint fail') :-
+    substring_constraint("parse", name, Uuid, 0.0, no_constraint).
+test('substring constraint fails') :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(substring_constraint, ("dsdsfdwa", name))], 1.0, _).
+    substring_constraint("dsdsfdwa", name, Uuid, 1.0, _).
 test('func constraints subsequence constraint', [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(subsequence_constraint, ("pre", name))], 0.0, _).
-test('func constraints subsequence constraint fail') :-
+    subsequence_constraint("pre", name, Uuid, 0.0, no_constraint).
+test('and constraints subsequence constraint fail') :-
     function:fname(Uuid, "parseInt"),
-    func_constraints(Uuid, [(subsequence_constraint, ("tspkn", name))], 1.0, _).
+    subsequence_constraint("tspkn", name, Uuid, 1.0, _).
 test('func constraints input constraint', [nondet]) :-
     function:fname(Uuid, "increment"),
-    input_constraint(Uuid, ["int"], 0.0, (input_constraint, ["int"])).
+    input_constraint(["int"], Uuid, 0.0, input_constraint(["int"])).
 test('func constraints input constraint fails when input does not match', [fail]) :-
     function:fname(Uuid, "increment"),
-    input_constraint(Uuid, ["str"], 1.0, _).
-test(
-    'func constraints regex constraint',
-    [
-        nondet,
-        condition(can_use_regex)
-    ]
-    ) :-
-    function:fname(Uuid, "decrement"),
-    func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 0.0, _).
+    input_constraint(["str"], Uuid, 1.0, _).
 test(
     'func constraints regex constraint',
     [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint(Uuid, ("de.*", name), 0.0, (no_constraint, _)).
+    regex_constraint("de.*", name, Uuid, 0.0, no_constraint).
 test(
     'func constraints regex constraint fail',
     [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint(Uuid, ("d.*A", name), 1.0, _).
+    regex_constraint("d.*A", name, Uuid, 1.0, _).
 
 :- end_tests('func_constraints').
 
@@ -267,20 +259,20 @@ test(
 :- begin_tests('path_constraints').
 :- use_module(path_constraints).
 test('cycle_constraint does not allow cycles', [fail]) :-
-    cycle_constraint([a, b, c, d], d, _).
+    cycle_constraint([a, b, c, d], d).
 test('cycle_constraint allows none') :-
-    cycle_constraint([a, b, c, d], none, _).
+    cycle_constraint([a, b, c, d], none).
 test('cycle_constraint allows non-cycle') :-
-    cycle_constraint([a, b, c, d], e, _).
+    cycle_constraint([a, b, c, d], e).
 
 test('length_constraint fails on overly long path', [fail]) :-
-    length_constraint([a, b, c], d, 3).
+    length_constraint(3, [a, b, c], d).
 test('length_constraint is fine when path is short') :-
-    length_constraint([a, b, c], d, 4).
+    length_constraint(4, [a, b, c], d).
 
 test('length_constraint does not allow excessively long path at end', [fail]) :-
-    length_constraint([a, b, c, d], none, 3).
+    length_constraint(3, [a, b, c, d], none).
 test('length_constraint is fine testing end') :-
-    length_constraint([a, b, c], none, 3).
+    length_constraint(3, [a, b, c], none).
 
 :- end_tests('path_constraints').
