@@ -18,7 +18,8 @@ list_subset([First|Rest], B) :-
     member(First, B),
     list_subset(Rest, B), !.
 
-%% Joins the string with the provided separator string
+%% join(+Items, +Sep, -Output)
+% Joins the string with the provided separator string
 join([], _Sep, "") :- !.
 join([Item], _Sep, Item) :- !.
 join([Head|Tail], Sep, Output) :-
@@ -26,7 +27,7 @@ join([Head|Tail], Sep, Output) :-
     string_concat(Head, Sep, HeadSep),
     string_concat(HeadSep, TailOutput, Output), !.
 
-%% sequence_match/2(Sequence, String)
+%% sequence_match/2(+Sequence, +String)
 % sequence_match is true if the all elements in Sequence appear in
 % String, in sequential order.
 sequence_match(Sequence, String) :-
@@ -43,7 +44,7 @@ sequence_match([Head|Tail], [Head|Tail1]) :-
 sequence_match(Sequence, [_|Tail1]) :-
     sequence_match(Sequence, Tail1).
 
-%% split_left/4(String, Sep, N, Substrings)
+%% split_left/4(String, Sep, N, -Substrings)
 % split_left splits the provided string on the characters in Sep,
 % up to a maximum of N times into Substrings. Multiple seperator characters
 % will be treated as one.
@@ -79,7 +80,7 @@ split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
 split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
     split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
 
-%% levenshtein_distance(A, B, Distance)
+%% levenshtein_distance(A, B, -Distance)
 % Returns the Levenshtein distance between A and B
 % https://en.wikipedia.org/wiki/Levenshtein_distance
 levenshtein_distance(A, B, Distance) :-

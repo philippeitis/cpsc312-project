@@ -51,6 +51,7 @@ find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
     json_write_dict(current_output, _{msg:Msg}), !.
+
 %% Helper for correctly constraining lists.
 nonempty_list([], true, []) :- !.
 nonempty_list([], false, _) :- !.

@@ -66,7 +66,8 @@ jsonify_funcs([Func|Funcs], [JFunc|JFuncs]) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% JSON persistence
-%% Writes knowledge-base into the stream in JSON format.
+%% write_json_metadata(+Stream)
+% Writes knowledge-base into the stream in JSON format.
 write_json_metadata(Stream) :-
     findall(Func, (
         get_function(Func),
@@ -77,6 +78,7 @@ write_json_metadata(Stream) :-
     findall(Trait, get_trait(Trait), Traits),
     write_json_metadata(Stream, Functions, Types, Traits).
 
+%% write_json_metadata(+Stream, +Functions, +Types, +Traits)
 %% Writes the provided functions into the stream in JSON format.
 write_json_metadata(Stream, Functions, Types, Traits) :-
     jsonify_funcs(Functions, JsonFuncs),
@@ -99,7 +101,4 @@ read_json_metadata(Stream) :-
     }),
     jsonify_funcs(Funcs, JsonFuncs),
     jsonify_list_of_types(Types, JsonTypes),
-    jsonify_list_of_traits(Traits, JsonTraits),
-    foreach(member(Func, Funcs), assertz(Func)),
-    foreach(member(Type, Types), assertz(Type)),
-    foreach(member(Trait, Traits), assertz(Trait)).
+    jsonify_list_of_traits(Traits, JsonTraits).
