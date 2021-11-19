@@ -89,6 +89,11 @@ test('parse signature generics is subst') :-
         "f<X: T + Q> :: [X] -> [X]", "f",
         [generic("X", ["T", "Q"])], [gen("X")], [gen("X")], "").
 
+test('parse signature generics is subst for nested type') :-
+    parse_signature(
+        "f<X: T + Q> :: [List<X>] -> [X]", "f",
+        [generic("X", ["T", "Q"])], [type("List", [gen("X")], _)], [gen("X")], "").
+    
 test('parse one impl') :-
     parse_type("type str: Add", type("str", [], ["Add"])).
 test('parse two impls') :-

@@ -16,7 +16,7 @@ subst_generics_into(
     type(TName, TypeUGenerics, TBounds),
     type(TName, TypeGenerics, TBounds)
 ) :-
-    subst_generic_into(Generics, TypeUGenerics, TypeGenerics), !.
+    subst_generics_into(Generics, TypeUGenerics, TypeGenerics), !.
 subst_generics_into(Generics, Name, gen(Name)) :-
     member(generic(Name, _), Generics), !.
 subst_generics_into(_, _, _) :- !.
