@@ -43,8 +43,8 @@ func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
     add_field_constraint(docs, Docs, DocCmp, C0, C1),
     find_funcs(
         and_constraint([
-            input_constraint(Inputs)
-            |[output_constraint(Outputs)|C1]
+            input_constraint(Inputs),
+            output_constraint(Outputs)|C1
         ]),
         Funcs
     ).
