@@ -130,30 +130,21 @@ test_interp((Name, Type), generic(Name, GImpls)) :-
     type_is_compat_with_generic(Type, generic(Name, GImpls)).
 test_interp((Name, unbound), generic(Name, _)).
 
-test_interp_against_all([], []).
-test_interp_against_all([Interp|RestInterp], [Generic|Rest]) :-
-    test_interp(Interp, Generic),
-    test_interp_against_all(RestInterp, Rest).
-
 %% fn_interp_valid(Func, Interp:list)
 % Unifies Interp with an interpration of Func's generics which satisfy all
 % type constraints.
 fn_interp_valid(Func, Interp) :-
     generics(Func, Generics),
-    test_interp_against_all(Interp, Generics),
+    maplist(test_interp, Interp, Generics),
     sort(Interp, Interp).
 
 %% subst(Interp, GenericTypes, ConcreteTypes)
 % Produces true if ConcreteTypes is equivalent to GenericTypes with the given interpretation
-subst(_, [], []).
-subst(Interp, [gen(Name)|GenRest], [ConcreteType|Rest]) :-
-    member((Name, ConcreteType), Interp),
-    subst(Interp, GenRest, Rest), !.
-subst(Interp, [type(Name, SubTypes, Bounds)|GenRest], [type(Name, ConcreteTypes, Bounds)|Rest]) :-
-    subst(Interp, SubTypes, ConcreteTypes),
-    subst(Interp, GenRest, Rest), !.
-subst(Interp, [ConcreteType|GenRest], [ConcreteType|Rest]) :-
-    subst(Interp, GenRest, Rest), !.
+subst(Interp, gen(Name), ConcreteType) :-
+    member((Name, ConcreteType), Interp), !.
+subst(Interp, type(Name, SubTypes, Bounds), type(Name, ConcreteTypes, Bounds)) :-
+    maplist(subst(Interp), SubTypes, ConcreteTypes), !.
+subst(_, ConcreteType, ConcreteType) :- !.
 
 %% specialize(Func, Interp, Uuid)
 % Specializes Func with the given interpretation of the generics, and adds
@@ -163,8 +154,8 @@ specialize(Func, Interp, Uuid) :-
     function(Func, Name, Generics, Inputs, Outputs, Docs),
     \+(Generics=[]),
     fn_interp_valid(Func, Interp),
-    subst(Interp, Inputs, SpecInputs),
-    subst(Interp, Outputs, SpecOutputs),
+    maplist(subst(Interp), Inputs, SpecInputs),
+    maplist(subst(Interp), Outputs, SpecOutputs),
     \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
     uuid(Uuid),
     assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)),
