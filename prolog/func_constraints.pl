@@ -13,9 +13,6 @@
 :- use_module(compat).
 :- use_module(function).
 :- use_module(sequence_ops).
-:- if(prolog_version_eight).
-:- use_module(library(pcre)).
-:- endif.
 
 %% Function Constraint Common API
 % Func, Args, Cost, NewConstraint
@@ -63,7 +60,7 @@ seq_core(Func, (Sequence, Field), 0.0) :-
 subsequence_constraint(Func, Args, Cost, NewConstraint) :-
     wrap_core(seq_core, Func, Args, Cost, NewConstraint).
 
-:- if(prolog_version_eight).
+:- if(can_use_regex).
 regex_core(Func, (Regex, Field), 0.0) :-
     get_field(Func, Field, String),
     re_match(Regex, String).
@@ -128,7 +125,7 @@ field_constraint(Field, String, Substr, (substring_constraint, (String, Field)))
     match_substr(Substr), !.
 field_constraint(Field, String, Subseq, (subsequence_constraint, (String, Field))) :-
     match_subseq(Subseq), !.
-:- if(prolog_version_eight).
+:- if(can_use_regex).
 field_constraint(Field, String, Re, (regex_constraint, (String, Field))) :-
     match_re(Re), !.
 :- endif.
