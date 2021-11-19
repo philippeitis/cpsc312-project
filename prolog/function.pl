@@ -11,9 +11,10 @@
     specialize/3,
     specialized/2,
     get_field/3,
-    update_type_trait_impl/2,
     clear_kb/0,
     add_function/6,
+    update_type/3,
+    update_trait/2,
     get_function/2
 ]).
 
@@ -43,23 +44,47 @@ clear_kb :-
     retractall(trait(_, _)).
 
 %% Update or add new types and functions
-update_type_trait_impl(Name, NewImpls) :-
-    type(Name, Bounds, OldImpls),
+update_type(Name, NewGenerics, NewImpls) :-
+    type(Name, OldGenerics, OldImpls),
     append(OldImpls, NewImpls, AllImpls),
+    append(OldGenerics, NewGenerics, AllGenerics),
     % TODO: Add all newly implied impls
     sort(AllImpls, ReducedImpls),
+    sort(AllGenerics, ReducedGenerics),
     retract(type(Name, _, _)),
-    assertz(type(Name, Bounds, ReducedImpls)), !.
+    assertz(type(Name, ReducedGenerics, ReducedImpls)), !.
 
-update_type_trait_impl(Name, NewImpls) :-
+update_type(Name, NewGenerics, NewImpls) :-
     sort(NewImpls, Impls),
-    assertz(type(Name, [], Impls)).
+    sort(NewGenerics, Generics),
+    assertz(type(Name, Generics, Impls)).
 
-try_add_type(Type, Implements) :-
-    update_type_trait_impl(Type, Implements).
+update_trait(Name, NewBounds) :-
+    trait(Name, OldBounds),
+    append(OldBounds, NewBounds, Bounds),
+    % TODO: Add all newly implied impls
+    sort(Bounds, ReducedBounds),
+    retract(trait(Name, _)),
+    assertz(trait(Name, ReducedBounds)), !.
+
+update_trait(Name, NewBounds) :-
+    sort(NewBounds, Bounds),
+    assertz(trait(Name, Bounds)), !.
+
+add_fn_generic_traits([]) :- !.
+add_fn_generic_traits([generic(_, Bounds)|Rest]) :-
+    is_list(Bounds),
+    foreach(
+        member(Bound, Bounds),
+        update_trait(Bound, [])
+    ),
+    add_fn_generic_traits(Rest), !.
+add_fn_generic_traits([_|Rest]) :-
+    add_fn_generic_traits(Rest), !.
 
 add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
     uuid(Uuid),
+    add_fn_generic_traits(Generics),
     assertz(function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)).
 
 get_function(Uuid, function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)) :-

@@ -84,10 +84,15 @@ test('parse signature succeeds no docs') :-
 test('parse signature generics') :-
     parse_signature("f<X: T + Q> :: [x] -> [y]", "f", [generic("X", ["T", "Q"])], ["x"], ["y"], "").
 
+test('parse signature generics is subst') :-
+    parse_signature(
+        "f<X: T + Q> :: [X] -> [X]", "f",
+        [generic("X", ["T", "Q"])], [gen("X")], [gen("X")], "").
+
 test('parse one impl') :-
-    parse_impls("str impls Add", "str", ["Add"]).
+    parse_type("type str: Add", type("str", [], ["Add"])).
 test('parse two impls') :-
-    parse_impls("str impls Add + Sub", "str", ["Add", "Sub"]).
+    parse_type("type str: Add + Sub", type("str", [], ["Add", "Sub"])).
 
 
 test('parse trait bounds') :-

@@ -144,14 +144,15 @@ execute_command(String) :-
 
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
-    parse_impls(Rest, Type, Impls),
-    update_type_trait_impl(Type, Impls),
-    format("Adding impls for ~w: ~w", [Type, Impls]), nl, !.
+    parse_type(Rest, type(Name, Generics, Bounds)),
+    update_type(Name, Generics, Bounds),
+    format("Added type ~w<~w>: ~w~n", [Name, Generics, Bounds]), nl, !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
-    parse_trait(Rest, Trait),
-    format("User tried to define trait: ~w", [Trait]), nl, !.
+    parse_trait(Rest, trait(Name, Bounds)),
+    update_trait(Name, Bounds),
+    format("Added trait ~w: ~w~n", [Name, Bounds]), nl, !.
 
 execute_command("clear") :-
     clear_kb,

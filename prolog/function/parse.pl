@@ -3,12 +3,27 @@
     parse_types/3,
     parse_types/4,
     parse_trait/2,
-    parse_impls/3,
+    parse_type/2,
     format_func/2,
     format_skeleton/6
 ]).
 :- use_module(function).
 :- use_module(library(dcg/basics)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subst_generics_into(
+    Generics,
+    type(TName, TypeUGenerics, TBounds),
+    type(TName, TypeGenerics, TBounds)
+) :-
+    subst_generic_into(Generics, TypeUGenerics, TypeGenerics), !.
+subst_generics_into(Generics, Name, gen(Name)) :-
+    member(generic(Name, _), Generics), !.
+subst_generics_into(_, _, _) :- !.
+
+subst_generics([], Types, Types) :- !.
+subst_generics(Generics, UTypes, Types) :-
+    maplist(subst_generics_into(Generics), UTypes, Types), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DCG Helpers
@@ -24,7 +39,7 @@ wh -->  "".
 %% Parsing text representation of functions
 
 %% DCG: Parse a single type
-% List<X + Y + Z>
+% List<X, Y, Z>
 single_type(type(Name, Generics, _)) -->
     ez_str(Name),
     wh, "<", wh, 
@@ -39,6 +54,20 @@ list_of_types([Type|Rem]) -->
 list_of_types([Type]) --> single_type(Type).
 list_of_types([]) --> [].
 
+%% DCG: Parse a single type declaration
+% List<X: ..., Y, Z> :
+type_decl(type(Name, Generics, Decl)) -->
+    "type", wh,
+    ez_str(Name),
+    wh,
+    list_of_gen(Generics),
+    wh, ":", wh,
+    parse_bounds(Decl).
+type_decl(type(Name, Generics, [])) -->
+    "type", wh,
+    ez_str(Name), wh,
+    list_of_gen(Generics).
+
 % Parse a generic in a function signature:
 % X: Add + Sub
 single_gen(generic(Name, Bounds)) -->
@@ -46,10 +75,13 @@ single_gen(generic(Name, Bounds)) -->
 single_gen(generic(Name, [])) --> ez_str(Name).
 
 %% DCG: Parse a list of generics
-list_of_gen([Gen|Rem]) -->
-    single_gen(Gen), wh, ",", wh, list_of_gen(Rem).
-list_of_gen([Gen]) --> single_gen(Gen).
-list_of_gen([]) --> [].
+list_of_gen_([Gen|Rem]) -->
+    single_gen(Gen), wh, ",", wh, list_of_gen_(Rem).
+list_of_gen_([Gen]) --> single_gen(Gen).
+list_of_gen_([]) --> [].
+
+list_of_gen(Gen) --> "<", wh, list_of_gen_(Gen), wh, ">".
+list_of_gen([]) --> "".
 
 %% List of bounds: X + Y + Z
 parse_bounds([First|Rest]) -->
@@ -72,7 +104,7 @@ parse_type_sig(Inputs, Outputs) -->
 
 %% DCG: Parse a function signature.
 parse_sig(Name, Generics, Inputs, Outputs, Docs) -->
-    ez_str(Name), wh, "<", list_of_gen(Generics), wh, ">",
+    ez_str(Name), wh, list_of_gen(Generics),
     wh, "::", wh,
     parse_type_sig(Inputs, Outputs),
     optional_doc(Docs).
@@ -101,10 +133,16 @@ parse_trait(String, Trait) :-
     string_codes(String, Codes),
     phrase(parse_trait_(Trait), Codes), !.
 
+parse_type(String, Type) :-
+    string_codes(String, Codes),
+    phrase(type_decl(Type), Codes), !.
+
 %% Parse a function signature in roughly Haskell format
 parse_signature(String, Name, Generics, Inputs, Outputs, Docs) :-
     string_codes(String, Codes),
-    phrase(parse_sig(Name, Generics, Inputs, Outputs, Docs), Codes), !.
+    phrase(parse_sig(Name, Generics, UInputs, UOutputs, Docs), Codes),
+    subst_generics(Generics, UInputs, Inputs),
+    subst_generics(Generics, UOutputs, Outputs), !.
 
 %% Formats the function with the given name
 format_func(String, Uuid) :-
@@ -116,7 +154,3 @@ format_skeleton(String, Name, [], Inputs, Outputs, Docs) :-
     format(string(String), '~w :: ~w -> ~w | ~w', [Name, Inputs, Outputs, Docs]).
 format_skeleton(String, Name, Generics, Inputs, Outputs, Docs) :-
     format(string(String), '~w<~w> :: ~w -> ~w | ~w', [Name, Generics, Inputs, Outputs, Docs]).
-
-parse_impls(String, Type, Impls) :-
-    string_codes(String, Codes),
-    phrase((ez_str(Type), wh, "impls", wh, parse_bounds(Impls)), Codes), !.
