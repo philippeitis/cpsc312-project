@@ -270,20 +270,12 @@ main(['--help', CommandAtom]) :-
     atom_string(CommandAtom, Command),
     assist(Command), !.
 main(['--quit'|Command]) :-
-    findall(String, (
-        member(Atom, Command),
-        atom_string(Atom, String)
-    ), Args),
+    maplist(atom_string, Command, Args),
     join(Args, " ", CommandStr),
     execute_command(CommandStr), !.
-main([CommandAtom|AtomArgs]) :-
-    atom_string(CommandAtom, Command),
-    findall(String, (
-        member(Atom, AtomArgs),
-        atom_string(Atom, String)
-    ), Args),
-    join([Command|Args], " ", CommandStr),
+main([Command|AtomArgs]) :-
+    maplist(atom_string, [Command|AtomArgs], Args),
+    join(Args, " ", CommandStr),
     execute_command(CommandStr),
     input_loop(), !.
-
-main(_Argv) :- input_loop().
+main([]) :- input_loop().

@@ -13,6 +13,10 @@
 :- meta_predicate find_funcs(3, ?).
 :- meta_predicate func_path_init(+, 3, 2, ?).
 
+%% TODO: Type and trait search as well
+%% -> eg. what types have this documentation or implement these traits
+%% TODO: Allow not specifying input / output types (eg. what functions take this / return this)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function level search
 
@@ -22,20 +26,16 @@ find_fn(Constraint, Fn, Score) :-
     call(Constraint, Fn, Score, NewConstraint),
     no_constraints_left(NewConstraint).
 
-%% TODO: Type and trait search as well
-%% -> eg. what types have this documentation or implement these traits
-%% TODO: Allow not specifying input / output types (eg. what functions take this / return this)
-
+second((_, B), B).
 %% Finds all functions satisfying the constraints, and orders them from
 % highest score to lowest.
 find_funcs(Constraint, Fns) :-
-    findall(
+    setof(
         (Score, Fn),
         find_fn(Constraint, Fn, Score),
-        FnsUnsorted
+        FnPairs
     ),
-    sort(FnsUnsorted, FnPairs),
-    findall(Fn, member((_Score, Fn), FnPairs), Fns).
+    maplist(second, FnPairs, Fns).
 
 %% Finds all functions with the constraints.
 func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
