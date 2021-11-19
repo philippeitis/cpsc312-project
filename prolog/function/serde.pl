@@ -32,20 +32,18 @@ jsonify_type(type(Type, SubTypes, _), _{root:Type, generics:JTypes}) :-
     jsonify_list_of_types(SubTypes, JTypes).
 jsonify_type(unbound, _{unbound:true}).
 
+jsonify_trait(trait(Name, Bounds), _{name:Name, bounds:Bounds}).
+
 %% List helpers
-jsonify_list_of_generics([], []).
-jsonify_list_of_generics([Generic|Generics], [JGeneric, JGenerics]) :-
-    jsonify_generic(Generic, JGeneric),
-    jsonify_list_of_generics(Generics, JGenerics).
+jsonify_list_of_generics(Generics, JGenerics) :-
+    maplist(jsonify_generic, Generics, JGenerics).
 
-jsonify_list_of_types([], []).
-jsonify_list_of_types([Type|Types], [JType|JTypes]) :-
-    jsonify_type(Type, JType),
-    jsonify_list_of_types(Types, JTypes).
+jsonify_list_of_types(Types, JTypes) :-
+    maplist(jsonify_type, Types, JTypes).
 
-jsonify_list_of_traits([], []).
-jsonify_list_of_traits([trait(Name, Bounds)|Types], [_{name:Name, bounds:Bounds}|JTypes]) :-
-    jsonify_list_of_types(Types, JTypes).
+
+jsonify_list_of_traits(Traits, JTraits) :-
+    maplist(jsonify_trait, Traits, JTraits).
 
 jsonify_func(
     function(Uuid, Name, Generics, Inputs, Outputs, Docs),

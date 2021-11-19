@@ -124,6 +124,15 @@ test('json roundtrip succeeds', [nondet]) :-
     assertion(aggregate_all(count, function:trait(_, _), 1)),
     assertion(aggregate_all(count, function:function(_, _, _, _, _, _), 9)).
 
+test('jsonify list of traits empty') :-
+    serde:jsonify_list_of_traits([], []).
+
+test('jsonify list of traits two items') :-
+    serde:jsonify_list_of_traits(
+        [trait("Add", []), trait("Sub", [])],
+        [_{name:"Add", bounds:[]}, _{name:"Sub", bounds:[]}]
+    ).
+
 :- end_tests('function/serde').
 
 :- begin_tests('search').
