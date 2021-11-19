@@ -202,20 +202,20 @@ test(
     'func constraints regex constraint',
     [
         nondet,
-        condition(prolog_version_eight)
+        condition(can_use_regex)
     ]
     ) :-
     function:fname(Uuid, "decrement"),
     func_constraints(Uuid, [(regex_constraint, ("decrement", name))], 0.0, _).
 test(
     'func constraints regex constraint',
-    [condition(prolog_version_eight)]
+    [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("de.*", name), 0.0, (no_constraint, _)).
 test(
     'func constraints regex constraint fail',
-    [condition(prolog_version_eight)]
+    [condition(can_use_regex)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(Uuid, ("d.*A", name), 1.0, _).
