@@ -1,7 +1,7 @@
 :- initialization(main, main).
 :- use_module(function).
 :- use_module(function/parse).
-:- use_module(function/serde).
+:- use_module(storage).
 
 :- use_module(compat).
 :- use_module(sequence_ops).
@@ -155,7 +155,7 @@ execute_command(String) :-
     format("Added trait ~w: ~w~n", [Name, Bounds]), nl, !.
 
 execute_command("clear") :-
-    clear_kb,
+    clear_knowledge_base,
     write("Database has been erased."), nl, !.
 
 execute_command(String) :-
@@ -211,13 +211,13 @@ execute_command(String) :-
 execute_command(String) :-
     split_left(String, " ", 1, ["store", Path]),
     open(Path, write, Stream),
-    write_json_metadata(Stream),
+    store_knowledge_base(Stream),
     close(Stream), !.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["load", Path]),
     open(Path, read, Stream),
-    read_json_metadata(Stream),
+    load_knowledge_base(Stream),
     close(Stream), !.
 
 execute_command("quit") :- halt(0).

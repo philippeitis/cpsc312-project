@@ -11,7 +11,6 @@
     specialize/3,
     specialized/2,
     get_field/3,
-    clear_kb/0,
     add_function/6,
     update_type/3,
     update_trait/2,
@@ -37,11 +36,6 @@ inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
 generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
 outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
 docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
-
-clear_kb :-
-    retractall(function(_, _, _, _, _, _)),
-    retractall(type(_, _, _)),
-    retractall(trait(_, _)).
 
 %% Update or add new types and functions
 update_type(Name, NewGenerics, NewImpls) :-

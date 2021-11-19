@@ -110,40 +110,70 @@ test('parse trait no bounds') :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('function/serde').
+:- use_module(storage).
 :- use_module(function/serde).
+
+test('jsonify list of traits empty') :-
+    serde:jsonify_traits([], []).
+
+test('jsonify list of traits two items') :-
+    serde:jsonify_traits(
+        [trait("Add", []), trait("Sub", [])],
+        [_{name:"Add", bounds:[]}, _{name:"Sub", bounds:[]}]
+    ).
+
+test('jsonify type roundtrip suceeds') :-
+    find_all_types(Types),
+    serde:jsonify_types(Types, JTypes),
+    serde:jsonify_types(NewTypes, JTypes),
+    assertion(Types=NewTypes).
+
+test('jsonify trait roundtrip suceeds') :-
+    find_all_traits(Traits),
+    serde:jsonify_traits(Traits, JTraits),
+    serde:jsonify_traits(NewTraits, JTraits),
+    assertion(Traits=NewTraits).
+
+test('jsonify type roundtrip suceeds') :-
+    find_all_functions(Functions),
+    serde:jsonify_funcs(Functions, JFunctions),
+    serde:jsonify_funcs(NewFunctions, JFunctions),
+    assertion(Functions=NewFunctions).
+
+:- end_tests('function/serde').
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+:- begin_tests('storage').
+:- use_module(storage).
 :- use_module(library(http/json)).
 
-test('json roundtrip succeeds', [nondet]) :-
+test('find_all_functions correct length') :-
+    find_all_functions(Functions),
+    length(Functions, 9).
+
+test('find_all_types correct length') :-
+    find_all_types(Types),
+    length(Types, 4).
+
+test('find_all_traits correct length') :-
+    find_all_traits(Traits),
+    length(Traits, 1).
+
+test('storage roundtrip succeeds', [nondet]) :-
     with_output_to(string(String0), (
         current_output(Stream0),
-        write_json_metadata(Stream0)
+        store_knowledge_base(Stream0)
     )),
-    function:clear_kb,
+    storage:clear_knowledge_base,
     open_string(String0, Stream1),
-    read_json_metadata(Stream1),
-    with_output_to(string(String1), (
-        current_output(Stream2),
-        write_json_metadata(Stream2)
-    )),
-    open_string(String0, Stream3),
-    open_string(String1, Stream4),
-    json_read_dict(Stream3, JsonMetadata),
-    json_read_dict(Stream4, JsonMetadata),
+    load_knowledge_base(Stream1),
     % Should only have 4 types, 1 trait, and 8 functions
     assertion(aggregate_all(count, function:type(_, _, _), 4)),
     assertion(aggregate_all(count, function:trait(_, _), 1)),
     assertion(aggregate_all(count, function:function(_, _, _, _, _, _), 9)).
 
-test('jsonify list of traits empty') :-
-    serde:jsonify_list_of_traits([], []).
-
-test('jsonify list of traits two items') :-
-    serde:jsonify_list_of_traits(
-        [trait("Add", []), trait("Sub", [])],
-        [_{name:"Add", bounds:[]}, _{name:"Sub", bounds:[]}]
-    ).
-
-:- end_tests('function/serde').
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('search').
 :- use_module(search).
