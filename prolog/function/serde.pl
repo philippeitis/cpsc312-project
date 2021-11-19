@@ -59,10 +59,8 @@ jsonify_func(
     jsonify_list_of_types(Inputs, JInputs),
     jsonify_list_of_types(Outputs, JOutputs).
 
-jsonify_funcs([], []).
-jsonify_funcs([Func|Funcs], [JFunc|JFuncs]) :-
-    jsonify_func(Func, JFunc),
-    jsonify_funcs(Funcs, JFuncs).
+jsonify_funcs(Funcs, JFuncs) :-
+    maplist(jsonify_func, Funcs, JFuncs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% JSON persistence
