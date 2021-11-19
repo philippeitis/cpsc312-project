@@ -92,8 +92,15 @@ write_json_metadata(Stream, Functions, Types, Traits) :-
         }
     ).
 
-%% Loads the functions in the stream into the global knowledge base.
+%% read_json_metadata(+Stream, -Funcs, -Types, -Traits)
+% Loads the functions in the stream into the global knowledge base.
 read_json_metadata(Stream) :-
+    read_json_metadata(Stream, Funcs, Types, Traits),
+    foreach(member(Func, Funcs), assertz(Func)),
+    foreach(member(Type, Types), assertz(Type)),
+    foreach(member(Trait, Traits), assertz(Trait)).
+
+read_json_metadata(Stream, Funcs, Types, Traits) :-
     json_read_dict(Stream, _{
         functions:JsonFuncs,
         types:JsonTypes,
