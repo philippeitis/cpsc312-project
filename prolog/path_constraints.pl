@@ -1,8 +1,8 @@
 :- module(path_constraints, [
-    path_constraints/3,
+    and_constraint/3,
     cycle_constraint/2,
     length_constraint/3,
-    path_output_constraint/3,
+    output_constraint/3,
     no_constraints_left/1
 ]).
 :- use_module(func_constraints).
@@ -22,9 +22,9 @@ no_constraints_left(and_constraint(Constraints)) :-
 no_constraints_left(no_constraint) :- !.
 no_constraints_left(input_constraint(_)) :- !.
 
-%% path_constraints(Path, Func, Constraints)
+%% and_constraint(+Constraints, +Path, +Func)
 % Evaluates all of the provided path-level constraints on the path.
-path_constraints(Constraints, Path, Func) :-
+and_constraint(Constraints, Path, Func) :-
     forall(
         member(Constraint, Constraints),
         call(Constraint, Path, Func)
@@ -46,8 +46,8 @@ length_constraint(Length, Path, _) :-
     length(Path, PathLength),
     PathLength < Length, !.
 
-%% path_output_constraint(Path, Func, OutputTypes:list)
+%% output_constraint(?OutputTypes:list, +Path:list, +Func)
 % Produces true if the last function in Path produces OutputTypes.
-path_output_constraint(OutputTypes, [LastFn|_], none) :-
+output_constraint(OutputTypes, [LastFn|_], none) :-
     output_constraint(OutputTypes, LastFn, _, _).
-path_output_constraint(_, _, Value) :- \+(Value=none).
+output_constraint(_, _, Value) :- \+(Value=none).
