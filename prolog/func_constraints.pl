@@ -139,7 +139,7 @@ add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints
 func_constraints(Func, Constraints, CostOut, NewConstraints) :-
     func_constraints(Func, Constraints, 0.0, CostOut, NewConstraints).
 
-func_constraints(_Func, [], Cost, Cost, []) :- !.
+func_constraints(_, [], Cost, Cost, []) :- !.
 
 func_constraints(
     Func,
@@ -148,6 +148,6 @@ func_constraints(
     CostOut,
     [NewConstraint|NewConstraints]
     ) :-
-    call(ConstraintFn, Func, Args, ThisCost, NewConstraint),
-    CostIn2 is CostIn + ThisCost,
-    func_constraints(Func, Rest, CostIn2, CostOut, NewConstraints).
+    call(ConstraintFn, Func, Args, Cost, NewConstraint),
+    NextCost is CostIn + Cost,
+    func_constraints(Func, Rest, NextCost, CostOut, NewConstraints).
