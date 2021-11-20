@@ -38,8 +38,9 @@ wrap_core(Constraint, Field, Func, 1.0, wrapper(Constraint, Field)) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% String comparison methods
-% x_core: Args*, Func, Cost
+% x_core: Args*, Value, Cost
 % x_constraint: Args*, Func, Cost, NewConstraint
+
 equality_core(Target, Target, 0.0).
 equality_constraint(Target, Field, Func, Cost, NewConstraint) :-
     wrap_core(equality_core(Target), Field, Func, Cost, NewConstraint).
