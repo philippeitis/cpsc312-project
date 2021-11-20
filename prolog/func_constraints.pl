@@ -23,51 +23,49 @@
 no_constraint(_, 0.0, no_constraint).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Wrappers for string comparision methods
+%% Wrappers for string comparison methods
 
-wrapper(Constraint, Func, Cost, NewConstraint) :-
-    wrap_core(Constraint, Func, Cost, NewConstraint).
+wrapper(Constraint, Field, Func, Cost, NewConstraint) :-
+    wrap_core(Constraint, Field, Func, Cost, NewConstraint).
 
-wrap_core(Constraint, Func, Cost, no_constraint) :-
-    call(Constraint, Func, Cost), !.
+wrap_core(Constraint, Field, Func, Cost, no_constraint) :-
+    get_field(Func, Field, Value),
+    call(Constraint, Value, Cost), !.
 
-wrap_core(Constraint, Func, 1.0, wrapper(Constraint)) :-
-    \+call(Constraint, Func, _), !.
+wrap_core(Constraint, Field, Func, 1.0, wrapper(Constraint, Field)) :-
+    get_field(Func, Field, Value),
+    \+call(Constraint, Value, _), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% String comparison methods
 % x_core: Args*, Func, Cost
 % x_constraint: Args*, Func, Cost, NewConstraint
-equality_core(Target, Field, Func, 0.0) :-
-    get_field(Func, Field, Target), !.
+equality_core(Target, Target, 0.0).
 equality_constraint(Target, Field, Func, Cost, NewConstraint) :-
-    wrap_core(equality_core(Target, Field), Func, Cost, NewConstraint).
+    wrap_core(equality_core(Target), Field, Func, Cost, NewConstraint).
 
-sub_core(Needle, Field, Func, 0.0) :-
-    get_field(Func, Field, String),
+sub_core(Needle, String, 0.0) :-
     sub_string(String, _, _, _, Needle), !.
 substring_constraint(Needle, Field, Func, Cost, NewConstraint) :-
-    wrap_core(sub_core(Needle, Field), Func, Cost, NewConstraint).
+    wrap_core(sub_core(Needle), Field, Func, Cost, NewConstraint).
 
-lev_core(Target, Field, MaxDistance, Func, Distance) :-
-    get_field(Func, Field, String),
-    levenshtein_distance(Target, String, Distance),
-    Distance =< MaxDistance, !.
+lev_core(Target, MaxDistance, String, Distance) :-
+    levenshtein_distance(Target, String, LevDistance),
+    LevDistance =< MaxDistance,
+    Distance is LevDistance / MaxDistance, !.
 levenshtein_constraint(Target, Field, MaxDistance, Func, Cost, NewConstraint) :-
-    wrap_core(lev_core(Target, Field, MaxDistance), Func, Cost, NewConstraint).
+    wrap_core(lev_core(Target, MaxDistance), Field, Func, Cost, NewConstraint).
 
-seq_core(Sequence, Field, Func, 0.0) :-
-    get_field(Func, Field, String),
+seq_core(Sequence, String, 0.0) :-
     sequence_match(Sequence, String), !.
 subsequence_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
-    wrap_core(seq_core(Sequence, Field), Func, Cost, NewConstraint).
+    wrap_core(seq_core(Sequence), Field, Func, Cost, NewConstraint).
 
 :- if(can_use_regex).
-regex_core(Regex, Field, Func, 0.0) :-
-    get_field(Func, Field, String),
+regex_core(Regex, String, 0.0) :-
     re_match(Regex, String), !.
 :- else.
-regex_core(_, _, _, _) :-
+regex_core(_, _, _) :-
     throw(
         error(
             unsupported_error,
@@ -78,7 +76,7 @@ regex_core(_, _, _, _) :-
     ).
 :- endif.
 regex_constraint(Regex, Field, Func, Cost, NewConstraint) :-
-    wrap_core(regex_core(Regex, Field), Func, Cost, NewConstraint).
+    wrap_core(regex_core(Regex), Field, Func, Cost, NewConstraint).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
@@ -129,6 +127,7 @@ field_constraint(Field, String, Re, func_constraints:regex_constraint(String, Fi
     match_re(Re), !.
 :- endif.
 
+%% add_field_constraint(+Field, +String, +Method, +OldConstraints, -NewConstraints).
 %% none is used to denote constraints which are not provided
 add_field_constraint(_, none, _, Constraints, Constraints) :- !.
 add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
@@ -162,3 +161,6 @@ at_most_n_constraint(N, Constraint, Func, Cost, at_most_n_constraint(NSub, Const
     NSub >= 0.
 
 at_most_n_constraint(N, Constraint, _, 0.0, at_most_n_constraint(N, Constraint)) :- N >= 0.
+
+not_constraint(Constraint, Fn, 0.0, no_constraint) :-
+    \+call(Constraint, Fn, _, _).
