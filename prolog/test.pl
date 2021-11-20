@@ -243,13 +243,13 @@ test("input constraint fails when input does not match", [fail]) :-
     input_constraint(["str"], Uuid, 1.0, _).
 test(
     "regex constraint",
-    [condition(can_use_regex)]
+    [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint("de.*", name, Uuid, 0.0, no_constraint).
 test(
     "regex constraint fail",
-    [condition(can_use_regex)]
+    [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint("d.*A", name, Uuid, 1.0, _).
