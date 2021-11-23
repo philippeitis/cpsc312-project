@@ -135,6 +135,8 @@ add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints
     field_constraint(Field, String, Method, Constraint), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Meta Constraints: These apply operations to other constraints
+
 %% and_constraint(+Constraints, -Func, -CostOut, -NewConstraints)
 % Tests if Func satisfies all constraints, producing a cost for this function,
 % CostOut, and a set of constraints which follow Constraints, NewConstraints.

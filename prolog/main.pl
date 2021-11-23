@@ -23,39 +23,35 @@ pretty_print_path([Func|Tail]) :-
 wh -->  " ", wh.
 wh -->  "".
 
-%% Find the first key/value pair with the corresponding Key,
-% returning Default if no such key/value pair exists.
-get_key_or_default(List, Key, _, Value) :-
-    member((Key, Value), List), !.
-get_key_or_default(List, Key, Default, Default) :-
-    \+member((Key, _), List), !.
-
 %% Parses options in --key=val format.
 parse_options(String, Options) :-
     string_codes(String, Codes),
     phrase((wh, options(Options)), Codes), !.
 
 %% DCG option parsing
-options([(Key, Value)|Rem]) -->
-    single_option(Key, Value), wh, options(Rem).
-options([(Key, Value)]) --> single_option(Key, Value), wh.
-options([]) --> [].
+options(Dict) -->
+    single_option(Key, Value),
+    wh, options(SubDict),
+    { Dict = SubDict.put(Key, Value) }.
+options(Dict) -->
+    single_option(Key, Value), { Dict = _{}.put(Key, Value) }, wh.
+options(_{}) --> [].
 
 single_option(Key, Value) -->
     "--", string(KeyCodes), wh,
-    {string_codes(Key, KeyCodes)},
+    {atom_codes(Key, KeyCodes)},
     "=", wh, "\"", escaped_string(ValueCodes), "\"",
     {string_codes(Value, ValueCodes)}.
 
 single_option(Key, Value) -->
     "--", string(KeyCodes), wh,
-    {string_codes(Key, KeyCodes)},
+    {atom_codes(Key, KeyCodes)},
     "=", wh, string(ValueCodes),
     {string_codes(Value, ValueCodes)}.
 
 single_option(Key, "") -->
     "--", string(KeyCodes),
-    {string_codes(Key, KeyCodes)}.
+    {atom_codes(Key, KeyCodes)}.
 
 %% DCG for escaping quote and backslach for regex strings.
 escaped_char('"') -->
@@ -79,6 +75,7 @@ command("load").
 command("launch").
 :- endif.
 command("quit").
+command("os").
 
 %% Help strings for available commands.
 assist("define") :- 
@@ -162,12 +159,11 @@ execute_command(String) :-
     split_left(String, " ", 1, ["search", Rest]),
     parse_types(Rest, InputTypes, OutputTypes, OptionStr),
     parse_options(OptionStr, Options),
-    get_key_or_default(Options, "name", none, Name),
-    get_key_or_default(Options, "docs", none, Docs),
-    get_key_or_default(Options, "name_cmp", lev, NameCmp),
-    get_key_or_default(Options, "doc_cmp", substr, DocCmp),
-    get_key_or_default(Options, "limit", "5", Count),
-    number_string(N, Count),
+    Name = Options.get(name, none),
+    Docs = Options.get(docs, none),
+    NameCmp = Options.get(name_cmp, lev),
+    DocCmp = Options.get(doc_cmp, substr),
+    number_string(N, Options.get(limit, "5")),
     func_search(Name, InputTypes, OutputTypes, Docs, NameCmp, DocCmp, Funcs),
     findnsols(N, FName, (member(Func, Funcs), fname(Func, FName)), Solns),
     length(Solns, Len),
@@ -178,10 +174,8 @@ execute_command(String) :-
     split_left(String, " ", 1, ["path", Rest]),
     parse_types(Rest, InputTypes, OutputTypes, OptionStr),
     parse_options(OptionStr, Options),
-    get_key_or_default(Options, "limit", "5", Count),
-    number_string(N, Count),
-    get_key_or_default(Options, "strategy", "bestfs", StrategyString),
-    atom_string(Strategy, StrategyString),
+    number_string(N, Options.get(limit, "5")),
+    atom_string(Strategy, Options.get(strategy, "bestfs")),
     findnsols(
         N,
         Path,
