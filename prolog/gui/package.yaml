@@ -7,6 +7,8 @@ dependencies:
 - gi-gtk == 3.0.*
 - Cabal == 3.*
 - haskell-gi-base == 0.25.0
+- req == 3.9.*
+- text == 1.2.*
 # when:
 # - condition: os(linux)
 #   dependencies:
