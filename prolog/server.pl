@@ -15,19 +15,32 @@
 :- use_module(func_constraints).
 :- use_module(search).
 
-%% Initialize server
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Register handlers
 :- http_handler(
     root(func),
-    func(Method),
+    fn_endpoint(Method),
     [method(Method), methods([get, post, delete])]
 ).
 
+:- http_handler(
+    root(type),
+    type_endpoint(Method),
+    [method(Method), methods([get, post, delete])]
+).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Starting and stopping server
 server(Port) :-	http_server(http_dispatch, [port(Port)]).
 shutdown(Port) :- http_stop_server(Port, []).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Hide unconstrained variables.
 render_param(Param, "?") :- var(Param), !.
 render_param(Param, Param) :- !.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Defining, searching, and deleting functions
 
 uuids_to_funcs([], []).
 uuids_to_funcs([Uuid|Uuids], [Func|Funcs]) :-
@@ -89,7 +102,7 @@ parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).
 
-attempt_uuid_deletion(Uuid) :-
+attempt_fn_deletion(Uuid) :-
     uuid(Uuid, Uuid),
     specialized(Parent, Uuid),
     format('Status: 405~n'), % HTTP not allowed
@@ -101,13 +114,13 @@ attempt_uuid_deletion(Uuid) :-
         }
     ), !.
 
-attempt_uuid_deletion(Uuids) :-
+attempt_fn_deletion(Uuids) :-
     atom_string(Uuid, Uuids),
     function:fname(Uuid, _),
     retractall(function(Uuid, _, _, _, _, _)),
     reply_json_dict(_{msg: "Removed", uuid:Uuid}), !.
 
-attempt_uuid_deletion(Uuid) :-
+attempt_fn_deletion(Uuid) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
     json_write_dict(current_output,
@@ -117,27 +130,73 @@ attempt_uuid_deletion(Uuid) :-
         }
     ).
 
-%% REST API
-func(get, Request) :-
+%% Function endpoint
+fn_endpoint(get, Request) :-
     parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
     find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs).
 
-func(post, Request) :-
+fn_endpoint(post, Request) :-
     parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs),
     add_function(Uuid, FuncName, [], Inputs, Outputs, Docs),
     format(string(Msg), "Created func ~w", [FuncName]),
     reply_json_dict(_{msg: Msg, uuid:Uuid}).
 
-%% How to deal with specialized functions being deleted?
-%% -> this doesn't really make sense from the POV of an IDE, since
-%% user would be deleting function or modifying types, and this should appear elsewhere
-%% -> Programming lang POV? Same story. 
-%% When a delete request is received, should be for a specific Uuid, and should ignore
-%% specialized functions (error). 
-%% Lists all functions which are deleted.
-func(delete, Request) :-
+fn_endpoint(delete, Request) :-
     http_parameters(Request, [
         uuid(Uuid, [string])
     ]),
-    attempt_uuid_deletion(Uuid).
+    attempt_fn_deletion(Uuid).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Defining, searching, and deleting types
+
+find_and_fmt_type(Name) :-
+    type(Name, Generics, Impls),
+    jsonify_type(type(Name, Generics, Impls), JsonType),
+    reply_json_dict(_{msg:"Found type", type: JsonType}).
+
+find_and_fmt_type(Name) :-
+    format(string(Msg), "No type with name ~w found.", [Name]),
+    format('Status: 404~n'), % Not found
+    format('Content-type: application/json~n~n'),
+    json_write_dict(current_output, _{msg:Msg}), !.
+
+attempt_type_deletion(Name) :-
+    type(Name, _, _),
+    retractall(type(Name, _, _)),
+    reply_json_dict(_{msg: "Removed type", name:Name}), !.
+
+attempt_type_deletion(Name) :-
+    format('Status: 404~n'), % Not found
+    format('Content-type: application/json~n~n'),
+    json_write_dict(current_output,
+        _{
+            msg:"Name not found",
+            name:Name
+        }
+    ).
+
+%% This should be more interesting (eg. allow using cmp methods here)
+type_endpoint(get, Request) :-
+    http_parameters(Request,
+        [name(Name, [string])]
+    ),
+    find_and_fmt_type(Name).
+
+type_endpoint(post, Request) :-
+    http_read_json(Request, JsonIn, [json_object(dict)]),
+    jsonify_type(type(Name, Generics, Impls), JsonIn),
+    assertz(type(Name, Generics, Impls)),
+    format(string(Msg), "Created type ~w", [Name]),
+    reply_json_dict(_{msg: Msg}), !.
+
+type_endpoint(post, _) :-
+    format('Status: 400~n'), % User error
+    format('Content-type: application/json~n~n'),
+    reply_json_dict(_{msg: "Malformed input"}).
+
+type_endpoint(delete, Request) :-
+    http_parameters(Request,
+        [name(Name, [string])]
+    ),
+    attempt_type_deletion(Name).

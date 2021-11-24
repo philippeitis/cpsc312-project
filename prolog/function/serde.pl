@@ -1,26 +1,26 @@
 :- module(serde, [
     write_json_metadata/4,
     read_json_metadata/4,
-    jsonify_funcs/2
+    jsonify_funcs/2,
+    jsonify_type/2
 ]).
 :- use_module(library(http/json)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Serializing and deserializing functions, types, and traits
-jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
-    is_list(Bounds), !.
+jsonify_generic(generic(Name, Impls), _{name:Name, bounds:Impls}) :-
+    is_list(Impls), !.
 jsonify_generic(generic(Name, _), _{name:Name}).
 
 jsonify_type(Generic, JsonGeneric) :-
     jsonify_generic(Generic, JsonGeneric), !.
 jsonify_type(Type, Type) :- string(Type), !.
-jsonify_type(gen(Type), _{generic:Type}) :- !.
-jsonify_type(type(Type, SubTypes, Bounds), _{root:Type, generics:JTypes, bounds:Bounds}) :-
-    is_list(Bounds),
-    jsonify_types(SubTypes, JTypes), !.
-jsonify_type(type(Type, SubTypes, _), _{root:Type, generics:JTypes}) :-
-    jsonify_types(SubTypes, JTypes), !.
-
+jsonify_type(gen(Name), _{generic:Name}) :- !.
+jsonify_type(type(Name, Generics, Impls), _{root:Name, generics:JGenerics, bounds:Impls}) :-
+    is_list(Impls),
+    jsonify_types(Generics, JGenerics), !.
+jsonify_type(type(Name, Generics, _), _{root:Name, generics:JGenerics}) :-
+    jsonify_types(Generics, JGenerics), !.
 jsonify_trait(trait(Name, Bounds), _{name:Name, bounds:Bounds}).
 
 %% List helpers
