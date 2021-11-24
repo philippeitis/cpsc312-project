@@ -64,3 +64,56 @@ main =  do
   #showAll win
   
   Gtk.main
+
+-- TODOS:
+--  SEARCH/DEFINE/DELETE
+-- 
+--  > function/serde.pl for JSON format
+--  > Use Aeson for JSON files
+--
+--  > server.pl for API + expected responses
+--  > README.md also covers API
+--  > Use Req for HTTP Requests
+-- 
+--  HTTP Endpoint/Method | Purpose
+--  func/POST:    Define functions
+--  func/GET:     Search for functions
+--  func/DELETE:  Delete functions
+--  type/POST:    Define types
+--  type/GET:     Search for types
+--  type/DELETE:  Delete types
+--  trait/POST:   Define traits (eg. typeclasses)
+--  trait/GET:    Search traits
+--  trait/DELETE: Delete traits
+--  > Search should be based on Paths (basically, use
+--  > the same code, but remove some constraints which
+--  > don't make sense)
+--  > Delete takes a UUID (so you search, get uuids, and
+--  > then delete them)
+--  > Define should be done using JSON format in serde.pl
+--  ---------------------------------------------------------
+--  Save data (CTRL+S?)
+--
+--  > Only needs to save file from server
+--  Load file
+--  > Only needs to send file to server
+-- ---------------------------------------------------------
+--  Help information
+--  > look at main.pl for some ideas
+-- ---------------------------------------------------------
+-- Paths
+-- 
+-- > want to be able to add constraints
+-- eg. length (number)
+-- string contraints (eg. regex)
+-- input/output types
+-- AND/OR constraints (eg. all of / one of these are true)
+-- ---------------------------------------------------------
+-- General quality of life / Optional ideas
+-- 
+-- make all commands easy to find and get help for
+-- Make search box which as you type, shows results?
+-- search history? should restore appropriate window
+--
+-- Make sure to start/close server
+-- > maybe allow user to choose their own server?
