@@ -57,7 +57,7 @@ delete_fn(Port, Uuid, Reply) :-
         [json_object(dict)]
     ).
 
-:- begin_tests('end-to-end function test', [condition(prolog_version_eight)]).
+:- begin_tests('function endpoint tests', [condition(prolog_version_eight)]).
 
 test(
     "Trying to delete nonexistent uuid results in 404",
@@ -117,13 +117,13 @@ test(
         delete_fn(Port, Uuid1, _{msg: "Removed", uuid:Uuid1})
     ),
     assertion(
-    delete_fn(Port, Uuid2, _{msg: "Removed", uuid:Uuid2})
+        delete_fn(Port, Uuid2, _{msg: "Removed", uuid:Uuid2})
     ),
     % Check that we did in fact delete parseInt55 - this should be 404
     % If not, we don't throw an exception and read fail.
     catch((get_fn(Port, _), fail), _, true).
 
-:- end_tests('end-to-end function test').
+:- end_tests('function endpoint tests').
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,7 +170,8 @@ delete_type(Port, Name, Reply) :-
         Reply,
         [json_object(dict)]
     ).
-:- begin_tests('end-to-end type test', [condition(prolog_version_eight)]).
+
+:- begin_tests('type endpoint tests', [condition(prolog_version_eight)]).
 
 test(
     "Trying to delete nonexistent type results in 404",
@@ -197,7 +198,7 @@ test(
     }).
 
 test(
-    "Post suceeds",
+    "Post succeeds",
     [
         setup(server(Port)),
         nondet,
@@ -224,4 +225,4 @@ test(
     % If not, we don't throw an exception and read fail.
     catch((get_type(Port, _), fail), _, true).
 
-:- end_tests('end-to-end type test').
+:- end_tests('type endpoint tests').
