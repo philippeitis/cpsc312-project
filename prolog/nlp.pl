@@ -1,7 +1,9 @@
-:- module(nlp, [similarity/3]).
+:- module(nlp, [similarity/3, fuzzy_substr/3]).
 :- use_module(library(http/http_client)).
 
 :- dynamic nlp_streams/2.
+
+:- at_halt(close_tokenizer).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Helper functions for OS detection
@@ -74,12 +76,31 @@ launch_tokenizer(In, Out) :-
     ),
     assertz(nlp_streams(In, Out)), !.
 
+close_tokenizer :-
+    (
+        nlp_streams(In, Out) -> (
+            close(In),
+            close(Out),
+            retractall(nlp_streams(_, _))
+        ); true
+    ).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 similarity(Docs, Needle, Similarity) :-
     launch_tokenizer(In, Out),
     string_length(Docs, LenA),
     string_length(Needle, LenB),
     format(In, "similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
+    flush_output(In),
+    read_line_to_string(Out, "OK"),
+    read_line_to_string(Out, String),
+    number_string(Similarity, String).
+
+fuzzy_substr(Docs, Needle, Similarity) :-
+    launch_tokenizer(In, Out),
+    string_length(Docs, LenA),
+    string_length(Needle, LenB),
+    format(In, "lev_similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),
