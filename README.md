@@ -2,6 +2,7 @@ Our POC is currently functional, but since Prolog 7.6.4 does not include the PCR
 
 # FastFuncs
 
+
 Software development is consistently on the leading edge of occupational innovation and process improvement. Advancements in machine learning and prediction are helping development environments save developers time and effort by anticipating their intentions and offering suggestions. FastFuncs is a tool that allows users to quickly find functions and automate function composition.
 
 This project is in fulfillment of the [CPSC 312 2021W1 project requirements](https://steven-wolfman.github.io/cpsc-312-website/project.html).
@@ -15,7 +16,42 @@ Our team is:
 + Scott Banducci (80557069): Bandersnatch
 + Luis Victoria (78827979): Tor
 
-We call ourselves: Pattern Match This.
+We call ourselves: Functionator.
+
+## Video
+TODO: 
+
+Your key additions will be to include and document your MVP and to include (a link to) a demo video of maximum length 3 minutes 59 seconds that demonstrates the functionality of your MVP.
+
+A link to your video (described above). We expect most people will host on YouTube, Vimeo, or the like, but if you need help deciding where to host the video, let us know (well in advance of the deadline!).
+
+Your video should include:
+
+- A title for your project
+- Your team name (as used for your project submission) and the names of your team members (identified by your preferred names)
+- A demonstration sufficient for us to mark the “Fulfills the proposal” rubric item below. At minimum:
+  - Remind us what you proposed (which will often involve mentioning pieces of functionality as you demonstrate them).
+  - Show us your MVP running and fulfilling that proposal. Use this opportunity to show off what your MVP can do!
+  - Briefly highlight key elements of your code underpinning your functionality. (But have links directly to those places in your code in your README.md file as well, since a video may not be the easiest way to review code!)
+- If you have time, also include what we need to judge the “Application of new learning” rubric item, but that is not required.
+- Optionally: Close with your team’s CPSC 312-related catchphrase visually illustrated in some fantastically cool way. (But that’s seriously optional!)
+
+## Proposal
+TODO: Add link to separate PROPOSAL.md
+
+## MVP Guide
+- How the MVP fulfills your proposal
+- Clear explanation and links into a handful of key elements of the MVP code that successfully illustrate the proposal requirements
+- How to run the MVP
+
+## Guide to New Learning
+A guide to your new learning (which can also be part of your guide to the MVP if you prefer, but make clear that that’s what you’re doing!), including:
+- Highlighting how the new learning is essential for your project/MVP,
+- Direct links into parts of the code where the new learning was employed
+- Explanation of how the project benefits from the application of your new learning.
+
+## RUBRIC:
+https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
 
 ## Product Pitch
 
