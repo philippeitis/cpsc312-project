@@ -8,6 +8,7 @@
     levenshtein_constraint/6,
     subsequence_constraint/5,
     regex_constraint/5,
+    similarity_constraint/5,
     at_most_n_constraint/5
 ]).
 

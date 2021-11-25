@@ -263,6 +263,11 @@ test("at_most_n succeeds if non-zero") :-
 test("at_most_n does not decrement if failure") :-
     at_most_n_constraint(1, [_, _, _]>>(fail), _, _, at_most_n_constraint(1, _)).
 
+test("similarity constraint", [nondet]) :-
+    function:fname(Uuid, "listify"),
+    similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
+    similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
+    
 :- end_tests('func_constraints').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
