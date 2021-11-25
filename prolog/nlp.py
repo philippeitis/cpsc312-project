@@ -48,7 +48,10 @@ def read_sentence(size: int):
 if __name__ == "__main__":
     # REPL
     while True:
-        line = sys.stdin.readline().strip()
+        try:
+            line = sys.stdin.readline().strip()
+        except (BrokenPipeError, IOError):
+            sys.exit()
         components = line.split(" ")
         # similarity len_0 len_1
         if components[0] == "similarity":

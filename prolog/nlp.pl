@@ -70,7 +70,7 @@ launch_tokenizer(In, Out) :-
     process_create(
         Python,
         ['nlp.py'],
-        [stdin(pipe(In)), stdout(pipe(Out)), stderr(std)]
+        [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
     ),
     assertz(nlp_streams(In, Out)), !.
 
