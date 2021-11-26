@@ -1,7 +1,7 @@
 :- module(nlp, [similarity/3, fuzzy_substr/3]).
 :- use_module(library(http/http_client)).
 
-:- dynamic nlp_streams/2.
+:- dynamic streams/3.
 
 :- at_halt(close_tokenizer).
 
@@ -63,10 +63,10 @@ setup_tokenizer :-
     format("Installed spaCy.~n"), !.
 
 launch_tokenizer(In, Out) :-
-    nlp_streams(In, Out), !.
+    streams(tokenizer, In, Out), !.
 
 launch_tokenizer(In, Out) :-
-    \+nlp_streams(_, _),
+    \+streams(tokenizer, _, _),
     setup_tokenizer,
     relative_python_path(Python),
     process_create(
@@ -74,18 +74,17 @@ launch_tokenizer(In, Out) :-
         ['nlp.py'],
         [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
     ),
-    assertz(nlp_streams(In, Out)), !.
+    assertz(streams(tokenizer, In, Out)), !.
 
 close_tokenizer :-
     (
-        nlp_streams(In, Out) -> (
+        streams(tokenizer, In, Out) -> (
             close(In),
             close(Out),
-            retractall(nlp_streams(_, _))
+            retractall(streams(tokenizer, _, _))
         ); true
     ).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 similarity(Docs, Needle, Similarity) :-
     launch_tokenizer(In, Out),
     string_length(Docs, LenA),
@@ -95,12 +94,34 @@ similarity(Docs, Needle, Similarity) :-
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),
     number_string(Similarity, String).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+launch_lev(In, Out) :-
+    streams(levenshtein, In, Out), !.
+
+launch_lev(In, Out) :-
+    \+streams(levenshtein, _, _),
+    process_create(
+        path(stack),
+        ['script.hs'],
+        [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
+    ),
+    assertz(streams(levenshtein, In, Out)), !.
+
+close_lev :-
+    (
+        streams(levenshtein, In, Out) -> (
+            close(In),
+            close(Out),
+            retractall(streams(levenshtein, _, _))
+        ); true
+    ).
 
 fuzzy_substr(Docs, Needle, Similarity) :-
-    launch_tokenizer(In, Out),
+    launch_lev(In, Out),
     string_length(Docs, LenA),
     string_length(Needle, LenB),
-    format(In, "lev_similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
+    format(In, "~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),
