@@ -35,12 +35,33 @@ Your video should include:
 The project proposal is available at [PROPOSAL.md](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/a853728ae242497fe15789b5c17b9471d7db3820/PROPOSAL.md). Some information may be duplicated between this file and PROPOSAL.md.
 
 ## MVP Guide
-- How the MVP fulfills your proposal
-### Links
-Clear explanation and links into a handful of key elements of the MVP code that successfully illustrate the proposal requirements
+Our MVP demonstrates our ability to define and search a knowledge-base of sample functions (such as print()), create a chain or path of functions and use scoring algorithms in conjunction with search algorithms to prioritize the most relevant search results. It also demonstrates the usage of DCGs to parse user input and subsequently define functions and options via the CLI. 
+
+We link the key elements of our MVP below, which demonstrate what our project allows users to do:
+1. Easily define functions (with documentation), types, and traits (eg. Haskell typeclasses), via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/server.pl#L119), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/main.pl#L259). Functions and types support generic arguments, allowing for the definition of complex type system.
+  - This satisfies our goal of allowing users to import their code bases into our program, as they have access to a simple JSON format which can easily be loaded into the knowledge base. Additionally, users could define their own parsers for their language of choice within the program.
+2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/func_constraints.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/search.pl#L21), allowing users to select the best option for a particular task.
+  - Included in this is functionality which uses spaCy, a Python NLP library, to compare user provided text against the names and documentation of relevant items in the codebase to find the most relevant items, satisfying our goal of using natural language processing for searching code bases.
+3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/eb4f5534f5381af9785d64dc02757f2aaf0d2a6f/prolog/search.pl#L116) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/path_constraints.pl), with the same scoring functionality as for individual function searches.
+
+This represents the core functionality our product aims to provide:
+1. a user interface where users can easily define new functions, types, and traits, and perform searches over the knowledge base, using constraints to find the most appropriate functions
+2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort
+3. Sorting search results using interesting scoring algorithms - our composable constraint interface allows users to mix and match constraints as needed, tracking any relevant state, and even adjusting the weights of particular constraints to prioritize certain features in their search.
+4. Processing of natural language descriptions - we provide levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
 
 ### Running MVP
-How to run the MVP
+NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4.
+
+In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
+
+In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests. 
+
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
+
+Please note that using `make prolog-eval` or `make test` will only test the REST API if run on Prolog 8+. For more details, go to [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
+
+### Go into more details about how the MVP works...
 
 ## Guide to New Learning
 A guide to your new learning (which can also be part of your guide to the MVP if you prefer, but make clear that that’s what you’re doing!), including:
