@@ -13,6 +13,8 @@
 :- table(fuzzy_substr/3).
 :- endif.
 
+:- meta_predicate run_levenshtein(+, +, 2, -).
+
 %% list_subset(?List1, ?List2)
 % Returns true if List1 is a subset of List2.
 list_subset([], _).
