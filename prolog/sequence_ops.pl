@@ -84,7 +84,11 @@ split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Development notes:
-% Haskell impl is ~3x faster (but requires much larger Dockerfile, so balances out)
+% Haskell impl is ~3x faster
+% BUT: 
+% - +1.2GB of disk usage in Docker
+% - Requires reading/writing to streams (annoying)
+% - Requires compilation and extra steps in Makefiles
 lev_cost(C, C, 0.0) :- !.
 lev_cost(A, B, 0.4) :- downcase_atom(A, C), downcase_atom(B, C), !.
 lev_cost(_, _, 1.0) :- !.
@@ -101,7 +105,8 @@ fill_row(PrevRow, Row, Ca, [Cb|StrB], Out) :-
     fill_row([Delete|PRest], [MinC,Insert|Rest], Ca, StrB, Out).
 
 %% Rearranges arguments as needed for initial fill_row call.
-fill_row_helper(StrA, Num, Char, [Head|Tail], [HRow, Head|Tail]) :-
+% can do [Head|Tail], [HRow, Head|Tail] for backtracking
+fill_row_helper(StrA, Num, Char, [Head|_], [HRow, Head]) :-
     Numf is float(Num),
     fill_row(Head, [Numf], Char, StrA, RRow),
     reverse(RRow, HRow).
