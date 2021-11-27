@@ -51,7 +51,13 @@ This represents the core functionality our product aims to provide:
 4. Processing of natural language descriptions - we provide levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
 
 ### Running MVP
-NOTE: The REST API does not work on the department computers, as the http library does not include an HTTP server in Prolog 7.6.4.
+Below, we present two options for running the code. To ensure that all dependencies have the correct version and that your experience matches ours, use the commands in the `Using Docker` column. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
+
+| Task | Using Docker | Using Current OS |
+| :--  | :-- | :-- |
+| Run tests | `make docker-test` | `make prolog-eval` |
+| Enter test repl | `make docker-repl` | `cd prolog && make test-repl` |
+| Launch server listening on `PORT` | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && swipl main.pl launch PORT` |
 
 In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
 
