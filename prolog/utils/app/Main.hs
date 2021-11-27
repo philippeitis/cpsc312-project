@@ -1,5 +1,3 @@
--- stack --resolver lts-18.6 script
-
 import Control.Monad (forM)
 import Data.Char (toLower)
 import Data.Foldable (minimumBy)
@@ -7,6 +5,7 @@ import Data.Functor((<&>))
 import Data.Function (on)
 import Data.List.Split (splitOn)
 import Data.HashMap.Strict (HashMap, empty, insert)
+import System.IO(hFlush, stdout)
 import qualified Data.HashMap.Strict(lookup)
 
 data Connection = Delete | Subst | Insert deriving (Enum, Show)
@@ -70,6 +69,7 @@ repl cache = getLine
     <&> levenshteinUser cache
     >>= \(dist, newcache) -> putStrLn "OK"
         >> print dist
+        >> hFlush stdout
         >> repl newcache
 
 main :: IO ()

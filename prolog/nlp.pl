@@ -102,8 +102,8 @@ launch_lev(In, Out) :-
 launch_lev(In, Out) :-
     \+streams(levenshtein, _, _),
     process_create(
-        path(stack),
-        ['script.hs'],
+        "fast-func-utils-exe",
+        [],
         [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
     ),
     assertz(streams(levenshtein, In, Out)), !.
