@@ -36,10 +36,10 @@ fillRow prevRow row  cA (cB:strB) =
 
 runLevenshtein :: String -> String -> LevTable
 runLevenshtein strA strB =
-    foldl fillRowHelper [replicate (length strB + 1) (0.0, Subst)] (zip [1..] strA)
+    foldl fillRowHelper [replicate (length strA + 1) (0.0, Subst)] (zip [1..] strB)
     where
         fillRowHelper :: LevTable -> (Int, Char) -> LevTable
-        fillRowHelper (head:tail) (ind, cA) = (reverse $ fillRow head [(fromIntegral ind, Subst)] cA strB):head:tail
+        fillRowHelper (head:tail) (ind, cB) = (reverse $ fillRow head [(fromIntegral ind, Subst)] cB strA):head:tail
         fillRowHelper _ _ = undefined
 
 backtrack :: LevTable -> ([(Int, Int)], Float)
