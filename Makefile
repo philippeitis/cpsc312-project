@@ -20,4 +20,7 @@ prolog-eval:
 	cd prolog && make test
 .PHONY: docker-test
 docker-test:
+	docker build . -t fast-func-server && docker run -it fast-func-server /cpsc312-project/test.sh
+.PHONY: docker-repl
+docker-repl:
 	docker build . -t fast-func-server && docker run -it fast-func-server /bin/bash

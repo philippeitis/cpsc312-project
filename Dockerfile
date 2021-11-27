@@ -18,5 +18,9 @@ RUN curl -sSL https://get.haskellstack.org/ | sh
 
 RUN stack install ghc
 
-COPY . /cpsc312-project
+COPY ./prolog /cpsc312-project/prolog
 RUN cd /cpsc312-project/prolog/ && make build
+
+COPY ./Makefile /cpsc312-project/Makefile
+COPY ./test.sh /cpsc312-project/test.sh
+RUN chmod +x /cpsc312-project/test.sh
