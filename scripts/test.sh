@@ -1,3 +1,3 @@
 #!/bin/bash
-cd cpsc312-project
+cd /cpsc312-project
 make prolog-eval

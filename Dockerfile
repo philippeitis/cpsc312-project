@@ -22,5 +22,8 @@ COPY ./prolog /cpsc312-project/prolog
 RUN cd /cpsc312-project/prolog/ && make build
 
 COPY ./Makefile /cpsc312-project/Makefile
-COPY ./test.sh /cpsc312-project/test.sh
-RUN chmod +x /cpsc312-project/test.sh
+COPY ./scripts/ ./scripts/
+RUN chmod +x ./scripts/*.sh
+
+WORKDIR "./cpsc312-project/prolog"
+CMD ["swipl", "./main.pl", "launch", "5000"]
