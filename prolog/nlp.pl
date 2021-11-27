@@ -1,4 +1,4 @@
-:- module(nlp, [similarity/3, fuzzy_substr/3, setup_tokenizer/0]).
+:- module(nlp, [similarity/3, setup_tokenizer/0]).
 :- use_module(library(http/http_client)).
 
 :- dynamic streams/3.
@@ -90,38 +90,6 @@ similarity(Docs, Needle, Similarity) :-
     string_length(Docs, LenA),
     string_length(Needle, LenB),
     format(In, "similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
-    flush_output(In),
-    read_line_to_string(Out, "OK"),
-    read_line_to_string(Out, String),
-    number_string(Similarity, String).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-launch_lev(In, Out) :-
-    streams(levenshtein, In, Out), !.
-
-launch_lev(In, Out) :-
-    \+streams(levenshtein, _, _),
-    process_create(
-        "fast-func-utils-exe",
-        [],
-        [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
-    ),
-    assertz(streams(levenshtein, In, Out)), !.
-
-close_lev :-
-    (
-        streams(levenshtein, In, Out) -> (
-            close(In),
-            close(Out),
-            retractall(streams(levenshtein, _, _))
-        ); true
-    ).
-
-fuzzy_substr(Docs, Needle, Similarity) :-
-    launch_lev(In, Out),
-    string_length(Docs, LenA),
-    string_length(Needle, LenB),
-    format(In, "~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),

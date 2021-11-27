@@ -1,7 +1,6 @@
 .PHONY: build
 BUILD_DIR=""
 build:
-	cd utils && make build && cp "$$(stack path --local-install-root)/bin/fast-func-utils-exe" ../fast-func-utils-exe
 	swipl main.pl --quit setup
 .PHONY: test
 test:

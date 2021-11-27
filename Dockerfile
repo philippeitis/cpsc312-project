@@ -6,17 +6,11 @@ RUN apt-get install -y --no-install-recommends \
     build-essential \
     python3.9 \
     python3-pip \
-    haskell-platform \
-    python3-venv \
-    curl
+    python3-venv
 
 RUN add-apt-repository ppa:swi-prolog/stable
 RUN apt-get install -y --no-install-recommends \
         swi-prolog
-
-RUN curl -sSL https://get.haskellstack.org/ | sh
-
-RUN stack install ghc
 
 COPY ./prolog /cpsc312-project/prolog
 RUN cd /cpsc312-project/prolog/ && make build

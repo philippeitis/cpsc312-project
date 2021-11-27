@@ -20,15 +20,15 @@ test("split_left split many times") :-
     split_left("Hello    world  ! a a   a", " ", 999, ["Hello", "world", "!", "a", "a", "a"]).
 
 test("levenshtein_distance all equal") :-
-    levenshtein_distance("kitten", "kitten", 0).
+    levenshtein_distance("kitten", "kitten", 0.0).
 test("levenshtein_distance insert and replace") :-
-    levenshtein_distance("kitten", "knitting", 3).
+    levenshtein_distance("kitten", "knitting", 3.0).
 test("levenshtein_distance no similarity") :-
-    levenshtein_distance("abcdef", "zzzzzz", 6).
+    levenshtein_distance("abcdef", "zzzzzz", 6.0).
 test("levenshtein_distance left empty") :-
-    levenshtein_distance("", "zzzzzz", 6).
+    levenshtein_distance("", "zzzzzz", 6.0).
 test("levenshtein_distance right empty") :-
-    levenshtein_distance("abcdef", "", 6).
+    levenshtein_distance("abcdef", "", 6.0).
 
 test("list_subset two empty lists") :-
     list_subset([], []).
@@ -292,3 +292,4 @@ test("length_constraint is fine testing end") :-
     length_constraint(3, [a, b, c], none).
 
 :- end_tests('path_constraints').
+

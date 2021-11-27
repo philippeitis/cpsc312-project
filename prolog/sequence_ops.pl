@@ -1,6 +1,7 @@
 :- module(sequence_ops, [
     split_left/4,
     levenshtein_distance/3,
+    fuzzy_substr/3,
     sequence_match/2,
     join/3,
     list_subset/2
@@ -9,6 +10,7 @@
 :- use_module(compat).
 :- if(prolog_version_eight).
 :- table(levenshtein_distance/3).
+:- table(fuzzy_substr/3).
 :- endif.
 
 %% list_subset(?List1, ?List2)
@@ -80,22 +82,66 @@ split_left([Head|Tail], Sep, N, Accumulator, [Reversed|Strings]) :-
 split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
     split_left(Tail, Sep, N, [Head|Accumulator], Strings), !.
 
-%% levenshtein_distance(A, B, -Distance)
-% Returns the Levenshtein distance between A and B
-% https://en.wikipedia.org/wiki/Levenshtein_distance
-levenshtein_distance(A, B, Distance) :-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Development notes:
+% Haskell impl is ~3x faster (but requires much larger Dockerfile, so balances out)
+lev_cost(C, C, 0.0) :- !.
+lev_cost(A, B, 0.4) :- downcase_atom(A, C), downcase_atom(B, C), !.
+lev_cost(_, _, 1.0) :- !.
+
+fill_row(_, Row, _, [], Row).
+fill_row(PrevRow, Row, Ca, [Cb|StrB], Out) :-
+    PrevRow = [Subst,Delete|PRest],
+    Row = [Insert|Rest],
+    lev_cost(Ca, Cb, SubstCost),
+    Substx is Subst + SubstCost,
+    Deletex is Delete + 1.0,
+    Insertx is Insert + 1.0,
+    min_list([Substx, Deletex, Insertx], MinC),
+    fill_row([Delete|PRest], [MinC,Insert|Rest], Ca, StrB, Out).
+
+%% Rearranges arguments as needed for initial fill_row call.
+fill_row_helper(StrA, Num, Char, [Head|Tail], [HRow, Head|Tail]) :-
+    Numf is float(Num),
+    fill_row(Head, [Numf], Char, StrA, RRow),
+    reverse(RRow, HRow).
+
+run_levenshtein(A, "", RowFn, [FirstRow]) :-
+    string(A),
+    string_chars(A, AChars),
+    length(AChars, LA),
+    call(RowFn, LA, FirstRow), !.
+
+run_levenshtein(A, B, RowFn, Table) :-
     string(A),
     string(B),
     string_chars(A, AChars),
     string_chars(B, BChars),
-    levenshtein_distance(AChars, BChars, Distance), !.
-levenshtein_distance([], B, Distance) :- length(B, Distance), !.
-levenshtein_distance(A, [], Distance) :- length(A, Distance), !.
-levenshtein_distance([X|TailA], [X|TailB], Distance) :-
-    levenshtein_distance(TailA, TailB, Distance), !.
-levenshtein_distance([A|TailA], [B|TailB], Distance) :-
-    levenshtein_distance(TailA, [B|TailB], Distance1),
-    levenshtein_distance([A|TailA], TailB, Distance2),
-    levenshtein_distance(TailA, TailB, Distance3),
-    min_list([Distance1, Distance2, Distance3], DistanceMin),
-    Distance is DistanceMin + 1, !.
+    length(AChars, LA),
+    length(BChars, LB),
+    call(RowFn, LA, FirstRow),
+    numlist(1, LB, Nums),
+    foldl(fill_row_helper(AChars), Nums, BChars, [FirstRow], Table), !.
+
+zeros_helper(LA, List) :-
+    LAPlus is LA + 1,
+    length(List, LAPlus), maplist(=(0.0), List).
+
+%% levenshtein_distance_fuzzy(+A:str, +B:str, -Distance:float)
+% https://en.wikipedia.org/wiki/Approximate_string_matching#Problem_formulation_and_algorithms
+% Use min_list for minimum distance. Ignore first item in row.
+fuzzy_substr(A, B, Distance) :-
+    run_levenshtein(A, B, zeros_helper, [[_|Out]|_]),
+    min_list(Out, Distance).
+
+to_float(X, Y) :- Y is float(X).
+
+numlist_helper(LA, List) :-
+    numlist(0, LA, NList), maplist(to_float, NList, List).
+
+%% levenshtein_distance(+A:str, +B:str, -Distance:float)
+% Returns the Levenshtein distance between A and B
+% https://en.wikipedia.org/wiki/Levenshtein_distance
+levenshtein_distance(A, B, Distance) :-
+    run_levenshtein(A, B, numlist_helper, [Row|_]),
+    last(Row, Distance).
