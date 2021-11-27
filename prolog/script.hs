@@ -2,6 +2,7 @@
 
 import Control.Monad (forM)
 import Data.Char (toLower)
+import Data.Functor((<&>))
 import Data.Foldable (minimumBy)
 import Data.Function (on)
 import Data.List.Split (splitOn)
@@ -39,7 +40,7 @@ runLevenshtein rows cols strA strB =
     foldl fillRowHelper [replicate (cols + 1) (0.0, Subst)] (zip [1..] strA)
     where
         fillRowHelper :: LevTable -> (Int, Char) -> LevTable
-        fillRowHelper (init:rest) (ind, cA) = (reverse $ fillRow init [(fromIntegral ind, Subst)] cA strB):init:rest
+        fillRowHelper (head:tail) (ind, cA) = (reverse $ fillRow head [(fromIntegral ind, Subst)] cA strB):head:tail
         fillRowHelper _ _ = undefined
 
 backtrack :: LevTable -> ([(Int, Int)], Float)
@@ -47,13 +48,12 @@ backtrack ((_:row):_) = ([], fst $ minCost row)
 backtrack _ = error "empty LevTable"
 
 levenshtein :: String -> String -> Float
-levenshtein sentA sentB = if length sentA < length sentB
-    then
-          let (rows, cols) = (length sentA, length sentB)
-          in 1.0 - snd (backtrack $ runLevenshtein rows cols sentA sentB) / fromIntegral rows
-    else
-          let (rows, cols) = (length sentB, length sentA)
-          in 1.0 - snd (backtrack $ runLevenshtein rows cols sentB sentA) / fromIntegral rows
+levenshtein sentAA sentBB = do
+    let (sentA, sentB) = if length sentAA < length sentBB
+        then (sentAA, sentBB)
+        else (sentBB, sentAA)
+    let (rows, cols) = (length sentA, length sentB)
+    1.0 - snd (backtrack $ runLevenshtein rows cols sentA sentB) / fromIntegral rows
 
 levenshteinCached :: HashMap (String, String) Float -> String -> String -> (Float, HashMap (String, String) Float)
 levenshteinCached cache a b = case Data.HashMap.Strict.lookup (a, b) cache of
@@ -68,11 +68,10 @@ levenshteinUser _ _ = error "expected two items"
 repl :: HashMap (String, String) Float -> IO ()
 repl cache = getLine
     >>= mapM readNBytes . map read . splitOn " "
-    >>= \strings -> do
-        let (f, new_cache) = levenshteinUser cache strings
-        putStrLn "OK"
-        print f
-        repl new_cache
+    <&> levenshteinUser cache
+    >>= \(dist, newcache) -> putStrLn "OK"
+        >> print dist
+        >> repl newcache
 
 main :: IO ()
 main = repl empty
