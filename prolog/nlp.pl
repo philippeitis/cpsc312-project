@@ -67,7 +67,6 @@ launch_tokenizer(In, Out) :-
 
 launch_tokenizer(In, Out) :-
     \+streams(tokenizer, _, _),
-    setup_tokenizer,
     relative_python_path(Python),
     process_create(
         Python,
