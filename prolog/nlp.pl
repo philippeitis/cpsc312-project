@@ -1,4 +1,4 @@
-:- module(nlp, [similarity/3, fuzzy_substr/3]).
+:- module(nlp, [similarity/3, fuzzy_substr/3, setup_tokenizer/0]).
 :- use_module(library(http/http_client)).
 
 :- dynamic streams/3.
@@ -8,11 +8,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Helper functions for OS detection
 get_os(unix) :-
-    current_prolog_flag(unix, true).
+    current_prolog_flag(unix, true), !.
 get_os(apple) :-
-    current_prolog_flag(apple, true).
+    current_prolog_flag(apple, true), !.
 get_os(windows) :-
-    current_prolog_flag(windows, true).
+    current_prolog_flag(windows, true), !.
 
 relative_python_path("./venv/bin/python") :-
     get_os(unix).

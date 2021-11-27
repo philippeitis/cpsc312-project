@@ -10,6 +10,7 @@
 :- if(prolog_version_eight).
 :- use_module(server).
 :- endif.
+:- use_module(nlp).
 
 %% pretty_print_path(List[function])
 pretty_print_path([]) :- !.
@@ -76,6 +77,7 @@ command("launch").
 :- endif.
 command("quit").
 command("os").
+command("setup").
 
 %% Help strings for available commands.
 assist("define") :- 
@@ -105,6 +107,8 @@ assist("quit") :-
     write("Terminates the program."), nl, !.
 assist("os") :-
     write("Prints the currently running OS."), nl, !.
+assist("setup") :-
+    write("Sets up all dependencies ahead of time"), nl, !.
 
 assist(String) :- 
     format("Unrecognized command ~~~w", String), nl,
@@ -234,6 +238,9 @@ execute_command("os") :-
 execute_command("help") :-
     write("Use `help command` for help with a particular command"), nl,
     available_commands(), !.
+
+execute_command("setup") :-
+    nlp:setup_tokenizer.
 
 execute_command(String) :-
     split_left(String, " ", 1, ["help", Command]),
