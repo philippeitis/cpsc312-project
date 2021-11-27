@@ -2,8 +2,8 @@
 
 import Control.Monad (forM)
 import Data.Char (toLower)
-import Data.Functor((<&>))
 import Data.Foldable (minimumBy)
+import Data.Functor((<&>))
 import Data.Function (on)
 import Data.List.Split (splitOn)
 import Data.HashMap.Strict (HashMap, empty, insert)
@@ -35,9 +35,9 @@ fillRow prevRow row  cA (cB:strB) =
             (subst + substCost cA cB, Subst),
             (insert + 1.0, Insert)]
 
-runLevenshtein :: Int -> Int -> String -> String -> LevTable
-runLevenshtein rows cols strA strB =
-    foldl fillRowHelper [replicate (cols + 1) (0.0, Subst)] (zip [1..] strA)
+runLevenshtein :: String -> String -> LevTable
+runLevenshtein strA strB =
+    foldl fillRowHelper [replicate (length strB + 1) (0.0, Subst)] (zip [1..] strA)
     where
         fillRowHelper :: LevTable -> (Int, Char) -> LevTable
         fillRowHelper (head:tail) (ind, cA) = (reverse $ fillRow head [(fromIntegral ind, Subst)] cA strB):head:tail
@@ -52,8 +52,7 @@ levenshtein sentAA sentBB = do
     let (sentA, sentB) = if length sentAA < length sentBB
         then (sentAA, sentBB)
         else (sentBB, sentAA)
-    let (rows, cols) = (length sentA, length sentB)
-    1.0 - snd (backtrack $ runLevenshtein rows cols sentA sentB) / fromIntegral rows
+    1.0 - snd (backtrack $ runLevenshtein sentA sentB) / fromIntegral (length sentA)
 
 levenshteinCached :: HashMap (String, String) Float -> String -> String -> (Float, HashMap (String, String) Float)
 levenshteinCached cache a b = case Data.HashMap.Strict.lookup (a, b) cache of
