@@ -1,6 +1,5 @@
 .PHONY: haskell-eval
 USER_OS = "$(shell ghci -e 'import System.Info' -e 'putStrLn os')"
-FASTFUNC_SERVER_PORT = 4999
 ifneq ($(USER_OS), "mingw32")
 haskell-eval:
 	cp haskell/stack-unix.yaml haskell/stack.yaml
