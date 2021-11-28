@@ -77,9 +77,9 @@ launch_tokenizer(In, Out) :-
 
 close_tokenizer :-
     (
-        streams(tokenizer, In, Out) -> (
-            close(In),
-            close(Out),
+        streams(tokenizer, In, _) -> (
+            write(In, "exit\n"),
+            flush_output(In),
             retractall(streams(tokenizer, _, _))
         ); true
     ).
