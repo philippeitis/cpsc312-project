@@ -3,3 +3,4 @@ venv/
 .stack-work/
 *.cabal
 stack.yaml.lock
+.idea/
