@@ -86,15 +86,18 @@ split_left([Head|Tail], Sep, N, Accumulator, Strings) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Development notes:
-% Haskell impl is ~3x faster
+% Haskell impl is ~3x faster (with the backtracking functionality)
 % BUT: 
 % - +1.2GB of disk usage in Docker
 % - Requires reading/writing to streams (annoying)
 % - Requires compilation and extra steps in Makefiles
+
+%% Basic implementation of substitution cost.
 lev_cost(C, C, 0.0) :- !.
 lev_cost(A, B, 0.4) :- downcase_atom(A, C), downcase_atom(B, C), !.
 lev_cost(_, _, 1.0) :- !.
 
+%% Fills the current row with the cheapest action
 fill_row(_, Row, _, [], Row).
 fill_row(PrevRow, Row, Ca, [Cb|StrB], Out) :-
     PrevRow = [Subst,Delete|PRest],
@@ -107,12 +110,14 @@ fill_row(PrevRow, Row, Ca, [Cb|StrB], Out) :-
     fill_row([Delete|PRest], [MinC,Insert|Rest], Ca, StrB, Out).
 
 %% Rearranges arguments as needed for initial fill_row call.
-% can do [Head|Tail], [HRow, Head|Tail] for backtracking
+% can do [Head|Tail], [HRow, Head|Tail] to keep the full table
+% for backtracking purposes
 fill_row_helper(StrA, Num, Char, [Head|_], [HRow, Head]) :-
     Numf is float(Num),
     fill_row(Head, [Numf], Char, StrA, RRow),
     reverse(RRow, HRow).
 
+%% Helper which builds the levenshtein distance table (or in this case, a single row).
 run_levenshtein(A, "", RowFn, [FirstRow]) :-
     string(A),
     string_chars(A, AChars),
@@ -130,6 +135,19 @@ run_levenshtein(A, B, RowFn, Table) :-
     numlist(1, LB, Nums),
     foldl(fill_row_helper(AChars), Nums, BChars, [FirstRow], Table), !.
 
+to_float(X, Y) :- Y is float(X).
+
+numlist_helper(LA, List) :-
+    numlist(0, LA, NList), maplist(to_float, NList, List).
+
+%% levenshtein_distance(+A:str, +B:str, -Distance:float)
+% Returns the Levenshtein distance between A and B
+% https://en.wikipedia.org/wiki/Levenshtein_distance
+% Uses the two-row table solution to optimize for memory and runtime characteristics
+levenshtein_distance(A, B, Distance) :-
+    run_levenshtein(A, B, numlist_helper, [Row|_]),
+    last(Row, Distance).
+
 zeros_helper(LA, List) :-
     LAPlus is LA + 1,
     length(List, LAPlus), maplist(=(0.0), List).
@@ -141,14 +159,3 @@ fuzzy_substr(A, B, Distance) :-
     run_levenshtein(A, B, zeros_helper, [[_|Out]|_]),
     min_list(Out, Distance).
 
-to_float(X, Y) :- Y is float(X).
-
-numlist_helper(LA, List) :-
-    numlist(0, LA, NList), maplist(to_float, NList, List).
-
-%% levenshtein_distance(+A:str, +B:str, -Distance:float)
-% Returns the Levenshtein distance between A and B
-% https://en.wikipedia.org/wiki/Levenshtein_distance
-levenshtein_distance(A, B, Distance) :-
-    run_levenshtein(A, B, numlist_helper, [Row|_]),
-    last(Row, Distance).
