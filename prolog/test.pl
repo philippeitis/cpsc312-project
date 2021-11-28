@@ -267,7 +267,12 @@ test("similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
     similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
     similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
-    
+
+test("sub_similarity constraint", [nondet]) :-
+    function:fname(Uuid, "listify"),
+    sub_similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
+    sub_similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
+
 :- end_tests('func_constraints').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

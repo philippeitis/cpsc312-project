@@ -1,4 +1,4 @@
-:- module(nlp, [similarity/3, setup_tokenizer/0]).
+:- module(nlp, [similarity/3, sub_similarity/3, setup_tokenizer/0]).
 :- use_module(library(http/http_client)).
 
 :- dynamic streams/3.
@@ -44,6 +44,11 @@ install_spacy :-
     ),
     process_wait(PID1, exit(0)).
 
+%% Performs the necessary setup steps to create the initial Python environment
+% for the tokenizer, provided that ./venv does not exist.
+% 
+% If the environment is not successfully created, simply delete it and run this
+% again.
 setup_tokenizer :-
     exists_directory('./venv'),
     format("Virtual environment already exists.~n"), !.
@@ -62,6 +67,10 @@ setup_tokenizer :-
     install_spacy,
     format("Installed spaCy.~n"), !.
 
+%% launch_tokenizer(-In:stream, -Out:stream)
+% If a tokenizer is currently running, unifies In and Out with the tokenizer's
+% input and output streams, respectively. Otherwise, creates a tokenizer instance,
+% and unifies the input and output streams with In and Out, respectively.
 launch_tokenizer(In, Out) :-
     streams(tokenizer, In, Out), !.
 
@@ -75,6 +84,7 @@ launch_tokenizer(In, Out) :-
     ),
     assertz(streams(tokenizer, In, Out)), !.
 
+%% Closes the tokenizer by writing exit to the input stream.
 close_tokenizer :-
     (
         streams(tokenizer, In, _) -> (
@@ -84,11 +94,27 @@ close_tokenizer :-
         ); true
     ).
 
+%% similarity(+Docs:string, +Needle:string, -Similarity:float)
+% Unifies Similarity with the similarity between Docs and Needle, as computed
+% by spaCy's similarity method.
 similarity(Docs, Needle, Similarity) :-
     launch_tokenizer(In, Out),
     string_length(Docs, LenA),
     string_length(Needle, LenB),
     format(In, "similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
+    flush_output(In),
+    read_line_to_string(Out, "OK"),
+    read_line_to_string(Out, String),
+    number_string(Similarity, String).
+
+%% similarity(+Docs:string, +Needle:string, -Similarity:float)
+% Unifies Similarity with the similarity between Docs and Needle, as determined
+% by comparing a sliding window of words in Docs to Needle.
+sub_similarity(Docs, Needle, Similarity) :-
+    launch_tokenizer(In, Out),
+    string_length(Docs, LenA),
+    string_length(Needle, LenB),
+    format(In, "sub_similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),

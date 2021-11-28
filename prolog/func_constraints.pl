@@ -9,6 +9,7 @@
     subsequence_constraint/5,
     regex_constraint/5,
     similarity_constraint/5,
+    sub_similarity_constraint/5,
     fuzzy_substr_constraint/5,
     at_most_n_constraint/5
 ]).
@@ -82,12 +83,19 @@ regex_core(_, _, _) :-
 regex_constraint(Regex, Field, Func, Cost, NewConstraint) :-
     wrap_core(regex_core(Regex), Field, Func, Cost, NewConstraint).
 
-similarity_core(Source, Needle, Cost) :-
+similarity_core(Needle, Source, Cost) :-
     similarity(Source, Needle, Similarity),
     Similarity > 0.8,
     Cost is 1.0 - Similarity, !.
 similarity_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
     wrap_core(similarity_core(Sequence), Field, Func, Cost, NewConstraint).
+
+sub_similarity_core(Needle, Source, Cost) :-
+    sub_similarity(Source, Needle, Similarity),
+    Similarity > 0.8,
+    Cost is 1.0 - Similarity, !.
+sub_similarity_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
+    wrap_core(sub_similarity_core(Sequence), Field, Func, Cost, NewConstraint).
 
 fuzzy_substr_core(Source, Needle, Cost) :-
     fuzzy_substr(Source, Needle, Similarity),
@@ -131,6 +139,8 @@ match_substr(Substr) :- member(Substr, ["substr", substr]).
 match_subseq(Subseq) :- member(Subseq, ["subseq", subseq]).
 match_re(Re) :- member(Re, ["re", re]).
 match_sim(Sim) :- member(Sim, ["sim", sim]).
+match_sub_sim(Sim) :- member(Sim, ["subsim", subsim]).
+
 match_fuzzy_substr(Substr) :- member(Substr, ["fsubstr", fsubstr]).
 
 %% Get the constraint for the field and method
@@ -148,7 +158,9 @@ field_constraint(Field, String, Re, func_constraints:regex_constraint(String, Fi
 :- endif.
 field_constraint(Field, String, Subseq, func_constraints:similarity_constraint(String, Field)) :-
     match_sim(Subseq), !.
-field_constraint(Field, String, Subseq, func_constraints:similarity_constraint(String, Field)) :-
+field_constraint(Field, String, Subseq, func_constraints:sub_similarity_constraint(String, Field)) :-
+    match_sub_sim(Subseq), !.
+field_constraint(Field, String, Subseq, func_constraints:fuzzy_substr_constraint(String, Field)) :-
     match_fuzzy_substr(Subseq), !.
 
 %% add_field_constraint(+Field, +String, +Method, +OldConstraints, -NewConstraints).
