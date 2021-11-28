@@ -6,10 +6,6 @@ from functools import cached_property
 import spacy
 import numpy as np
 
-# Global data (NLP MODEL, plus cache for efficiency)
-MODEL = spacy.load("en_core_web_md")
-CACHE = {}
-
 
 def take_n(generator, n):
     for _ in range(n):
@@ -25,16 +21,38 @@ def clamp(num: float, bottom: float, top: float):
 
 
 class Sentence:
+    # Global data (NLP model, plus cache for efficiency)
+    CACHE = {}
+    MODEL = None
+
     __slots__ = ["doc", "tokens", "_sentences"]
 
     def __init__(self, sentence: str):
         """Contains tokenized data for sentence."""
-        self.doc = MODEL(sentence)
+        self.doc = self.process(sentence)
         self.tokens = [
             {"text": token.text, "tag": str(token.tag_)}
-            for token in MODEL(sentence)
+            for token in self.doc
         ]
         self._sentences = None
+
+    @classmethod
+    def process(cls, sent: str):
+        """Processes the sentence, loading the model if it has not yet
+        been loaded."""
+        if cls.MODEL is None:
+            cls.MODEL = spacy.load("en_core_web_md")
+        return cls.MODEL(sent)
+
+    @classmethod
+    def cached(cls, sent: str) -> "Sentence":
+        """Returns an instance of Sentence which contains the processed data,
+        using a cached result if one exists."""
+        if sent in cls.CACHE:
+            return cls.CACHE[sent]
+        processed = Sentence(sent)
+        cls.CACHE[sent] = processed
+        return processed
 
     def similarity(self, other: "Sentence"):
         """Returns the similarity between self and other"""
@@ -43,7 +61,7 @@ class Sentence:
     def sentences(self):
         """Returns all of the sentences within self. Uses caching to avoid repeating work"""
         if self._sentences is None:
-            self._sentences = [process_sentence(sentence.text.strip()) for sentence in self.doc.sents]
+            self._sentences = [self.cached(sentence.text.strip()) for sentence in self.doc.sents]
         return self._sentences
 
     def vector_chunks(self, size: int):
@@ -68,18 +86,8 @@ class Sentence:
             yield clamp(cosine_similarity(chunk, sent.doc.vector), 0.0, 1.0)
 
 
-def process_sentence(sentence: str):
-    """Processes the sentence, returning a cached result if possible"""
-    if sentence in CACHE:
-        processed = CACHE[sentence]
-    else:
-        processed = Sentence(sentence)
-        CACHE[sentence] = processed
-    return processed
-
-
-def read_sentence(size: int):
-    return process_sentence(sys.stdin.read(size))
+def read_sentence(size: int) -> Sentence:
+    return Sentence.cached(sys.stdin.read(size))
 
 
 if __name__ == "__main__":
@@ -101,7 +109,7 @@ if __name__ == "__main__":
         elif components[0] == "sub_similarity":
             sent_a = read_sentence(int(components[1]))
             sent_b = read_sentence(int(components[2]))
-            # Find most similar sentence in doc
+            # Find most similar sequence in doc
             similarity = max(sent_a.sub_similarity(sent_b))
             sys.stdout.write("OK\n")
             sys.stdout.write(f"{similarity}\n")
