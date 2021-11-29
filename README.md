@@ -90,7 +90,7 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Metapredicates [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/search.pl#L12)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
   - We can compose a complex constraint combining five other constraints, negating some constraints and 
-- Dictionaries [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/main.pl#L32) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/725935ef0c946d30ebaf7fddaabec8c17e519293/prolog/main.pl#L32)
+- Dictionaries [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/main.pl#L32) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl)
   - Useful for JSON representation, which allows persistence and also serving / reading from a REST API
   - Can be used for collections intended for lookup (eg. a set of options)
 - Modules (all pl files except test files and main are modules)
