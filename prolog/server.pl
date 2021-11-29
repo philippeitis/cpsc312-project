@@ -27,7 +27,7 @@
 
 :- http_handler(
     root(.),
-    http_reply_from_files('.', []),
+    http_reply_from_files('./web_content', []),
     [prefix]
 ).
 
