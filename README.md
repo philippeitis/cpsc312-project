@@ -51,21 +51,28 @@ This represents the core functionality our product aims to provide:
 4. Processing of natural language descriptions - we provide levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
 
 ### Running MVP
-Below, we present two options for running the code. To ensure that all dependencies have the correct version and that your experience matches ours, use the commands in the `Using Docker` column. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
+In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
+
+Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
 
 | Task | Using Docker | Using Current OS |
 | :--  | :-- | :-- |
-| Run tests | `make docker-test` | `make prolog-eval` |
-| Enter test repl | `make docker-repl` | `cd prolog && make test-repl` |
-| Launch server listening on `PORT` | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && swipl main.pl launch PORT` |
+| Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make prolog-eval` |
+| Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
+| Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && swipl main.pl launch PORT` |
 
-In this section, we cover testing, and usage of the CLI to define functions and types, and performing various queries over them. Additonal features, including the REST API, are described in the [appendix](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#appendix).
+Launching the server will output the following text:
+```console
+...
+Started server at http://localhost:4999/
+Go to http://localhost:4999/openapi for a web-based REPL
+docker run -it -p 4999:5000 fast-func-server
+>>> 
+```
 
-In the `prolog` directory, you can run `make test` to run the unit tests. You can also load the test file into the swipl repl with `make test-repl` and in that repl you can run `run_tests.` to run those tests. 
+By going to the linked site - http://localhost:4999/openapi you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification.
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
-
-Please note that using `make prolog-eval` or `make test` will only test the REST API if run on Prolog 8+. For more details, go to [REST API Overview](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project#rest-api-overview).
 
 ### Go into more details about how the MVP works...
 
