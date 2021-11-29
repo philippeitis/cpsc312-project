@@ -84,22 +84,23 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Explanation of how the project benefits from the application of your new learning.
 
 ### Prolog features
-- Metapredicates
+- Metapredicates [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/search.pl#L12)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
-- Dictionary
+- Dictionary [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/main.pl#L32) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl)
   - Useful for JSON persistence, as well as collections intended for lookup (eg. a set of options)
-- Modules
+- Modules (all pl files except test files and main are modules)
   - makes it easier to manage a complex Prolog project with many features - serialization/deserialization, various types of constraints, a server interface, etc.
-- findall/foreach/forall/setof/findnsols functions
+- findall/foreach/forall/setof/findnsols functions (throughout source code)
   - allows defining simple path/search predicates which simply check that one path/func is valid, and then aggregating as many solutions as needed
-- DCG for parsing
+- DCG for parsing [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/parse.pl)
   - makes it possible to construct complex function signatures from simple components
-- Conditional compilation with if
+- Conditional compilation with if [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/func_constraints.pl#L70)
   - allows enabling/disabling features for specific versions of Prolog to provide minimum functionality (such as in the CS server / home computer)
-- Tabling
-  - allows making expensive operations (eg. levenshtein) cheaper without polluting global namespace and without manually implementing necessary garbage collection
-- Dynamic values
+- Tabling [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/sequence_ops.pl#L12)
+  - allows making expensive operations (eg. computing Levenshtein distance) cheaper without polluting global namespace and without manually implementing necessary garbage collection
+  - Eg. 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but 0s for the second time.
+- Dynamic values [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/function.pl#L22)
   - allow easy access to database without passing additional parameters with a list of all visible functions/traits/types
-
+  - allows descriptions of objects without modifying said objects.
 ## RUBRIC:
 https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
