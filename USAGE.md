@@ -144,9 +144,13 @@ The table below describes all endpoints and supported methods.
 
 | Endpoint/Method         | Description                        | Parameters | Errors | Output |
 | :---------- | :----------                        | :--: | :--: | :--- |
-| [func/get](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L119) | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
-| [func/post](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L124) | Add one function with the described features | name, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
-| [func/delete](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/e07469bad19dc8f2954499f394a1d00d845e9f74/prolog/server.pl#L137) | Delete one function with the given uuid | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
+| [func/get](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L155) | Get one or more functions with the described features | name, name_cmp, docs, doc_cmp, inputs, outputs (all optional) | 404 if nothing found | All functions in JSON format |
+| [func/post](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L159) | Add the described function | JSON: uuid (optional), name, generics, inputs, outputs, docs (docs optional) | N/A | Uuid in JSON format |
+| [func/delete](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L166) | Delete one function with the given uuid | uuid | 404 if uuid not found, 405 if uuid belongs to specialized function | Uuid in JSON format |
+| [type/get](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L201) | Get a type with the specific name | name | 404 if nothing found | JSON: name, generics, impls |
+| [type/post](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L208) | Create the described type | Type in JSON format | N/A | Message with type name in JSON format |
+| [type/delete](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/306bd38c97d7d48b39148f8e66d21d4aa7c68e11/prolog/server.pl#L220) | Delete one type with the given name | name | 404 if type not found | Name in JSON format |
+
 
 Due to the behaviour of Prolog's http library, specifying that a function has no arguments/output requires using boolean parameters "no_inputs" and "no_outputs", respectively.
 
