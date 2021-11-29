@@ -253,15 +253,6 @@ test(
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint("d.*A", name, Uuid, 1.0, _).
-test(
-    "at_most_n fails when it hits 0",
-    [fail]
-    ) :-
-        at_most_n_constraint(0, no_constraint, _, _, _).
-test("at_most_n succeeds if non-zero") :-
-    at_most_n_constraint(1, no_constraint, _, _, at_most_n_constraint(0, no_constraint)).
-test("at_most_n does not decrement if failure") :-
-    at_most_n_constraint(1, [_, _, _]>>(fail), _, _, at_most_n_constraint(1, _)).
 
 test("similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
@@ -272,6 +263,24 @@ test("sub_similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
     sub_similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
     sub_similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
+
+test(
+    "at_most_n fails when it hits 0",
+    [fail]
+    ) :-
+        at_most_n_constraint(0, no_constraint, _, _, _).
+test("at_most_n succeeds if non-zero") :-
+    at_most_n_constraint(1, no_constraint, _, _, at_most_n_constraint(0, no_constraint)).
+test("at_most_n does not decrement if failure") :-
+    at_most_n_constraint(1, [_, _, _]>>(fail), _, _, at_most_n_constraint(1, _)).
+
+test("scale constraint") :-
+    function:fname(Uuid, "parseInt"),
+    scale_constraint(substring_constraint("dsdsfdwa", name), 5.0, Uuid, 5.0, _).
+
+test("scale constraint") :-
+    function:fname(Uuid, "parseInt"),
+    scale_constraint(substring_constraint("dsdsfdwa", name), 0.3, Uuid, 0.3, _).
 
 :- end_tests('func_constraints').
 

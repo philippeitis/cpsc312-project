@@ -11,7 +11,8 @@
     similarity_constraint/5,
     sub_similarity_constraint/5,
     fuzzy_substr_constraint/5,
-    at_most_n_constraint/5
+    at_most_n_constraint/5,
+    scale_constraint/5
 ]).
 
 :- use_module(compat).
@@ -202,3 +203,7 @@ at_most_n_constraint(N, Constraint, _, 0.0, at_most_n_constraint(N, Constraint))
 
 not_constraint(Constraint, Fn, 0.0, no_constraint) :-
     \+call(Constraint, Fn, _, _).
+
+scale_constraint(Constraint, Weight, Fn, Scaled, scale_constraint(NewConstraint, Weight)) :-
+    call(Constraint, Fn, Cost, NewConstraint),
+    Scaled is Cost * Weight.
