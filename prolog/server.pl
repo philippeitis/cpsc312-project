@@ -45,7 +45,13 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Starting and stopping server
-server(Port) :-	http_server(http_dispatch, [port(Port)]).
+suppress_start_msg :- 
+    getenv('IN_DOCKER', '1').
+
+server(Port) :-	suppress_start_msg,
+    http_server(http_dispatch, [port(Port), silent(true)]), !.
+server(Port) :-	\+suppress_start_msg,
+    http_server(http_dispatch, [port(Port)]), !.
 shutdown(Port) :- http_stop_server(Port, []).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

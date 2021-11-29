@@ -19,5 +19,6 @@ COPY ./Makefile /cpsc312-project/Makefile
 COPY ./scripts/ ./scripts/
 RUN chmod +x ./scripts/*.sh
 
+ENV IN_DOCKER=1
 WORKDIR "/cpsc312-project/prolog"
 CMD ["swipl", "./main.pl", "launch", "5000"]
