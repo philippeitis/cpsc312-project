@@ -56,15 +56,10 @@ render_param(Param, Param) :- !.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Defining, searching, and deleting functions
 
-uuids_to_funcs([], []).
-uuids_to_funcs([Uuid|Uuids], [Func|Funcs]) :-
-    get_function(Uuid, Func),
-    uuids_to_funcs(Uuids, Funcs).
-
 %% Finds a single function with the constraints and prints it.
 find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
     func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Uuid|Uuids]),
-    uuids_to_funcs([Uuid|Uuids], Funcs),
+    maplist(get_function, [Uuid|Uuids], Funcs),
     jsonify_funcs(Funcs, JsonFuncs),
     reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}).
 
@@ -117,7 +112,7 @@ parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
     nonempty_list(Outputs0, NoOutputs, Outputs).
 
 attempt_fn_deletion(Uuid) :-
-    uuid(Uuid, Uuid),
+    fname(Uuid, _),
     specialized(Parent, Uuid),
     format('Status: 405~n'), % HTTP not allowed
     format('Content-type: application/json~n~n'),
@@ -128,9 +123,8 @@ attempt_fn_deletion(Uuid) :-
         }
     ), !.
 
-attempt_fn_deletion(Uuids) :-
-    atom_string(Uuid, Uuids),
-    function:fname(Uuid, _),
+attempt_fn_deletion(Uuid) :-
+    fname(Uuid, _),
     retractall(function(Uuid, _, _, _, _, _)),
     reply_json_dict(_{msg: "Removed", uuid:Uuid}), !.
 

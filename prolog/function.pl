@@ -76,8 +76,13 @@ add_fn_generic_traits([generic(_, Bounds)|Rest]) :-
 add_fn_generic_traits([_|Rest]) :-
     add_fn_generic_traits(Rest), !.
 
+init_uuid(Uuid) :- \+var(Uuid), !.
+
+init_uuid(Uuid) :-
+    var(Uuid), uuid(Uuid), !.
+
 add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
-    (var(Uuid) -> uuid(Uuid); true),
+    init_uuid(Uuid),
     add_fn_generic_traits(Generics),
     assertz(function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)).
 
@@ -151,6 +156,5 @@ specialize(Func, Interp, Uuid) :-
     maplist(subst(Interp), Inputs, SpecInputs),
     maplist(subst(Interp), Outputs, SpecOutputs),
     \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
-    uuid(Uuid),
-    assertz(function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)),
+    add_function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs),
     assertz(specialized(Func, Uuid)).
