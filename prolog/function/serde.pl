@@ -34,6 +34,32 @@ jsonify_traits(Traits, JTraits) :-
     maplist(jsonify_trait, Traits, JTraits).
 
 jsonify_func(
+    function(Uuid, Name, Generics, Inputs, Outputs, ""),
+    _{
+        uuid:Uuid,
+        name:Name,
+        generics:JGenerics,
+        inputs:JInputs,
+        outputs:JOutputs
+    }) :-
+    \+var(Uuid),
+    jsonify_generics(Generics, JGenerics),
+    jsonify_types(Inputs, JInputs),
+    jsonify_types(Outputs, JOutputs), !.
+
+jsonify_func(
+    function(_, Name, Generics, Inputs, Outputs, ""),
+    _{
+        name:Name,
+        generics:JGenerics,
+        inputs:JInputs,
+        outputs:JOutputs
+    }) :-
+    jsonify_generics(Generics, JGenerics),
+    jsonify_types(Inputs, JInputs),
+    jsonify_types(Outputs, JOutputs), !.
+
+jsonify_func(
     function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     _{
         uuid:Uuid,
@@ -43,9 +69,10 @@ jsonify_func(
         outputs:JOutputs,
         docs:Docs
     }) :-
+    \+var(Uuid),
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs).
+    jsonify_types(Outputs, JOutputs), !.
 
 jsonify_func(
     function(_, Name, Generics, Inputs, Outputs, Docs),
@@ -58,19 +85,7 @@ jsonify_func(
     }) :-
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs).
-
-jsonify_func(
-    function(_, Name, Generics, Inputs, Outputs, ""),
-    _{
-        name:Name,
-        generics:JGenerics,
-        inputs:JInputs,
-        outputs:JOutputs
-    }) :-
-    jsonify_generics(Generics, JGenerics),
-    jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs).
+    jsonify_types(Outputs, JOutputs), !.
 
 jsonify_funcs(Funcs, JFuncs) :-
     maplist(jsonify_func, Funcs, JFuncs).

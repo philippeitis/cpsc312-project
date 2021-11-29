@@ -13,18 +13,15 @@
 
 %% Checks that posting parseInt55 works correctly
 post_fn_ok(Port) :-
+    jsonify_funcs([function(_, "parseInt55", [], ["str"], ["int"], "Hello world!")], [JsonFn]),
+    atom_json_dict(Fn, JsonFn, [as(atom)]),
     http_post([
             protocol(http),
             host(localhost),
             port(Port),
             path('/func')
         ],
-        form_data([
-            name="parseInt55",
-            inputs="str",
-            outputs="int",
-            docs="Hello world!"
-        ]),
+        atom('application/json', Fn),
         _{
             msg:"Created func parseInt55",
             uuid:_
