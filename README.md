@@ -75,6 +75,8 @@ This should look like [this image](./resources/openapi.png).
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 
+[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc, and provides specific examples of different tasks to help direct your evaluation.
+
 ### Go into more details about how the MVP works...
 
 ## Guide to New Learning
