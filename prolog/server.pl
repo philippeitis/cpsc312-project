@@ -227,6 +227,7 @@ openapi(_) :-
     reply_html_page(
         \['<!doctype html>\n'],
         [
+            title('FastFunc OpenAPI'),
             \['<meta charset="utf-8">'],
             script(
                 [
