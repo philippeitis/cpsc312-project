@@ -20,15 +20,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Register handlers
 :- http_handler(
-    root(.),
-    http_reply_from_files('.', []),
-    [prefix]
-).
-
-:- http_handler(
     root(openapi),
     openapi,
     [method(get)]
+).
+
+:- http_handler(
+    root(.),
+    http_reply_from_files('.', []),
+    [prefix]
 ).
 
 :- http_handler(

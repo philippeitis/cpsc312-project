@@ -33,8 +33,7 @@ docker-repl:
 .PHONY: docker-server
 docker-server:
 	make docker-build
-	@printf "`tput setaf 4`Started server at `tput bold`http://localhost:$(FASTFUNC_SERVER_PORT)\n`tput sgr0`"
-	@printf "`tput setaf 4`Go to `tput bold`http://localhost:$(FASTFUNC_SERVER_PORT)/openapi`tput sgr0` for a web based REPL\n"
+	swipl flavor.pl $(FASTFUNC_SERVER_PORT)
 	docker run -it -p $(FASTFUNC_SERVER_PORT):5000 fast-func-server
 .PHONY: docker-start
 docker-start:
