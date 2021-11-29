@@ -70,7 +70,8 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to the linked site - http://localhost:4999/openapi you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification.
+By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification.
+This should look like [this image](./resources/openapi.png).
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 
