@@ -84,23 +84,32 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Explanation of how the project benefits from the application of your new learning.
 
 ### Prolog features
+- Partial function application [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/725935ef0c946d30ebaf7fddaabec8c17e519293/prolog/search.pl#L153)
+  - Makes it easy to pass relevant parameters to constraint functions, while still providing a consistent API between all constraints
+  - No need to pass a tuple with function and arguments, which is inconvenient.
 - Metapredicates [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/search.pl#L12)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
-- Dictionary [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/main.pl#L32) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl)
-  - Useful for JSON persistence, as well as collections intended for lookup (eg. a set of options)
+  - We can compose a complex constraint combining five other constraints, negating some constraints and 
+- Dictionaries [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/main.pl#L32) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl) [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/725935ef0c946d30ebaf7fddaabec8c17e519293/prolog/main.pl#L32)
+  - Useful for JSON representation, which allows persistence and also serving / reading from a REST API
+  - Can be used for collections intended for lookup (eg. a set of options)
 - Modules (all pl files except test files and main are modules)
-  - makes it easier to manage a complex Prolog project with many features - serialization/deserialization, various types of constraints, a server interface, etc.
+  - makes it easier to manage a complex Prolog project with many features
+  - serialization/deserialization
+  - various types of constraints
+  - a server interface, etc.
 - findall/foreach/forall/setof/findnsols functions (throughout source code)
   - allows defining simple path/search predicates which simply check that one path/func is valid, and then aggregating as many solutions as needed
 - DCG for parsing [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/parse.pl)
-  - makes it possible to construct complex function signatures from simple components
+  - DCGs make it possible to define parsers for each of the individual elements of a type declaration or function signature, and then combine these parsers to parse a complex and interesting function or type
 - Conditional compilation with if [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/func_constraints.pl#L70)
-  - allows enabling/disabling features for specific versions of Prolog to provide minimum functionality (such as in the CS server / home computer)
+  - allows enabling/disabling features for specific versions of Prolog to provide minimum functionality
+  - Eg. The CS servers are using an outdated version of Prolog, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows everything else to work.
 - Tabling [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/sequence_ops.pl#L12)
   - allows making expensive operations (eg. computing Levenshtein distance) cheaper without polluting global namespace and without manually implementing necessary garbage collection
   - Eg. 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but 0s for the second time.
 - Dynamic values [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/944ccad99886115f329ea9aece7c69ff6d6da58e/prolog/function.pl#L22)
-  - allow easy access to database without passing additional parameters with a list of all visible functions/traits/types
-  - allows descriptions of objects without modifying said objects.
+  - allow easy access to relevant functions when performing search, without passing additional parameters with a list of all visible functions/traits/types
+  - allows attaching attributes to objects without modifying said objects.
 ## RUBRIC:
 https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
