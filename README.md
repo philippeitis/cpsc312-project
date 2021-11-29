@@ -32,7 +32,7 @@ Your video should include:
 - Optionally: Close with your team’s CPSC 312-related catchphrase visually illustrated in some fantastically cool way. (But that’s seriously optional!)
 
 ## Proposal
-The project proposal is available at [PROPOSAL.md](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/PROPOSAL.md). Some information may be duplicated between this file and PROPOSAL.md.
+The project proposal is available at [PROPOSAL.md](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/PROPOSAL.md#minimal-viable-project). Some information may be duplicated between this file and PROPOSAL.md.
 
 ## MVP Guide
 Our MVP demonstrates our ability to define and search a knowledge-base of sample functions (such as print()), create a chain or path of functions and use scoring algorithms in conjunction with search algorithms to prioritize the most relevant search results. It also demonstrates the usage of DCGs to parse user input and subsequently define functions and options via the CLI. 
