@@ -8,7 +8,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Serializing and deserializing functions, types, and traits
-jsonify_generic(generic(Name, Impls), _{name:Name, bounds:Impls}) :-
+jsonify_generic(generic(Name, Impls), _{name:Name, impls:Impls}) :-
     is_list(Impls), !.
 jsonify_generic(generic(Name, _), _{name:Name}).
 
@@ -16,10 +16,10 @@ jsonify_type(Generic, JsonGeneric) :-
     jsonify_generic(Generic, JsonGeneric), !.
 jsonify_type(Type, Type) :- string(Type), !.
 jsonify_type(gen(Name), _{generic:Name}) :- !.
-jsonify_type(type(Name, Generics, Impls), _{root:Name, generics:JGenerics, bounds:Impls}) :-
+jsonify_type(type(Name, Generics, Impls), _{name:Name, generics:JGenerics, impls:Impls}) :-
     is_list(Impls),
     jsonify_types(Generics, JGenerics), !.
-jsonify_type(type(Name, Generics, _), _{root:Name, generics:JGenerics}) :-
+jsonify_type(type(Name, Generics, _), _{name:Name, generics:JGenerics}) :-
     jsonify_types(Generics, JGenerics), !.
 jsonify_trait(trait(Name, Bounds), _{name:Name, bounds:Bounds}).
 
@@ -42,6 +42,31 @@ jsonify_func(
         inputs:JInputs,
         outputs:JOutputs,
         docs:Docs
+    }) :-
+    jsonify_generics(Generics, JGenerics),
+    jsonify_types(Inputs, JInputs),
+    jsonify_types(Outputs, JOutputs).
+
+jsonify_func(
+    function(_, Name, Generics, Inputs, Outputs, Docs),
+    _{
+        name:Name,
+        generics:JGenerics,
+        inputs:JInputs,
+        outputs:JOutputs,
+        docs:Docs
+    }) :-
+    jsonify_generics(Generics, JGenerics),
+    jsonify_types(Inputs, JInputs),
+    jsonify_types(Outputs, JOutputs).
+
+jsonify_func(
+    function(_, Name, Generics, Inputs, Outputs, ""),
+    _{
+        name:Name,
+        generics:JGenerics,
+        inputs:JInputs,
+        outputs:JOutputs
     }) :-
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),

@@ -77,7 +77,7 @@ add_fn_generic_traits([_|Rest]) :-
     add_fn_generic_traits(Rest), !.
 
 add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
-    uuid(Uuid),
+    (var(Uuid) -> uuid(Uuid); true),
     add_fn_generic_traits(Generics),
     assertz(function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)).
 

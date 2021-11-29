@@ -8,6 +8,8 @@
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/json)).
+:- use_module(library(http/html_write)).
+:- use_module(library(http/http_files)).
 
 :- use_module(function).
 :- use_module(function/parse).
@@ -17,6 +19,18 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Register handlers
+:- http_handler(
+    root(.),
+    http_reply_from_files('.', []),
+    [prefix]
+).
+
+:- http_handler(
+    root(openapi),
+    openapi,
+    [method(get)]
+).
+
 :- http_handler(
     root(func),
     fn_endpoint(Method),
@@ -81,8 +95,8 @@ parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpNam
             inputs(Inputs0, [list(string)]),
             outputs(Outputs0, [list(string)]),
             docs(Docs, [string, default(none)]),
-            name_cmp(StringCmpName, [default(lev), oneof([re, eq, lev, substr, subseq])]),
-            doc_cmp(StringCmpDocs, [default(substr), oneof([re, eq, lev, substr, subseq])])
+            name_cmp(StringCmpName, [default(lev), oneof([re, eq, lev, substr, subseq, fsubstr, sim, subsim])]),
+            doc_cmp(StringCmpDocs, [default(substr), oneof([re, eq, lev, substr, subseq, fsubstr, sim, subsim])])
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs).
@@ -136,9 +150,10 @@ fn_endpoint(get, Request) :-
     find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs).
 
 fn_endpoint(post, Request) :-
-    parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs),
-    add_function(Uuid, FuncName, [], Inputs, Outputs, Docs),
-    format(string(Msg), "Created func ~w", [FuncName]),
+    http_read_json(Request, JsonIn, [json_object(dict)]),
+    jsonify_funcs([function(Uuid, Name, Generics, Inputs, Outputs, Docs)], [JsonIn]),
+    add_function(Uuid, Name, Generics, Inputs, Outputs, Docs),
+    format(string(Msg), "Created func ~w", [Name]),
     reply_json_dict(_{msg: Msg, uuid:Uuid}).
 
 fn_endpoint(delete, Request) :-
@@ -198,5 +213,23 @@ type_endpoint(post, _) :-
 type_endpoint(delete, Request) :-
     http_parameters(Request,
         [name(Name, [string])]
-    ),
-    attempt_type_deletion(Name).
+        ),
+        attempt_type_deletion(Name).
+
+openapi(_) :-
+    reply_html_page(
+        \['<!doctype html>\n'],
+        [
+            \['<meta charset="utf-8">'],
+            script(
+                [
+                    type='module',
+                    src='https://unpkg.com/rapidoc/dist/rapidoc-min.js'
+                ],
+                []
+            )
+        ],
+        [
+            \['<rapi-doc spec-url="./openapi.json"></rapi-doc>']
+        ]
+    ).
