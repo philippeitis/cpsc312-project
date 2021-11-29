@@ -36,13 +36,14 @@ jsonify_traits(Traits, JTraits) :-
 jsonify_func(
     function(Uuid, Name, Generics, Inputs, Outputs, ""),
     _{
-        uuid:Uuid,
+        uuid:Uuida,
         name:Name,
         generics:JGenerics,
         inputs:JInputs,
         outputs:JOutputs
     }) :-
-    \+var(Uuid),
+    (\+var(Uuid); \+var(Uuida)),
+    atom_string(Uuid, Uuida),
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
     jsonify_types(Outputs, JOutputs), !.
@@ -62,14 +63,15 @@ jsonify_func(
 jsonify_func(
     function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     _{
-        uuid:Uuid,
+        uuid:Uuida,
         name:Name,
         generics:JGenerics,
         inputs:JInputs,
         outputs:JOutputs,
         docs:Docs
     }) :-
-    \+var(Uuid),
+    (\+var(Uuid); \+var(Uuida)),
+    atom_string(Uuid, Uuida),
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
     jsonify_types(Outputs, JOutputs), !.

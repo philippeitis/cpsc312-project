@@ -152,7 +152,7 @@ fn_endpoint(post, Request) :-
 
 fn_endpoint(delete, Request) :-
     http_parameters(Request, [
-        uuid(Uuid, [string])
+        uuid(Uuid, [atom])
     ]),
     attempt_fn_deletion(Uuid).
 
