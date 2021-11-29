@@ -39,7 +39,7 @@ Our MVP demonstrates our ability to define and search a knowledge-base of sample
 
 The key elements of our MVP are linked below - these demonstrate what our project allows users to do:
 1. Easily define functions (with documentation), types, and traits (eg. Haskell typeclasses), via [JSON files](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/function/serde.pl), [a REST API](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/7e1441d1544848be021a02acebcdfbe8326cc422/prolog/server.pl#L154), [or command line input](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/7e1441d1544848be021a02acebcdfbe8326cc422/prolog/main.pl#L261). Functions and types support generic arguments, allowing for the definition of complex type system.
-  - This satisfies our goal of allowing users to import their code bases into our program, as they have access to a simple JSON format which can easily be loaded into the knowledge base. Additionally, users could define their own parsers for their language of choice within the program.
+  - This satisfies our goal of allowing users to import their code bases into our program, as they have access to a simple JSON format which can easily be loaded into the knowledge base. Additionally, users could define their own parsers for their language of choice within FastFunc itself, if so desired.
 2. Test that individual functions have a [particular set of features](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/func_constraints.pl), and [sort said functions with a computed score](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/7e1441d1544848be021a02acebcdfbe8326cc422/prolog/search.pl#L20), allowing users to select the best option for a particular task.
   - Included in this is functionality which uses spaCy, a Python NLP library, to compare user provided text against the names and documentation of relevant items in the codebase to find the most relevant items, satisfying our goal of using natural language processing for searching code bases.
 3. Generate a [sequence of functions](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/7e1441d1544848be021a02acebcdfbe8326cc422/prolog/search.pl#L123) which can transform a provided set of inputs into a provided set of outputs, and satisfy a [provided set of path-specific constraints](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/prolog/path_constraints.pl), with the same scoring functionality as for individual function searches.
@@ -55,7 +55,7 @@ Below, we present two options for running the code. To ensure that all dependenc
 
 | Task | Using Docker | Using Current OS |
 | :--  | :-- | :-- |
-| Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make prolog-eval` |
+| Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make test` |
 | Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
 | Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && make FASTFUNC_SERVER_PORT=PORT launch-server` |
 
@@ -68,7 +68,7 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification. This should look like [this image](./resources/openapi.png).
+By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [RapiDoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification. This should look like [this image](./resources/openapi.png).
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 
