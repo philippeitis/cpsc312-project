@@ -1,3 +1,5 @@
+![FastFunc logo](/prolog/web_content/android-chrome-512x512.png)
+
 # FastFuncs
 
 Software development is consistently on the leading edge of occupational innovation and process improvement. Advancements in machine learning and prediction are helping development environments save developers time and effort by anticipating their intentions and offering suggestions. FastFuncs is a tool that allows users to quickly find functions and automate function composition.
