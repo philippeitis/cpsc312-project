@@ -48,7 +48,7 @@ This represents the core functionality our product aims to provide:
 1. a user interface where users can easily define new functions, types, and traits, and perform searches over the knowledge base, using constraints to find the most appropriate functions
 2. A REST API, which allows any IDE or any language to easily provide powerful search functionality over any codebase with minimal effort
 3. Sorting search results using interesting scoring algorithms - our composable constraint interface allows users to mix and match constraints as needed, tracking any relevant state, and even adjusting the weights of particular constraints to prioritize certain features in their search.
-4. Processing of natural language descriptions - we provide levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
+4. Processing of natural language descriptions - we provide Levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
 
 ### Running MVP
 Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
@@ -57,7 +57,7 @@ Below, we present two options for running the code. To ensure that all dependenc
 | :--  | :-- | :-- |
 | Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make prolog-eval` |
 | Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
-| Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && swipl main.pl launch PORT` |
+| Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && make FASTFUNC_SERVER_PORT=PORT launch-server` |
 
 Launching the server will output the following text:
 ```console
@@ -68,8 +68,7 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification.
-This should look like [this image](./resources/openapi.png).
+By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [Rapidoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification. This should look like [this image](./resources/openapi.png).
 
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 

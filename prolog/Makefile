@@ -1,5 +1,5 @@
+FASTFUNC_SERVER_PORT = 4999
 .PHONY: build
-BUILD_DIR=""
 build:
 	swipl main.pl --quit setup
 .PHONY: test
@@ -11,3 +11,7 @@ test:
 test-repl:
 	make build
 	swipl test.pl
+.PHONY: server
+launch-server:
+	make build
+	swipl main.pl launch $(FASTFUNC_SERVER_PORT)
