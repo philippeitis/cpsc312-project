@@ -1,4 +1,4 @@
-:- module(server, [server/1, shutdown/1]).
+:- module(server, [server/1, shutdown/1, server/2]).
 
 %% Load this file in prolog, and use server(Port). to launch it.
 
@@ -48,10 +48,17 @@
 suppress_start_msg :- 
     getenv('IN_DOCKER', '1').
 
+server(Port, silent) :-	http_server(http_dispatch, [port(Port), silent(true)]), !.
 server(Port) :-	suppress_start_msg,
     http_server(http_dispatch, [port(Port), silent(true)]), !.
 server(Port) :-	\+suppress_start_msg,
-    http_server(http_dispatch, [port(Port)]), !.
+    http_server(http_dispatch, [port(Port), silent(true)]),
+    ansi_format([fg(blue)], 'Started server at ', []),
+    ansi_format([bold, fg(blue)], 'http://localhost:~w/~n', [Port]),
+    ansi_format([fg(blue)], 'Go to ', []),
+    ansi_format([bold, fg(blue)], 'http://localhost:~w/openapi', [Port]),
+    ansi_format([fg(blue)], ' for a web-based REPL~n', []), !.
+
 shutdown(Port) :- http_stop_server(Port, []).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

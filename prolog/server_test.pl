@@ -59,7 +59,7 @@ delete_fn(Port, Uuid, Reply) :-
 test(
     "Trying to delete nonexistent uuid results in 404",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         error(existence_error(_, _)),
         cleanup(shutdown(Port))
     ]) :-
@@ -71,7 +71,7 @@ test(
 test(
     "Trying to get nonexistent function results in 404",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         error(existence_error(_, _)),
         cleanup(shutdown(Port))
     ]) :-
@@ -82,7 +82,7 @@ test(
 test(
     "Runs an example client session",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         nondet,
         cleanup(shutdown(Port))
     ]) :-
@@ -173,7 +173,7 @@ delete_type(Port, Name, Reply) :-
 test(
     "Trying to delete nonexistent type results in 404",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         error(existence_error(_, _)),
         cleanup(shutdown(Port))
     ]) :-
@@ -186,7 +186,7 @@ test(
 test(
     "Trying to get nonexistent function results in 404",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         error(existence_error(_, _)),
         cleanup(shutdown(Port))
     ]) :-
@@ -197,7 +197,7 @@ test(
 test(
     "Post succeeds",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         nondet,
         cleanup(shutdown(Port))
     ]) :-
@@ -206,7 +206,7 @@ test(
 test(
     "Runs an example client session",
     [
-        setup(server(Port)),
+        setup(server(Port, silent)),
         nondet,
         cleanup(shutdown(Port))
     ]) :-
