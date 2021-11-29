@@ -8,8 +8,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Serializing and deserializing functions, types, and traits
-jsonify_generic(generic(Name, Impls), _{name:Name, impls:Impls}) :-
-    is_list(Impls), !.
+jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
+    is_list(Bounds), !.
 jsonify_generic(generic(Name, _), _{name:Name}).
 
 jsonify_type(Generic, JsonGeneric) :-
