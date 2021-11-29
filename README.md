@@ -1,4 +1,6 @@
-![FastFunc logo](/prolog/web_content/android-chrome-512x512.png)
+<p align="center">
+  <img width="256" height="256" alt="FastFunc logo" src="/prolog/web_content/android-chrome-512x512.png">
+</p>
 
 # FastFuncs
 
