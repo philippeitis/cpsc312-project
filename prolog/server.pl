@@ -223,6 +223,7 @@ type_endpoint(delete, Request) :-
         ),
         attempt_type_deletion(Name).
 
+%% favicon generated using https://redketchup.io/favicon-generator
 openapi(_) :-
     reply_html_page(
         \['<!doctype html>\n'],
