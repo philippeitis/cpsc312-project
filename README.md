@@ -55,7 +55,7 @@ Below, we present two options for running the code. To ensure that all dependenc
 
 | Task | Using Docker | Using Current OS |
 | :--  | :-- | :-- |
-| Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make prolog-eval` |
+| Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make test` |
 | Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
 | Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && make FASTFUNC_SERVER_PORT=PORT launch-server` |
 
