@@ -218,10 +218,11 @@ type_endpoint(post, _) :-
     json_write_dict(current_output, _{msg: "Malformed input"}).
 
 type_endpoint(delete, Request) :-
-    http_parameters(Request,
+    http_parameters(
+        Request,
         [name(Name, [string])]
-        ),
-        attempt_type_deletion(Name).
+    ),
+    attempt_type_deletion(Name).
 
 %% favicon generated using https://redketchup.io/favicon-generator
 openapi(_) :-
