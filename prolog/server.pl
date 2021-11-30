@@ -215,7 +215,7 @@ type_endpoint(post, Request) :-
 type_endpoint(post, _) :-
     format('Status: 400~n'), % User error
     format('Content-type: application/json~n~n'),
-    reply_json_dict(_{msg: "Malformed input"}).
+    json_write_dict(current_output, _{msg: "Malformed input"}).
 
 type_endpoint(delete, Request) :-
     http_parameters(Request,
