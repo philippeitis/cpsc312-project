@@ -53,7 +53,7 @@ function searchAndDisplay() {
 <div class="container">
 <div class="centered">
 <h1>Function Search</h1>
-<form action="/func" id="search_form" method="GET" target="this-page" onsubmit="searchAndDisplay()">
+<form action="/func" id="search_form" method="GET" target="this-page">
   <label for="name">Function name:</label>
   <input type="text" id="name" name="name"><br><br>
   <label for="name_cmp">Name comparison method:</label>
@@ -76,7 +76,7 @@ function searchAndDisplay() {
     <option value="subsim" selected>NLP Chunk-wise Similarity</option>
   </select>
   <br><br>
-  <input type="submit" />
+  <input type="button" value="submit" onClick="searchAndDisplay()" />
 </form>
 
 <p id="function_msg"></p>
