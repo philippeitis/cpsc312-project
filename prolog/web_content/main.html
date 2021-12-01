@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastFunc UI</title>
+    <style>
+        .container {
+            margin-right: auto; margin-left: auto;
+            width: 800px;
+        }
+    </style>
+        
+</head>
+<body>
+<script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/form-serialize/serialize-0.2.min.js"></script>
+
+<script>
+function searchAndDisplay() {
+    var xmlhttp = new XMLHttpRequest();
+    var form = document
+        .getElementById("search_form");
+    var url = form.action + "?" + serialize(form);
+    console.log(url);
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                var myArr = JSON.parse(this.responseText);
+                renderFunction(myArr);
+            }
+            if (this.status === 404) {
+                var json = JSON.parse(this.responseText);
+                document.getElementById("function_msg").innerHTML = "MESSAGE: " + json["msg"];
+                document.getElementById("functions").innerHTML = "";
+            }
+        }
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    function renderFunction(json) {
+        document.getElementById("function_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
+        var output = "";
+        for (var i = 0; i < json["functions"].length; i++) {
+            output += "<h3>" + json["functions"][i]["name"] + "</h3>"
+            output += "<p>" + json["functions"][i]["docs"] + "</p>"
+        }
+        document.getElementById("functions").innerHTML = output;
+    }
+}
+</script>
+
+<iframe name="this-page" id="this-page" style="display: none;"></iframe>
+
+<div class="container">
+<div class="centered">
+<h1>Function Search</h1>
+<form action="/func" id="search_form" method="GET" target="this-page" onsubmit="searchAndDisplay()">
+  <label for="name">Function name:</label>
+  <input type="text" id="name" name="name"><br><br>
+  <label for="name_cmp">Name comparison method:</label>
+  <select name="name_cmp" id="name_cmp">
+    <option value="eq">Exact</option>
+    <option value="re">Regex</option>
+    <option value="lev" selected>Levenshtein distance</option>
+    <option value="sim">NLP Sentence-wise Similarity</option>
+    <option value="subsim">NLP Chunk-wise Similarity</option>
+  </select>
+  <br><br>
+  <label for="docs">Find in doc:</label>
+  <input type="text" id="docs" name="docs"><br><br>
+  <label for="doc_cmp">Doc comparison method:</label>
+  <select name="doc_cmp" id="doc_cmp">
+    <option value="eq">Exact</option>
+    <option value="re">Regex</option>
+    <option value="lev">Levenshtein distance</option>
+    <option value="sim">NLP Sentence-wise Similarity</option>
+    <option value="subsim" selected>NLP Chunk-wise Similarity</option>
+  </select>
+  <br><br>
+  <input type="submit" />
+</form>
+
+<p id="function_msg"></p>
+<div id="functions"></div>
+</div>
+</div>
+</body>
+</html>
