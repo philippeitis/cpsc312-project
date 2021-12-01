@@ -264,6 +264,11 @@ test("sub_similarity constraint", [nondet]) :-
     sub_similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
     sub_similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
 
+test("sub_similarity constraint", [nondet]) :-
+    function:fname(Uuid, "print"),
+    sub_similarity_constraint("see also", docs, Uuid, _, no_constraint),
+    sub_similarity_constraint("also see", docs, Uuid, _, no_constraint).
+
 test(
     "at_most_n fails when it hits 0",
     [fail]

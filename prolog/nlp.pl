@@ -3,6 +3,9 @@
 
 :- dynamic streams/3.
 
+:- table(similarity).
+:- table(sub_similarity).
+
 :- at_halt(close_tokenizer).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,7 +108,7 @@ similarity(Docs, Needle, Similarity) :-
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),
-    number_string(Similarity, String).
+    number_string(Similarity, String), !.
 
 %% similarity(+Docs:string, +Needle:string, -Similarity:float)
 % Unifies Similarity with the similarity between Docs and Needle, as determined
@@ -118,4 +121,4 @@ sub_similarity(Docs, Needle, Similarity) :-
     flush_output(In),
     read_line_to_string(Out, "OK"),
     read_line_to_string(Out, String),
-    number_string(Similarity, String).
+    number_string(Similarity, String), !.

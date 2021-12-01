@@ -77,7 +77,7 @@ find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs)
     func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Uuid|Uuids]),
     maplist(get_function, [Uuid|Uuids], Funcs),
     jsonify_funcs(Funcs, JsonFuncs),
-    reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}).
+    reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}), !.
 
 find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
     render_param(FuncName0, FuncName),
