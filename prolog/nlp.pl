@@ -1,7 +1,7 @@
 :- module(nlp, [similarity/3, sub_similarity/3, setup_tokenizer/0]).
 :- use_module(library(http/http_client)).
 
-:- dynamic streams/3.
+:- dynamic streams/2.
 
 :- table(similarity).
 :- table(sub_similarity).
@@ -75,25 +75,27 @@ setup_tokenizer :-
 % input and output streams, respectively. Otherwise, creates a tokenizer instance,
 % and unifies the input and output streams with In and Out, respectively.
 launch_tokenizer(In, Out) :-
-    streams(tokenizer, In, Out), !.
+    streams(In, Out), !.
 
 launch_tokenizer(In, Out) :-
-    \+streams(tokenizer, _, _),
+    \+streams(_, _),
     relative_python_path(Python),
     process_create(
         Python,
         ['nlp.py'],
         [stdin(pipe(In)), stdout(pipe(Out)), stderr(null)]
     ),
-    assertz(streams(tokenizer, In, Out)), !.
+    mutex_create(tokenizer),
+    assertz(streams(In, Out)), !.
 
 %% Closes the tokenizer by writing exit to the input stream.
 close_tokenizer :-
     (
-        streams(tokenizer, In, _) -> (
+        streams(In, _) -> (
             write(In, "exit\n"),
             flush_output(In),
-            retractall(streams(tokenizer, _, _))
+            mutex_destroy(tokenizer),
+            retractall(streams(_, _))
         ); true
     ).
 
@@ -102,23 +104,32 @@ close_tokenizer :-
 % by spaCy's similarity method.
 similarity(Docs, Needle, Similarity) :-
     launch_tokenizer(In, Out),
-    string_length(Docs, LenA),
-    string_length(Needle, LenB),
-    format(In, "similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
-    flush_output(In),
-    read_line_to_string(Out, "OK"),
-    read_line_to_string(Out, String),
-    number_string(Similarity, String), !.
+    with_mutex(tokenizer, 
+        (
+            string_length(Docs, LenA),
+            string_length(Needle, LenB),
+            format(In, "similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
+            flush_output(In),
+            read_line_to_string(Out, "OK"),
+            read_line_to_string(Out, String),
+            number_string(Similarity, String)
+        )
+    ), !.
+
 
 %% similarity(+Docs:string, +Needle:string, -Similarity:float)
 % Unifies Similarity with the similarity between Docs and Needle, as determined
 % by comparing a sliding window of words in Docs to Needle.
 sub_similarity(Docs, Needle, Similarity) :-
     launch_tokenizer(In, Out),
-    string_length(Docs, LenA),
-    string_length(Needle, LenB),
-    format(In, "sub_similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
-    flush_output(In),
-    read_line_to_string(Out, "OK"),
-    read_line_to_string(Out, String),
-    number_string(Similarity, String), !.
+    with_mutex(tokenizer, 
+        (
+            string_length(Docs, LenA),
+            string_length(Needle, LenB),
+            format(In, "sub_similarity ~w ~w~n~w~w", [LenA, LenB, Docs, Needle]),
+            flush_output(In),
+            read_line_to_string(Out, "OK"),
+            read_line_to_string(Out, String),
+            number_string(Similarity, String)
+        )
+    ), !.
