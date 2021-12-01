@@ -179,6 +179,7 @@ test("storage roundtrip succeeds", [nondet]) :-
 
 :- begin_tests('search').
 :- use_module(search).
+:- use_module(func_constraints).
 
 test("dfs works") :-
     aggregate_all(
@@ -206,6 +207,13 @@ test("No paths for types which do not exist", [fail]) :-
         ["not a real type"],
         ["also not a real type"],
     _).
+
+test("Regex matches all", [fail]) :-
+    find_funcs(
+        regex_constraint(".*", name),
+        Funcs
+    ),
+    length(Funcs, 8).
 
 :- end_tests('search').
 
