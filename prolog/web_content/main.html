@@ -8,45 +8,10 @@
             width: 800px;
         }
     </style>
-        
+    <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/form-serialize/serialize-0.2.min.js"></script>
+    <script src="./main.js"></script>
 </head>
 <body>
-<script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/form-serialize/serialize-0.2.min.js"></script>
-
-<script>
-function searchAndDisplay() {
-    var xmlhttp = new XMLHttpRequest();
-    var form = document
-        .getElementById("search_form");
-    var url = form.action + "?" + serialize(form);
-    console.log(url);
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            if (this.status === 200) {
-                var myArr = JSON.parse(this.responseText);
-                renderFunction(myArr);
-            }
-            if (this.status === 404) {
-                var json = JSON.parse(this.responseText);
-                document.getElementById("function_msg").innerHTML = "MESSAGE: " + json["msg"];
-                document.getElementById("functions").innerHTML = "";
-            }
-        }
-    };
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
-
-    function renderFunction(json) {
-        document.getElementById("function_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
-        var output = "";
-        for (var i = 0; i < json["functions"].length; i++) {
-            output += "<h3>" + json["functions"][i]["name"] + "</h3>"
-            output += "<p>" + json["functions"][i]["docs"] + "</p>"
-        }
-        document.getElementById("functions").innerHTML = output;
-    }
-}
-</script>
 
 <iframe name="this-page" id="this-page" style="display: none;"></iframe>
 
