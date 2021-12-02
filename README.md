@@ -67,14 +67,21 @@ Launching the server will output the following text:
 ```console
 ...
 Started server at http://localhost:4999/
-Go to http://localhost:4999/openapi for a web-based REPL
+Go to http://localhost:4999/openapi to interact with the OpenAPI specification
+Go to http://localhost:4999/main.html to interact with the application
 docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to the linked site (http://localhost:4999/openapi) you can interact with the REST API by sending requests using a convenient UI, which presents all of the possible input fields, and then performs the request for you and displays the response. This is accomplished by using [RapiDoc](https://mrin9.github.io/RapiDoc/) to display an OpenAPI specification. This should look like [this image](./resources/openapi.png).
+By going to http://localhost:4999/main.html, you can interact with a web-based FastFunc UI, which provides a more discoverable interface for searching functions compared to the command line. 
 
+By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which provides schemas for all of the endpoints the server provides and allows user interaction. This should look like [this image](./resources/openapi.png).
+
+#### Prolog Dependencies
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
+
+#### Python Dependencies
+This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language processing library. spaCy is automatically installed into a virtual environment if necessary by all build targets. This will also download a ~50MB natural language model. 
 
 [USAGE.md](USAGE.md) goes into further detail about how to use FastFunc, and provides specific examples of different tasks to help direct your evaluation.
 
