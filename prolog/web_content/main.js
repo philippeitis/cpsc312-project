@@ -6,11 +6,11 @@ function searchAndDisplay() {
     console.log(url);
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
+            const json = JSON.parse(this.responseText);
             if (this.status === 200) {
-                renderFunction(JSON.parse(this.responseText));
+                renderFunction(json);
             }
             if (this.status === 404) {
-                const json = JSON.parse(this.responseText);
                 document.getElementById("function_msg").innerHTML = "<h2 style='color:red'>" + json["msg"] + "</h2>";
                 document.getElementById("functions").innerHTML = "";
             }
