@@ -148,7 +148,9 @@ match_fuzzy_substr(Substr) :- member(Substr, ["fsubstr", fsubstr]).
 field_constraint(Field, String, Eq, func_constraints:equality_constraint(String, Field)) :-
     match_eq(Eq), !.
 field_constraint(Field, String, Lev, func_constraints:levenshtein_constraint(String, Field, MaxDis)) :-
-    match_lev(Lev), !, string_length(String, MaxDis).
+    match_lev(Lev), !,
+    string_length(String, StrLen),
+    MaxDis is round(sqrt(StrLen)).
 field_constraint(Field, String, Substr, func_constraints:substring_constraint(String, Field)) :-
     match_substr(Substr), !.
 field_constraint(Field, String, Subseq, func_constraints:subsequence_constraint(String, Field)) :-
