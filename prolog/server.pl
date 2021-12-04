@@ -205,16 +205,16 @@ attempt_type_deletion(Uuid) :-
 %% This should be more interesting (eg. allow using cmp methods here)
 type_endpoint(get, Request) :-
     http_parameters(Request,
-        [name(Name, [string])]
+        [uuid(Uuid, [atom])]
     ),
-    find_and_fmt_type(Name).
+    find_and_fmt_type(Uuid).
 
 type_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
     jsonify_type(Ty, JsonIn),
     Ty = type(Uuid, Name, Generics, Impls, Docs),
     add_type(Uuid, Name, Generics, Impls, Docs),
-    format(string(Msg), "Created type ~w", [Uuid]),
+    format(string(Msg), "Created type ~w", [Name]),
     reply_json_dict(_{msg: Msg, uuid:Uuid}), !.
 
 type_endpoint(post, _) :-
@@ -225,7 +225,7 @@ type_endpoint(post, _) :-
 type_endpoint(delete, Request) :-
     http_parameters(
         Request,
-        [uuid(Uuid, [string])]
+        [uuid(Uuid, [atom])]
     ),
     attempt_type_deletion(Uuid).
 

@@ -86,9 +86,6 @@ test(
         nondet,
         cleanup(shutdown(Port))
     ]) :-
-    % parseInt55 does not exist and should not be found
-    % Adding items should be fine even if repeated.
-    % parseInt55 should now exist.
     post_fn_ok(Port),
     post_fn_ok(Port),
     get_fn(Port, _{msg:"Found functions", functions:[
@@ -127,8 +124,8 @@ test(
 %% Defining, searching, and deleting types
 
 %% Checks that posting AddSet<X: Add> works correctly
-post_type_ok(Port) :-
-    jsonify_type(type('99', "Set", [generic("X", ["Add"])], ["Add"], ""), JsonType),
+post_type_ok(Port, Uuid) :-
+    jsonify_type(type(_, "Set", [generic("X", ["Add"])], ["Add"], ""), JsonType),
     atom_json_dict(Type, JsonType, [as(atom)]),
     http_post([
             protocol(http),
@@ -139,26 +136,28 @@ post_type_ok(Port) :-
         atom('application/json', Type),
         _{
             msg:"Created type Set",
-            uuid:_
+            uuid:Uuids
         },
         [json_object(dict)]
-    ).
+    ),
+    atom_string(Uuid, Uuids).
 
 %% Runs a request which gets parseInt55 and unfies the response with Rpely
-get_type(Port, Reply) :-
+get_type(Port, Uuid, Reply) :-
+    atom_concat('/type?uuid=', Uuid, Path),
     http_get([
             protocol(http),
             host(localhost),
             port(Port),
-            path('/type?name=Set')
+            path(Path)
         ],
         Reply,
         [json_object(dict)]
     ).
 
 %% Runs a request which deletes parseInt55 and unfies the response with Rpely
-delete_type(Port, Name, Reply) :-
-    atom_concat('/type?name=', Name, Path),
+delete_type(Port, Uuid, Reply) :-
+    atom_concat('/type?uuid=', Uuid, Path),
     http_delete([
             protocol(http),
             host(localhost),
@@ -202,7 +201,7 @@ test(
         nondet,
         cleanup(shutdown(Port))
     ]) :-
-    post_type_ok(Port).
+    post_type_ok(Port, _).
 
 test(
     "Runs an example client session",
@@ -211,16 +210,16 @@ test(
         nondet,
         cleanup(shutdown(Port))
     ]) :-
-    post_type_ok(Port),
-    post_type_ok(Port),
-    get_type(Port, _{msg:"Found type", type:JsonType}),
+    post_type_ok(Port, Uuid),
+    get_type(Port, Uuid, _{msg:"Found type", type:JsonType}),
     % Delete all copies of Set.
     assertion(
-        jsonify_type(type(Uuid, "Set", [generic("X", ["Add"])], ["Add"], ""), JsonType)
+        (jsonify_type(Ty, JsonType), Ty = type(Uuid, "Set", [generic("X", ["Add"])], ["Add"], ""))
     ),
-    delete_type(Port, 'Set', _{msg: "Removed type", uuid:Uuid}),
+    atom_string(Uuid, Uuids),
+    delete_type(Port, Uuid, _{msg:"Removed type", uuid:Uuids}),
     % Check that we did in fact delete parseInt55 - this should be 404
     % If not, we don't throw an exception and read fail.
-    catch((get_type(Port, _), fail), _, true).
+    catch((get_type(Port, Uuid, _), fail), _, true).
 
 :- end_tests('type endpoint tests').
