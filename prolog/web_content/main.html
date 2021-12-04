@@ -25,7 +25,10 @@
   <select name="name_cmp" id="name_cmp">
     <option value="eq">Exact</option>
     <option value="re">Regex</option>
-    <option value="lev" selected>Levenshtein distance</option>
+    <option value="lev" selected>Levenshtein distance (total)</option>
+    <option value="fsubstr">Levenshtein distance (partial)</option>
+    <option value="substr">Substring match</option>
+    <option value="subseq">Subsequence match</option>
     <option value="sim">NLP Sentence-wise Similarity</option>
     <option value="subsim">NLP Chunk-wise Similarity</option>
   </select>
@@ -36,7 +39,10 @@
   <select name="doc_cmp" id="doc_cmp">
     <option value="eq">Exact</option>
     <option value="re">Regex</option>
-    <option value="lev">Levenshtein distance</option>
+    <option value="lev">Levenshtein distance (total)</option>
+    <option value="fsubstr">Levenshtein distance (partial)</option>
+    <option value="substr">Substring match</option>
+    <option value="subseq">Subsequence match</option>
     <option value="sim">NLP Sentence-wise Similarity</option>
     <option value="subsim" selected>NLP Chunk-wise Similarity</option>
   </select>
