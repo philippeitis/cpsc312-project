@@ -95,9 +95,9 @@ test("parse signature generics is subst for nested type") :-
         [generic("X", ["T", "Q"])], [type("List", [gen("X")], _)], [gen("X")], "").
     
 test("parse one impl") :-
-    parse_type("type str: Add", type("str", [], ["Add"])).
+    parse_type("type str: Add", type(_, "str", [], ["Add"], "")).
 test("parse two impls") :-
-    parse_type("type str: Add + Sub", type("str", [], ["Add", "Sub"])).
+    parse_type("type str: Add + Sub", type(_, "str", [], ["Add", "Sub"], "")).
 
 
 test("parse trait bounds") :-
@@ -134,7 +134,7 @@ test("jsonify trait roundtrip suceeds") :-
     serde:jsonify_traits(NewTraits, JTraits),
     assertion(Traits=NewTraits).
 
-test("jsonify type roundtrip suceeds") :-
+test("jsonify function roundtrip suceeds") :-
     find_all_functions(Functions),
     serde:jsonify_funcs(Functions, JFunctions),
     serde:jsonify_funcs(NewFunctions, JFunctions),
@@ -169,7 +169,7 @@ test("storage roundtrip succeeds", [nondet]) :-
     open_string(String0, Stream1),
     load_knowledge_base(Stream1),
     % Should only have 4 types, 1 trait, and 8 functions
-    assertion(aggregate_all(count, function:type(_, _, _), 4)),
+    assertion(aggregate_all(count, function:type(_, _, _, _, _), 4)),
     assertion(aggregate_all(count, function:trait(_, _), 1)),
     assertion(aggregate_all(count, function:function(_, _, _, _, _, _), 9)).
 

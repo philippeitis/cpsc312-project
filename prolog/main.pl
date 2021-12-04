@@ -145,8 +145,8 @@ execute_command(String) :-
 
 execute_command(String) :-
     split_left(String, " ", 1, ["define", Rest]),
-    parse_type(Rest, type(Name, Generics, Bounds)),
-    update_type(Name, Generics, Bounds),
+    parse_type(Rest, type(_, Name, Generics, Bounds, Docs)),
+    update_type(_, Name, Generics, Bounds, Docs),
     format("Added type ~w<~w>: ~w~n", [Name, Generics, Bounds]), nl, !.
 
 execute_command(String) :-

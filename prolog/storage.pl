@@ -26,8 +26,8 @@ find_all_traits(Traits) :-
 %% Helpers for listing items.
 get_function(function(Uuid, Name, Generics, Inputs, Outputs, Docs)) :-
     function(Uuid, Name, Generics, Inputs, Outputs, Docs).
-get_type(type(Name, Generics, Impls)) :- 
-    type(Name, Generics, Impls).
+get_type(type(Uuid, Name, Generics, Impls, Docs)) :- 
+    type(Uuid, Name, Generics, Impls, Docs).
 get_trait(trait(Name, Bounds)) :-
     trait(Name, Bounds).
 
@@ -54,5 +54,5 @@ store_knowledge_base(Stream) :-
 % Clears all items from the knowledge base
 clear_knowledge_base :-
     retractall(function(_, _, _, _, _, _)),
-    retractall(type(_, _, _)),
+    retractall(type(_, _, _, _, _)),
     retractall(trait(_, _)).

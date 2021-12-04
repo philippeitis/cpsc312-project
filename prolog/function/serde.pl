@@ -8,6 +8,20 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Serializing and deserializing functions, types, and traits
+add_impls(JSONIn, List, JSONOut) :-
+    is_list(List),
+    JSONOut = JSONIn.put(impls, List).
+add_impls(_, List, _) :- \+is_list(List).
+
+atomize_uuid(Uuid, Uuid) :-
+    var(Uuid), !.
+
+atomize_uuid(Uuid, Uuida) :-
+    \+var(Uuid), atom_string(Uuid, Uuida), !.
+
+atomize_uuid(Uuid, Uuida) :-
+    \+var(Uuida), atom_string(Uuid, Uuida), !.
+
 jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
     is_list(Bounds), !.
 jsonify_generic(generic(Name, _), _{name:Name}).
@@ -17,11 +31,33 @@ jsonify_type(Generic, JsonGeneric) :-
     jsonify_generic(Generic, JsonGeneric), !.
 jsonify_type(Type, Type) :- string(Type), !.
 jsonify_type(gen(Name), _{generic:Name}) :- !.
-jsonify_type(type(Name, Generics, Impls), _{name:Name, generics:JGenerics, impls:Impls}) :-
-    is_list(Impls),
+jsonify_type(type(Name, Generics), _{name:Name, generics:JGenerics}) :-
     jsonify_types(Generics, JGenerics), !.
-jsonify_type(type(Name, Generics, _), _{name:Name, generics:JGenerics}) :-
-    jsonify_types(Generics, JGenerics), !.
+
+jsonify_type(
+        type(Uuid, Name, Generics, Impls, Docs),
+        JSON
+    ) :-
+    var(JSON),
+    atomize_uuid(Uuid, Uuida),
+    jsonify_generics(Generics, JGenerics),
+    JSONNoImpls = _{
+        uuid:Uuida,
+        name:Name,
+        generics:JGenerics,
+        docs:Docs
+    },
+    add_impls(JSONNoImpls, Impls, JSON), !.
+
+jsonify_type(
+    Type,
+    JSON
+) :-
+    var(Type),
+    atomize_uuid(Uuida, JSON.get(uuid, _)),
+    jsonify_generics(Generics, JSON.get(generics)),
+    Type = type(Uuida, JSON.get(name), Generics, JSON.get(impls, _), JSON.get(docs, "")), !.
+
 jsonify_trait(trait(Name, Bounds), _{name:Name, bounds:Bounds}).
 
 %% List helpers
@@ -35,60 +71,30 @@ jsonify_traits(Traits, JTraits) :-
     maplist(jsonify_trait, Traits, JTraits).
 
 jsonify_func(
-    function(Uuid, Name, Generics, Inputs, Outputs, ""),
-    _{
-        uuid:Uuida,
-        name:Name,
-        generics:JGenerics,
-        inputs:JInputs,
-        outputs:JOutputs
-    }) :-
-    (\+var(Uuid); \+var(Uuida)),
-    atom_string(Uuid, Uuida),
+        function(Uuid, Name, Generics, Inputs, Outputs, Docs),
+        JSON
+    ) :-
+    var(JSON),
+    atomize_uuid(Uuid, Uuida),
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs), !.
-
-jsonify_func(
-    function(_, Name, Generics, Inputs, Outputs, ""),
-    _{
-        name:Name,
-        generics:JGenerics,
-        inputs:JInputs,
-        outputs:JOutputs
-    }) :-
-    jsonify_generics(Generics, JGenerics),
-    jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs), !.
-
-jsonify_func(
-    function(Uuid, Name, Generics, Inputs, Outputs, Docs),
-    _{
+    jsonify_types(Outputs, JOutputs),
+    JSON = _{
         uuid:Uuida,
         name:Name,
         generics:JGenerics,
         inputs:JInputs,
         outputs:JOutputs,
         docs:Docs
-    }) :-
-    (\+var(Uuid); \+var(Uuida)),
-    atom_string(Uuid, Uuida),
-    jsonify_generics(Generics, JGenerics),
-    jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs), !.
+    }, !.
 
-jsonify_func(
-    function(_, Name, Generics, Inputs, Outputs, Docs),
-    _{
-        name:Name,
-        generics:JGenerics,
-        inputs:JInputs,
-        outputs:JOutputs,
-        docs:Docs
-    }) :-
-    jsonify_generics(Generics, JGenerics),
-    jsonify_types(Inputs, JInputs),
-    jsonify_types(Outputs, JOutputs), !.
+jsonify_func(Func, JSON) :-
+    var(Func),
+    atomize_uuid(Uuida, JSON.get(uuid, _)),
+    jsonify_generics(Generics, JSON.get(generics)),
+    jsonify_types(Inputs, JSON.get(inputs)),
+    jsonify_types(Outputs, JSON.get(outputs)),
+    Func = function(Uuida, JSON.get(name), Generics, Inputs, Outputs, JSON.get(docs, "")), !.
 
 jsonify_funcs(Funcs, JFuncs) :-
     maplist(jsonify_func, Funcs, JFuncs).

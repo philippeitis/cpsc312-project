@@ -128,7 +128,7 @@ test(
 
 %% Checks that posting AddSet<X: Add> works correctly
 post_type_ok(Port) :-
-    jsonify_type(type("Set", [generic("X", ["Add"])], ["Add"]), JsonType),
+    jsonify_type(type('99', "Set", [generic("X", ["Add"])], ["Add"], ""), JsonType),
     atom_json_dict(Type, JsonType, [as(atom)]),
     http_post([
             protocol(http),
@@ -138,7 +138,8 @@ post_type_ok(Port) :-
         ],
         atom('application/json', Type),
         _{
-            msg:"Created type Set"
+            msg:"Created type Set",
+            uuid:_
         },
         [json_object(dict)]
     ).
@@ -215,9 +216,9 @@ test(
     get_type(Port, _{msg:"Found type", type:JsonType}),
     % Delete all copies of Set.
     assertion(
-        jsonify_type(type("Set", [generic("X", ["Add"])], ["Add"]), JsonType)
+        jsonify_type(type(Uuid, "Set", [generic("X", ["Add"])], ["Add"], ""), JsonType)
     ),
-    delete_type(Port, 'Set', _{msg: "Removed type", name:"Set"}),
+    delete_type(Port, 'Set', _{msg: "Removed type", uuid:Uuid}),
     % Check that we did in fact delete parseInt55 - this should be 404
     % If not, we don't throw an exception and read fail.
     catch((get_type(Port, _), fail), _, true).

@@ -1,6 +1,6 @@
 :- module(function, [
     function/6,
-    type/3,
+    type/5,
     trait/2,
     uuid/2,
     fname/2,
@@ -12,7 +12,8 @@
     specialized/2,
     get_field/3,
     add_function/6,
-    update_type/3,
+    add_type/5,
+    update_type/5,
     update_trait/2,
     get_function/2
 ]).
@@ -21,7 +22,7 @@
 :- use_module(sequence_ops).
 :- dynamic function/6.
 :- dynamic trait/2.
-:- dynamic type/3.
+:- dynamic type/5.
 :- dynamic specialized/2.
 
 %% Getters for function.
@@ -38,20 +39,20 @@ outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
 docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
 
 %% Update or add new types and functions
-update_type(Name, NewGenerics, NewImpls) :-
-    type(Name, OldGenerics, OldImpls),
+update_type(Uuid, Name, NewGenerics, NewImpls) :-
+    type(Uuid, Name, OldGenerics, OldImpls, Docs),
     append(OldImpls, NewImpls, AllImpls),
     append(OldGenerics, NewGenerics, AllGenerics),
     % TODO: Add all newly implied impls
     sort(AllImpls, ReducedImpls),
     sort(AllGenerics, ReducedGenerics),
-    retract(type(Name, _, _)),
-    assertz(type(Name, ReducedGenerics, ReducedImpls)), !.
+    retract(type(Uuid, _, _, _, _)),
+    assertz(type(Uuid, Name, ReducedGenerics, ReducedImpls, Docs)), !.
 
-update_type(Name, NewGenerics, NewImpls) :-
+update_type(Uuid, Name, NewGenerics, NewImpls, Docs) :-
     sort(NewImpls, Impls),
     sort(NewGenerics, Generics),
-    assertz(type(Name, Generics, Impls)).
+    add_type(Uuid, Name, Generics, Impls, Docs).
 
 update_trait(Name, NewBounds) :-
     trait(Name, OldBounds),
@@ -81,20 +82,30 @@ init_uuid(Uuid) :- \+var(Uuid), !.
 init_uuid(Uuid) :-
     var(Uuid), uuid(Uuid), !.
 
-add_function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs) :-
+add_function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs) :-
     init_uuid(Uuid),
     add_fn_generic_traits(Generics),
-    assertz(function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)).
+    assertz(function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs)).
 
-get_function(Uuid, function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs)) :-
-    function(Uuid, FnName, Generics, InputTypes, OutputTypes, Docs).
+get_function(Uuid, function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs)) :-
+    function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs).
+
+add_type(Uuid, Name, Generics, Impls, Docs) :-
+    init_uuid(Uuid),
+    assertz(type(Uuid, Name, Generics, Impls, Docs)).
+
+get_type(Uuid, type(Uuid, Name, Generics, Impls, Docs)) :-
+    type(Uuid, Name, Generics, Impls, Docs).
+
+get_type_by_name(Name, type(Uuid, Name, Generics, Impls, Docs)) :-
+    type(Uuid, Name, Generics, Impls, Docs).
 
 %% generic(Name, Bounds:list).
 %% type(Name, Generics:list, Implements:list)
-type("int", [], ["Add"]).
-type("Optional", [], []).
-type("str", [], []).
-type("List", [generic("X", _)], ["Add"]).
+:- add_type(_, "int", [], ["Add"], "The integer type").
+:- add_type(_, "Optional", [], [], "A type which may contain a value").
+:- add_type(_, "str", [], [], "The string type.").
+:- add_type(_, "List", [generic("X", _)], ["Add"], "The string type.").
 
 %% trait(Name, Bounds:list)
 trait("Add", []).
@@ -112,14 +123,14 @@ ez_function(Name, Inputs, Outputs, Docs) :-
 :- ez_function("print2", ["int"], ["void"], "documentation").
 :- ez_function("increment", ["int"], ["int"], "The increment function takes an integer, adds one to it, and returns it.").
 :- ez_function("decrement", ["int"], ["int"], "The decrement function takes an integer, subtracts one from it, and returns it.").
-:- add_function(_, "listify", [generic("X", _)], [gen("X")], [type("List", [gen("X")], _)], "Produces a list containing the given value.").
-:- add_function(_, "sum", [generic("X", ["Add"])], [type("List", [gen("X")], _)], [gen("X")], "Sum, or add sequence adds all of the items in the list. It returns a single value which is the sum of this list.").
+:- add_function(_, "listify", [generic("X", _)], [gen("X")], [type("List", [gen("X")])], "Produces a list containing the given value.").
+:- add_function(_, "sum", [generic("X", ["Add"])], [type("List", [gen("X")])], [gen("X")], "Sum, or add sequence adds all of the items in the list. It returns a single value which is the sum of this list.").
 :- add_function(_, "add", [generic("X", ["Add"])], [gen("X"), gen("X")], [gen("X")], "Adds two generics").
 
 %% Type processing
 %% Produces true if the given type satisfies the constraints of the given generic.
 type_is_compat_with_generic(Name, generic(_, GImpls)) :-
-    type(Name, _, Impls),
+    type(_, Name, _, Impls, _),
     list_subset(GImpls, Impls).
 
 is_generic(generic(_, _)).
@@ -141,7 +152,7 @@ fn_interp_valid(Func, Interp) :-
 % Produces true if ConcreteTypes is equivalent to GenericTypes with the given interpretation
 subst(Interp, gen(Name), ConcreteType) :-
     member((Name, ConcreteType), Interp), !.
-subst(Interp, type(Name, SubTypes, Bounds), type(Name, ConcreteTypes, Bounds)) :-
+subst(Interp, type(Name, SubTypes), type(_, Name, ConcreteTypes, _, _)) :-
     maplist(subst(Interp), SubTypes, ConcreteTypes), !.
 subst(_, ConcreteType, ConcreteType) :- !.
 

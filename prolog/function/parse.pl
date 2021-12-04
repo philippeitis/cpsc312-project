@@ -38,6 +38,11 @@ wh -->  "".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parsing text representation of functions
 
+%% DCG: Parse optional documentation
+optional_doc(Docs) -->
+    wh, "|", wh, ez_str(Docs).
+optional_doc("") --> wh.
+
 %% DCG: Parse a single type
 % List<X, Y, Z>
 single_type(type(Name, Generics, _)) -->
@@ -56,17 +61,22 @@ list_of_types([]) --> [].
 
 %% DCG: Parse a single type declaration
 % List<X: ..., Y, Z> :
-type_decl(type(Name, Generics, Decl)) -->
+type_decl(type(_, Name, Generics, Decl, Docs)) -->
     "type", wh,
     ez_str(Name),
     wh,
     list_of_gen(Generics),
     wh, ":", wh,
-    parse_bounds(Decl).
-type_decl(type(Name, Generics, [])) -->
+    parse_bounds(Decl),
+    wh,
+    optional_doc(Docs).
+
+type_decl(type(Name, Generics, [], Docs)) -->
     "type", wh,
     ez_str(Name), wh,
-    list_of_gen(Generics).
+    list_of_gen(Generics),
+    wh,
+    optional_doc(Docs).
 
 % Parse a generic in a function signature:
 % X: Add + Sub
@@ -113,11 +123,6 @@ parse_sig(Name, [], Inputs, Outputs, Docs) -->
     wh, "::", wh,
     parse_type_sig(Inputs, Outputs),
     optional_doc(Docs).
-
-%% DCG: Parse optional documentation
-optional_doc(Docs) -->
-    wh, "|", wh, ez_str(Docs).
-optional_doc("") --> wh.
 
 %% Parse a type signature.
 parse_types(String, Inputs, Outputs) :-

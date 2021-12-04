@@ -175,29 +175,29 @@ fn_endpoint(delete, Request) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Defining, searching, and deleting types
 
-find_and_fmt_type(Name) :-
-    type(Name, Generics, Impls),
-    jsonify_type(type(Name, Generics, Impls), JsonType),
+find_and_fmt_type(Uuid) :-
+    type(Uuid, Name, Generics, Impls, Docs),
+    jsonify_type(type(Uuid, Name, Generics, Impls, Docs), JsonType),
     reply_json_dict(_{msg:"Found type", type: JsonType}).
 
-find_and_fmt_type(Name) :-
-    format(string(Msg), "No type with name ~w found.", [Name]),
+find_and_fmt_type(Uuid) :-
+    format(string(Msg), "No type with uuid ~w found.", [Uuid]),
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
     json_write_dict(current_output, _{msg:Msg}), !.
 
-attempt_type_deletion(Name) :-
-    type(Name, _, _),
-    retractall(type(Name, _, _)),
-    reply_json_dict(_{msg: "Removed type", name:Name}), !.
+attempt_type_deletion(Uuid) :-
+    type(Uuid, Name, Generics, Impls, Docs),
+    retractall(type(Uuid, Name, Generics, Impls, Docs)),
+    reply_json_dict(_{msg: "Removed type", uuid:Uuid}), !.
 
-attempt_type_deletion(Name) :-
+attempt_type_deletion(Uuid) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
     json_write_dict(current_output,
         _{
-            msg:"Name not found",
-            name:Name
+            msg:"Uuid not found",
+            uuid:Uuid
         }
     ).
 
@@ -210,10 +210,10 @@ type_endpoint(get, Request) :-
 
 type_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
-    jsonify_type(type(Name, Generics, Impls), JsonIn),
-    assertz(type(Name, Generics, Impls)),
-    format(string(Msg), "Created type ~w", [Name]),
-    reply_json_dict(_{msg: Msg}), !.
+    jsonify_type(type(Uuid, Name, Generics, Impls, Docs), JsonIn),
+    add_type(Uuid, Name, Generics, Impls, Docs),
+    format(string(Msg), "Created type ~w", [Uuid]),
+    reply_json_dict(_{msg: Msg, uuid:Uuid}), !.
 
 type_endpoint(post, _) :-
     format('Status: 400~n'), % User error
@@ -223,9 +223,9 @@ type_endpoint(post, _) :-
 type_endpoint(delete, Request) :-
     http_parameters(
         Request,
-        [name(Name, [string])]
+        [uuid(Uuid, [string])]
     ),
-    attempt_type_deletion(Name).
+    attempt_type_deletion(Uuid).
 
 %% favicon generated using https://redketchup.io/favicon-generator
 openapi(_) :-
