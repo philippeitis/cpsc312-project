@@ -32,11 +32,11 @@ func_field(name, Func, Field) :- fname(Func, Field).
 func_field(docs, Func, Field) :- docs(Func, Field).
 func_field(inputs, Func, Field) :- inputs(Func, Field).
 func_field(outputs, Func, Field) :- outputs(Func, Field).
-func_field(uuid, Func, Func).
+func_field(uuid, Func, Func) :- function(Func, _, _, _, _, _).
 
 type_field(name, Ty, Field) :- type(Ty, Field, _, _, _).
 type_field(docs, Ty, Field) :- type(Ty, _, _, _, Field).
-type_field(uuid, Ty, Ty).
+type_field(uuid, Ty, Ty) :- type(Ty, _, _, _, _).
 
 uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
 fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).

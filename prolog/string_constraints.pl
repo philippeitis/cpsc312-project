@@ -29,15 +29,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrappers for string comparison methods
 
-wrapper(Constraint, Getter, Func, Cost, NewConstraint) :-
-    wrap_core(Constraint, Getter, Func, Cost, NewConstraint).
+wrapper(Constraint, Getter, Item, Cost, NewConstraint) :-
+    wrap_core(Constraint, Getter, Item, Cost, NewConstraint).
 
-wrap_core(Constraint, Getter, Func, Cost, no_constraint) :-
-    call(Getter, Func, Value),
+wrap_core(Constraint, Getter, Item, Cost, no_constraint) :-
+    call(Getter, Item, Value),
     call(Constraint, Value, Cost), !.
 
-wrap_core(Constraint, Getter, Func, 1.0, wrapper(Constraint, Getter)) :-
-    call(Getter, Func, Value),
+wrap_core(Constraint, Getter, Item, 1.0, wrapper(Constraint, Getter)) :-
+    call(Getter, Item, Value),
     \+call(Constraint, Value, _), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
