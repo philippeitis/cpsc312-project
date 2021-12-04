@@ -15,6 +15,15 @@
           {
             "required": false,
             "schema": {
+              "title": "Uuid",
+              "type": "string"
+            },
+            "name": "uuid",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
               "title": "Name",
               "type": "string"
             },
@@ -98,6 +107,19 @@
               "default": "substr"
             },
             "name": "doc_cmp",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StrCmp"
+                }
+              ],
+              "default": "eq"
+            },
+            "name": "uuid_cmp",
             "in": "query"
           }
         ],
@@ -272,12 +294,69 @@
         "operationId": "type_get_type_get",
         "parameters": [
           {
-            "required": true,
+            "required": false,
             "schema": {
               "title": "Uuid",
               "type": "string"
             },
             "name": "uuid",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            },
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Docs",
+              "type": "string"
+            },
+            "name": "docs",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StrCmp"
+                }
+              ],
+              "default": "lev"
+            },
+            "name": "name_cmp",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StrCmp"
+                }
+              ],
+              "default": "substr"
+            },
+            "name": "doc_cmp",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/StrCmp"
+                }
+              ],
+              "default": "eq"
+            },
+            "name": "uuid_cmp",
             "in": "query"
           }
         ],
