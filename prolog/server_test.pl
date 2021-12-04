@@ -204,6 +204,16 @@ test(
     post_type_ok(Port, _).
 
 test(
+    "Get succeeds after post",
+    [
+        setup(server(Port, silent)),
+        nondet,
+        cleanup(shutdown(Port))
+    ]) :-
+    post_type_ok(Port, Uuid),
+    get_type(Port, Uuid, _{msg:"Found types", types:[_]}).
+
+test(
     "Runs an example client session",
     [
         setup(server(Port, silent)),
@@ -211,7 +221,7 @@ test(
         cleanup(shutdown(Port))
     ]) :-
     post_type_ok(Port, Uuid),
-    get_type(Port, Uuid, _{msg:"Found type", type:JsonType}),
+    get_type(Port, Uuid, _{msg:"Found types", types:[JsonType]}),
     % Delete all copies of Set.
     assertion(
         (jsonify_type(Ty, JsonType), Ty = type(Uuid, "Set", [generic("X", ["Add"])], ["Add"], ""))

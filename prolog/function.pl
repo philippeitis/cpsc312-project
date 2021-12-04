@@ -10,12 +10,14 @@
     docs/2,
     specialize/3,
     specialized/2,
-    get_field/3,
+    func_field/3,
+    type_field/3,
     add_function/6,
     add_type/5,
     update_type/5,
     update_trait/2,
-    get_function/2
+    get_function/2,
+    get_type/2
 ]).
 
 :- use_module(library(http/json)).
@@ -26,10 +28,15 @@
 :- dynamic specialized/2.
 
 %% Getters for function.
-get_field(Func, name, Field) :- fname(Func, Field).
-get_field(Func, docs, Field) :- docs(Func, Field).
-get_field(Func, inputs, Field) :- inputs(Func, Field).
-get_field(Func, outputs, Field) :- outputs(Func, Field).
+func_field(name, Func, Field) :- fname(Func, Field).
+func_field(docs, Func, Field) :- docs(Func, Field).
+func_field(inputs, Func, Field) :- inputs(Func, Field).
+func_field(outputs, Func, Field) :- outputs(Func, Field).
+func_field(uuid, Func, Func).
+
+type_field(name, Ty, Field) :- type(Ty, Field, _, _, _).
+type_field(docs, Ty, Field) :- type(Ty, _, _, _, Field).
+type_field(uuid, Ty, Ty).
 
 uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
 fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).

@@ -1,8 +1,8 @@
 :- module(search, [
     func_path/4,
     func_path_no_cycles/4,
-    find_fn/3,
-    find_funcs/2,
+    find_item/3,
+    find_items/2,
     func_search/7
 ]).
 :- use_module(function).
@@ -20,28 +20,30 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function level search
 
-%% find_fn(+Constraints, ?Function -Score)
-% Finds a function satisfying the constraints, unifying the score with Score
-find_fn(Constraint, Fn, Score) :-
-    call(Constraint, Fn, Score, NewConstraint),
+%% find_item(+Constraints, ?Item -Score)
+% Finds an Item satisfying the constraints, unifying the cost with Cost
+find_item(Constraint, Item, Cost) :-
+    call(Constraint, Item, Cost, NewConstraint),
     no_constraints_left(NewConstraint).
 
 second((_, B), B).
-%% Finds all functions satisfying the constraints, and orders them from
-% highest score to lowest.
-find_funcs(Constraint, Fns) :-
+
+%% find_item(+Constraints, ?Items -Score)
+%% Finds all items satisfying the constraints, and orders them from
+% lowest to highest cost.
+find_items(Constraint, Items) :-
     setof(
-        (Score, Fn),
-        find_fn(Constraint, Fn, Score),
-        FnPairs
+        (Score, Item),
+        find_item(Constraint, Item, Score),
+        ItemPairs
     ),
-    maplist(second, FnPairs, Fns).
+    maplist(second, ItemPairs, Items).
 
 %% Finds all functions with the constraints.
 func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
-    add_field_constraint(name, FuncName, NameCmp, [], C0),
-    add_field_constraint(docs, Docs, DocCmp, C0, C1),
-    find_funcs(
+    add_string_constraint(func_field(name), FuncName, NameCmp, [], C0),
+    add_string_constraint(func_field(docs), Docs, DocCmp, C0, C1),
+    find_items(
         and_constraint([
             input_constraint(Inputs),
             output_constraint(Outputs)|C1

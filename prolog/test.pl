@@ -209,8 +209,8 @@ test("No paths for types which do not exist", [fail]) :-
     _).
 
 test("Regex matches all", [fail]) :-
-    find_funcs(
-        regex_constraint(".*", name),
+    find_items(
+        regex_constraint(".*", func_field(name)),
         Funcs
     ),
     length(Funcs, 8).
@@ -233,16 +233,16 @@ test("and_constraint no constraints succeeds with score of 0.0") :-
     and_constraint([], Uuid, 0.0, and_constraint([])).
 test("substring constraint succeeds", [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    substring_constraint("parse", name, Uuid, 0.0, no_constraint).
+    substring_constraint("parse", func_field(name), Uuid, 0.0, no_constraint).
 test("substring constraint fails") :-
     function:fname(Uuid, "parseInt"),
-    substring_constraint("dsdsfdwa", name, Uuid, 1.0, _).
+    substring_constraint("dsdsfdwa", func_field(name), Uuid, 1.0, _).
 test("subsequence constraint", [nondet]) :-
     function:fname(Uuid, "parseInt"),
-    subsequence_constraint("pre", name, Uuid, 0.0, no_constraint).
+    subsequence_constraint("pre", func_field(name), Uuid, 0.0, no_constraint).
 test("subsequence constraint fail") :-
     function:fname(Uuid, "parseInt"),
-    subsequence_constraint("tspkn", name, Uuid, 1.0, _).
+    subsequence_constraint("tspkn", func_field(name), Uuid, 1.0, _).
 test("input constraint", [nondet]) :-
     function:fname(Uuid, "increment"),
     input_constraint(["int"], Uuid, 0.0, input_constraint(["int"])).
@@ -254,13 +254,13 @@ test(
     [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint("de.*", name, Uuid, 0.0, no_constraint).
+    regex_constraint("de.*", func_field(name), Uuid, 0.0, no_constraint).
 test(
     "regex constraint fail",
     [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint("d.*A", name, Uuid, 1.0, _).
+    regex_constraint("d.*A", func_field(name), Uuid, 1.0, _).
 
 test("similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
@@ -289,11 +289,11 @@ test("at_most_n does not decrement if failure") :-
 
 test("scale constraint") :-
     function:fname(Uuid, "parseInt"),
-    scale_constraint(substring_constraint("dsdsfdwa", name), 5.0, Uuid, 5.0, _).
+    scale_constraint(substring_constraint("dsdsfdwa", func_field(name)), 5.0, Uuid, 5.0, _).
 
 test("scale constraint") :-
     function:fname(Uuid, "parseInt"),
-    scale_constraint(substring_constraint("dsdsfdwa", name), 0.3, Uuid, 0.3, _).
+    scale_constraint(substring_constraint("dsdsfdwa", func_field(name)), 0.3, Uuid, 0.3, _).
 
 :- end_tests('func_constraints').
 

@@ -1,6 +1,6 @@
 :- module(func_constraints, [
     and_constraint/4,
-    add_field_constraint/5,
+    add_string_constraint/5,
     input_constraint/4,
     output_constraint/4,
     equality_constraint/5,
@@ -30,15 +30,15 @@ no_constraint(_, 0.0, no_constraint).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wrappers for string comparison methods
 
-wrapper(Constraint, Field, Func, Cost, NewConstraint) :-
-    wrap_core(Constraint, Field, Func, Cost, NewConstraint).
+wrapper(Constraint, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(Constraint, Getter, Func, Cost, NewConstraint).
 
-wrap_core(Constraint, Field, Func, Cost, no_constraint) :-
-    get_field(Func, Field, Value),
+wrap_core(Constraint, Getter, Func, Cost, no_constraint) :-
+    call(Getter, Func, Value),
     call(Constraint, Value, Cost), !.
 
-wrap_core(Constraint, Field, Func, 1.0, wrapper(Constraint, Field)) :-
-    get_field(Func, Field, Value),
+wrap_core(Constraint, Getter, Func, 1.0, wrapper(Constraint, Getter)) :-
+    call(Getter, Func, Value),
     \+call(Constraint, Value, _), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,25 +47,25 @@ wrap_core(Constraint, Field, Func, 1.0, wrapper(Constraint, Field)) :-
 % x_constraint: Args*, Func, Cost, NewConstraint
 
 equality_core(Target, Target, 0.0).
-equality_constraint(Target, Field, Func, Cost, NewConstraint) :-
-    wrap_core(equality_core(Target), Field, Func, Cost, NewConstraint).
+equality_constraint(Target, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(equality_core(Target), Getter, Func, Cost, NewConstraint).
 
 sub_core(Needle, String, 0.0) :-
     sub_string(String, _, _, _, Needle), !.
-substring_constraint(Needle, Field, Func, Cost, NewConstraint) :-
-    wrap_core(sub_core(Needle), Field, Func, Cost, NewConstraint).
+substring_constraint(Needle, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(sub_core(Needle), Getter, Func, Cost, NewConstraint).
 
 lev_core(Target, MaxDistance, String, Distance) :-
     levenshtein_distance(Target, String, LevDistance),
     LevDistance =< MaxDistance,
     Distance is LevDistance / MaxDistance, !.
-levenshtein_constraint(Target, Field, MaxDistance, Func, Cost, NewConstraint) :-
-    wrap_core(lev_core(Target, MaxDistance), Field, Func, Cost, NewConstraint).
+levenshtein_constraint(Target, Getter, MaxDistance, Func, Cost, NewConstraint) :-
+    wrap_core(lev_core(Target, MaxDistance), Getter, Func, Cost, NewConstraint).
 
 seq_core(Sequence, String, 0.0) :-
     sequence_match(Sequence, String), !.
-subsequence_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
-    wrap_core(seq_core(Sequence), Field, Func, Cost, NewConstraint).
+subsequence_constraint(Sequence, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(seq_core(Sequence), Getter, Func, Cost, NewConstraint).
 
 :- if(can_use_regex).
 regex_core(Regex, String, 0.0) :-
@@ -81,29 +81,29 @@ regex_core(_, _, _) :-
         )
     ).
 :- endif.
-regex_constraint(Regex, Field, Func, Cost, NewConstraint) :-
-    wrap_core(regex_core(Regex), Field, Func, Cost, NewConstraint).
+regex_constraint(Regex, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(regex_core(Regex), Getter, Func, Cost, NewConstraint).
 
 similarity_core(Needle, Source, Cost) :-
     similarity(Source, Needle, Similarity),
     Similarity > 0.8,
     Cost is 1.0 - Similarity, !.
-similarity_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
-    wrap_core(similarity_core(Sequence), Field, Func, Cost, NewConstraint).
+similarity_constraint(Sequence, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(similarity_core(Sequence), Getter, Func, Cost, NewConstraint).
 
 sub_similarity_core(Needle, Source, Cost) :-
     sub_similarity(Source, Needle, Similarity),
     Similarity > 0.8,
     Cost is 1.0 - Similarity, !.
-sub_similarity_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
-    wrap_core(sub_similarity_core(Sequence), Field, Func, Cost, NewConstraint).
+sub_similarity_constraint(Sequence, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(sub_similarity_core(Sequence), Getter, Func, Cost, NewConstraint).
 
 fuzzy_substr_core(Source, Needle, Cost) :-
     fuzzy_substr(Source, Needle, Similarity),
     Similarity > 0.8,
     Cost is 1.0 - Similarity, !.
-fuzzy_substr_constraint(Sequence, Field, Func, Cost, NewConstraint) :-
-    wrap_core(fuzzy_substr_core(Sequence), Field, Func, Cost, NewConstraint).
+fuzzy_substr_constraint(Sequence, Getter, Func, Cost, NewConstraint) :-
+    wrap_core(fuzzy_substr_core(Sequence), Getter, Func, Cost, NewConstraint).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Input/output checking
@@ -145,32 +145,32 @@ match_sub_sim(Sim) :- member(Sim, ["subsim", subsim]).
 match_fuzzy_substr(Substr) :- member(Substr, ["fsubstr", fsubstr]).
 
 %% Get the constraint for the field and method
-field_constraint(Field, String, Eq, func_constraints:equality_constraint(String, Field)) :-
+string_constraint(Getter, String, Eq, func_constraints:equality_constraint(String, Getter)) :-
     match_eq(Eq), !.
-field_constraint(Field, String, Lev, func_constraints:levenshtein_constraint(String, Field, MaxDis)) :-
+string_constraint(Getter, String, Lev, func_constraints:levenshtein_constraint(String, Getter, MaxDis)) :-
     match_lev(Lev), !,
     string_length(String, StrLen),
     MaxDis is round(sqrt(StrLen)).
-field_constraint(Field, String, Substr, func_constraints:substring_constraint(String, Field)) :-
+string_constraint(Getter, String, Substr, func_constraints:substring_constraint(String, Getter)) :-
     match_substr(Substr), !.
-field_constraint(Field, String, Subseq, func_constraints:subsequence_constraint(String, Field)) :-
+string_constraint(Getter, String, Subseq, func_constraints:subsequence_constraint(String, Getter)) :-
     match_subseq(Subseq), !.
 :- if(can_use_regex).
-field_constraint(Field, String, Re, func_constraints:regex_constraint(String, Field)) :-
+string_constraint(Getter, String, Re, func_constraints:regex_constraint(String, Getter)) :-
     match_re(Re), !.
 :- endif.
-field_constraint(Field, String, Subseq, func_constraints:similarity_constraint(String, Field)) :-
+string_constraint(Getter, String, Subseq, func_constraints:similarity_constraint(String, Getter)) :-
     match_sim(Subseq), !.
-field_constraint(Field, String, Subseq, func_constraints:sub_similarity_constraint(String, Field)) :-
+string_constraint(Getter, String, Subseq, func_constraints:sub_similarity_constraint(String, Getter)) :-
     match_sub_sim(Subseq), !.
-field_constraint(Field, String, Subseq, func_constraints:fuzzy_substr_constraint(String, Field)) :-
+string_constraint(Getter, String, Subseq, func_constraints:fuzzy_substr_constraint(String, Getter)) :-
     match_fuzzy_substr(Subseq), !.
 
-%% add_field_constraint(+Field, +String, +Method, +OldConstraints, -NewConstraints).
+%% add_string_constraint(+Field, +String, +Method, +OldConstraints, -NewConstraints).
 %% none is used to denote constraints which are not provided
-add_field_constraint(_, none, _, Constraints, Constraints) :- !.
-add_field_constraint(Field, String, Method, Constraints, [Constraint|Constraints]) :-
-    field_constraint(Field, String, Method, Constraint), !.
+add_string_constraint(_, none, _, Constraints, Constraints) :- !.
+add_string_constraint(Getter, String, Method, Constraints, [Constraint|Constraints]) :-
+    string_constraint(Getter, String, Method, Constraint), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Meta Constraints: These apply operations to other constraints

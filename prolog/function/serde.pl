@@ -2,7 +2,8 @@
     write_json_metadata/4,
     read_json_metadata/4,
     jsonify_funcs/2,
-    jsonify_type/2
+    jsonify_type/2,
+    jsonify_types/2
 ]).
 :- use_module(library(http/json)).
 

@@ -73,22 +73,16 @@ render_param(Param, Param) :- !.
 %% Defining, searching, and deleting functions
 
 %% Finds a single function with the constraints and prints it.
-find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
-    func_search(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs, [Uuid|Uuids]),
+find_and_fmt_func(Constraint) :-
+    find_items(Constraint, [Uuid|Uuids]),
     maplist(get_function, [Uuid|Uuids], Funcs),
     jsonify_funcs(Funcs, JsonFuncs),
     reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}), !.
 
-find_and_fmt_func(FuncName0, Inputs0, Outputs0, Docs0, _, _) :-
-    render_param(FuncName0, FuncName),
-    render_param(Inputs0, Inputs),
-    render_param(Outputs0, Outputs),
-    render_param(Docs0, Docs),
-    format_skeleton(String, FuncName, [], Inputs, Outputs, Docs),
-    format(string(Msg), "No matching func found: ~w", [String]),
+find_and_fmt_func(_) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
-    json_write_dict(current_output, _{msg:Msg}), !.
+    json_write_dict(current_output, _{msg:"Functions matching query not found"}), !.
 
 %% Helper for correctly constraining lists.
 nonempty_list([], true, []) :- !.
@@ -97,20 +91,31 @@ nonempty_list(NonEmpty, _, NonEmpty) :- !.
 
 %% Parses parameters for search requests.
 % Can be partially specified.
-parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs) :-
+
+parse_func_search_request(Request, Constraint) :-
+    Choices = [re, eq, lev, substr, subseq, fsubstr, sim, subsim],
     http_parameters(Request,
         [
-            name(FuncName, [string, default(none)]),
-            no_inputs(NoInputs, [boolean, default(false)]),
-            no_outputs(NoOutputs, [boolean, default(false)]),
-            inputs(Inputs0, [list(string)]),
-            outputs(Outputs0, [list(string)]),
+            name(Name, [string, default(none)]),
+            name_cmp(NameCmp, [default(lev), oneof(Choices)]),
             docs(Docs, [string, default(none)]),
-            name_cmp(StringCmpName, [default(lev), oneof([re, eq, lev, substr, subseq, fsubstr, sim, subsim])]),
-            doc_cmp(StringCmpDocs, [default(substr), oneof([re, eq, lev, substr, subseq, fsubstr, sim, subsim])])
+            doc_cmp(DocCmp, [default(substr), oneof(Choices)]),
+            uuid(Uuid, [atom, default(none)]),
+            uuid_cmp(UuidCmp, [default(eq), oneof(Choices)]),
+            inputs(Inputs0, [list(string)]),
+            no_inputs(NoInputs, [boolean, default(false)]),
+            outputs(Outputs0, [list(string)]),
+            no_outputs(NoOutputs, [boolean, default(false)])
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
-    nonempty_list(Outputs0, NoOutputs, Outputs).
+    nonempty_list(Outputs0, NoOutputs, Outputs),
+    add_string_constraint(func_field(name), Name, NameCmp, [], C0),
+    add_string_constraint(func_field(docs), Docs, DocCmp, C0, C1),
+    add_string_constraint(func_field(uuid), Uuid, UuidCmp, C1, C2),
+    Constraint = and_constraint([
+        input_constraint(Inputs),
+        output_constraint(Outputs)|C2
+    ]).
 
 %% Parses parameters for insertion of function
 % Requires function signature to be defined
@@ -156,8 +161,8 @@ attempt_fn_deletion(Uuid) :-
 
 %% Function endpoint
 fn_endpoint(get, Request) :-
-    parse_func_request_search(Request, FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs),
-    find_and_fmt_func(FuncName, Inputs, Outputs, Docs, StringCmpName, StringCmpDocs).
+    parse_func_search_request(Request, Constraint),
+    find_and_fmt_func(Constraint).
 
 fn_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
@@ -176,16 +181,30 @@ fn_endpoint(delete, Request) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Defining, searching, and deleting types
 
-find_and_fmt_type(Uuid) :-
-    type(Uuid, Name, Generics, Impls, Docs),
-    jsonify_type(type(Uuid, Name, Generics, Impls, Docs), JsonType),
-    reply_json_dict(_{msg:"Found type", type: JsonType}).
+parse_type_search_request(Request, and_constraint(C2)) :-
+    Choices = [re, eq, lev, substr, subseq, fsubstr, sim, subsim],
+    http_parameters(Request, [
+            name(Name, [string, default(none)]),
+            name_cmp(NameCmp, [default(lev), oneof(Choices)]),
+            docs(Docs, [string, default(none)]),
+            doc_cmp(DocCmp, [default(substr), oneof(Choices)]),
+            uuid(Uuid, [atom, default(none)]),
+            uuid_cmp(UuidCmp, [default(eq), oneof(Choices)])
+    ]),
+    add_string_constraint(type_field(name), Name, NameCmp, [], C0),
+    add_string_constraint(type_field(docs), Docs, DocCmp, C0, C1),
+    add_string_constraint(type_field(uuid), Uuid, UuidCmp, C1, C2).
 
-find_and_fmt_type(Uuid) :-
-    format(string(Msg), "No type with uuid ~w found.", [Uuid]),
+find_and_fmt_types(Constraint) :-
+    find_items(Constraint, [Uuid|Uuids]),
+    maplist(get_type, [Uuid|Uuids], Types),
+    jsonify_types(Types, JsonTypes),
+    reply_json_dict(_{msg:"Found types", types: JsonTypes}), !.
+
+find_and_fmt_types(_) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
-    json_write_dict(current_output, _{msg:Msg}), !.
+    json_write_dict(current_output, _{msg:"Types matching query not found"}), !.
 
 attempt_type_deletion(Uuid) :-
     type(Uuid, Name, Generics, Impls, Docs),
@@ -204,10 +223,8 @@ attempt_type_deletion(Uuid) :-
 
 %% This should be more interesting (eg. allow using cmp methods here)
 type_endpoint(get, Request) :-
-    http_parameters(Request,
-        [uuid(Uuid, [atom])]
-    ),
-    find_and_fmt_type(Uuid).
+    parse_type_search_request(Request, Constraint), 
+    find_and_fmt_types(Constraint).
 
 type_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
