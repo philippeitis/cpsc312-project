@@ -25,7 +25,7 @@ function searchAndDisplay() {
         let output = "";
         for (let i = 0; i < json["functions"].length; i++) {
             output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">";
-            output += "<input type=checkbox\">";
+            output += "<input type=checkbox>";
             output += "<h3>" + json["functions"][i]["name"] + "</h3>";
             output += "<p>" + json["functions"][i]["docs"] + "</p>";
             output += "</div>";
