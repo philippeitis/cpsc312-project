@@ -7,8 +7,8 @@
     list_subset/2
 ]).
 
-:- use_module(compat).
-:- if(prolog_version_eight).
+:- use_module(compat, []).
+:- if(compat:prolog_version_eight).
 :- table(levenshtein_distance/3).
 :- table(fuzzy_substr/3).
 :- endif.

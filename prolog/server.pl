@@ -14,7 +14,10 @@
 :- use_module(function).
 :- use_module(function/parse).
 :- use_module(function/serde).
+:- use_module(constraints).
+:- use_module(string_constraints).
 :- use_module(func_constraints).
+
 :- use_module(search).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,13 +112,13 @@ parse_func_search_request(Request, Constraint) :-
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs),
-    add_string_constraint(func_field(name), Name, NameCmp, [], C0),
+    add_string_constraint(func_field(name), Name, NameCmp, no_constraint, C0),
     add_string_constraint(func_field(docs), Docs, DocCmp, C0, C1),
     add_string_constraint(func_field(uuid), Uuid, UuidCmp, C1, C2),
-    Constraint = and_constraint([
+    Constraint = and_constraint(
         input_constraint(Inputs),
-        output_constraint(Outputs)|C2
-    ]).
+        and_constraint(output_constraint(Outputs), C2)
+    ).
 
 %% Parses parameters for insertion of function
 % Requires function signature to be defined
@@ -181,7 +184,7 @@ fn_endpoint(delete, Request) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Defining, searching, and deleting types
 
-parse_type_search_request(Request, and_constraint(C2)) :-
+parse_type_search_request(Request, C2) :-
     Choices = [re, eq, lev, substr, subseq, fsubstr, sim, subsim],
     http_parameters(Request, [
             name(Name, [string, default(none)]),
@@ -191,7 +194,7 @@ parse_type_search_request(Request, and_constraint(C2)) :-
             uuid(Uuid, [atom, default(none)]),
             uuid_cmp(UuidCmp, [default(eq), oneof(Choices)])
     ]),
-    add_string_constraint(type_field(name), Name, NameCmp, [], C0),
+    add_string_constraint(type_field(name), Name, NameCmp, no_constraint, C0),
     add_string_constraint(type_field(docs), Docs, DocCmp, C0, C1),
     add_string_constraint(type_field(uuid), Uuid, UuidCmp, C1, C2).
 

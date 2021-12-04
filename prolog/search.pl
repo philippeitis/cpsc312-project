@@ -6,11 +6,13 @@
     func_search/7
 ]).
 :- use_module(function).
-:- use_module(func_constraints).
+:- use_module(constraints, [and_constraint/5, at_most_n_constraint/5, no_constraint/3]).
+:- use_module(func_constraints, [input_constraint/4, output_constraint/4]).
+:- use_module(string_constraints, [add_string_constraint/5]).
 :- use_module(path_constraints).
 
-:- meta_predicate find_fn(3, ?, -).
-:- meta_predicate find_funcs(3, ?).
+:- meta_predicate find_item(3, ?, -).
+:- meta_predicate find_items(3, ?).
 :- meta_predicate func_path_init(+, 3, 2, ?).
 
 %% TODO: Type and trait search as well
@@ -41,13 +43,16 @@ find_items(Constraint, Items) :-
 
 %% Finds all functions with the constraints.
 func_search(FuncName, Inputs, Outputs, Docs, NameCmp, DocCmp, Funcs) :-
-    add_string_constraint(func_field(name), FuncName, NameCmp, [], C0),
+    add_string_constraint(func_field(name), FuncName, NameCmp, no_constraint, C0),
     add_string_constraint(func_field(docs), Docs, DocCmp, C0, C1),
     find_items(
-        and_constraint([
+        and_constraint(
             input_constraint(Inputs),
-            output_constraint(Outputs)|C1
-        ]),
+            and_constraint(
+                output_constraint(Outputs),
+                C1
+            )
+        ),
         Funcs
     ).
 
@@ -133,10 +138,10 @@ func_path_best_fs([(OldCost, FnConstraint, Path)|Candidates], PathConstraint, Ne
 func_path(Strategy, InputTypes, OutputTypes, Path) :-
     func_path_init(
         Strategy,
-        and_constraint([
+        and_constraint(
             at_most_n_constraint(999, no_constraint),
             input_constraint(InputTypes)
-        ]),
+        ),
         and_constraint([
             output_constraint(OutputTypes)
         ]),
@@ -159,13 +164,13 @@ func_path_init(bestfs, FnConstraint, PathConstraint, Path) :-
 func_path_no_cycles(Strategy, InputTypes, OutputTypes, Path) :-
     func_path_init(
         Strategy,
-        and_constraint([
+        and_constraint(
             at_most_n_constraint(999, no_constraint),
             input_constraint(InputTypes)
-        ]),
+        ),
         and_constraint([
             cycle_constraint,
-            output_constraint(OutputTypes)
+            path_constraints:output_constraint(OutputTypes)
         ]),
         Path
     ).

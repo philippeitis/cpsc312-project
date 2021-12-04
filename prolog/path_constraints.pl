@@ -14,11 +14,9 @@
 %% no_constraints_left(Constraints)
 % Produces true if all constraints are satisfied, or would be satisfied
 % in conjunction with path_output_constraint.
-no_constraints_left(and_constraint(Constraints)) :-
-    forall(
-        member(Constraint, Constraints),
-        no_constraints_left(Constraint)
-    ), !.
+no_constraints_left(and_constraint(Lhs, Rhs)) :-
+    no_constraints_left(Lhs),
+    no_constraints_left(Rhs).
 no_constraints_left(no_constraint) :- !.
 no_constraints_left(input_constraint(_)) :- !.
 no_constraints_left(at_most_n_constraint(_, _)) :- !.

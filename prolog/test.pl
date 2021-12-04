@@ -179,7 +179,8 @@ test("storage roundtrip succeeds", [nondet]) :-
 
 :- begin_tests('search').
 :- use_module(search).
-:- use_module(func_constraints).
+:- use_module(string_constraints).
+:- use_module(constraints).
 
 test("dfs works") :-
     aggregate_all(
@@ -210,7 +211,7 @@ test("No paths for types which do not exist", [fail]) :-
 
 test("Regex matches all", [fail]) :-
     find_items(
-        regex_constraint(".*", func_field(name)),
+        regex_constraint(function:func_field(name), ".*"),
         Funcs
     ),
     length(Funcs, 8).
@@ -222,61 +223,69 @@ test("Regex matches all", [fail]) :-
 :- begin_tests('func_constraints').
 :- use_module(func_constraints).
 
-%% Constraint detail: Some constraints have hard failures, while some have
-% soft failures, allowing a path to continue. In this case,
-% string constraints simply repeat themselves, as they can be satisfied
-% at any point, and we simply check that there are no constraints left
-% when the path is complete. However, input constraints will fail if
-% the input does not match, as this would allow an invalid path.
-test("and_constraint no constraints succeeds with score of 0.0") :-
-    function:fname(Uuid, "parseInt"),
-    and_constraint([], Uuid, 0.0, and_constraint([])).
-test("substring constraint succeeds", [nondet]) :-
-    function:fname(Uuid, "parseInt"),
-    substring_constraint("parse", func_field(name), Uuid, 0.0, no_constraint).
-test("substring constraint fails") :-
-    function:fname(Uuid, "parseInt"),
-    substring_constraint("dsdsfdwa", func_field(name), Uuid, 1.0, _).
-test("subsequence constraint", [nondet]) :-
-    function:fname(Uuid, "parseInt"),
-    subsequence_constraint("pre", func_field(name), Uuid, 0.0, no_constraint).
-test("subsequence constraint fail") :-
-    function:fname(Uuid, "parseInt"),
-    subsequence_constraint("tspkn", func_field(name), Uuid, 1.0, _).
 test("input constraint", [nondet]) :-
     function:fname(Uuid, "increment"),
     input_constraint(["int"], Uuid, 0.0, input_constraint(["int"])).
 test("input constraint fails when input does not match", [fail]) :-
     function:fname(Uuid, "increment"),
     input_constraint(["str"], Uuid, 1.0, _).
+
+:- end_tests('func_constraints').
+
+:- begin_tests('string_constraints').
+:- use_module(function, [func_field/3]).
+:- use_module(string_constraints).
+
+%% Constraint detail: Some constraints have hard failures, while some have
+% soft failures, allowing a path to continue. In this case,
+% string constraints simply repeat themselves, as they can be satisfied
+% at any point, and we simply check that there are no constraints left
+% when the path is complete. However, input constraints will fail if
+% the input does not match, as this would allow an invalid path.
+test("substring constraint succeeds", [nondet]) :-
+    function:fname(Uuid, "parseInt"),
+    substring_constraint(func_field(name), "parse", Uuid, 0.0, no_constraint).
+test("substring constraint fails") :-
+    function:fname(Uuid, "parseInt"),
+    substring_constraint(func_field(name), "dsdsfdwa", Uuid, 1.0, _).
+test("subsequence constraint", [nondet]) :-
+    function:fname(Uuid, "parseInt"),
+    subsequence_constraint(func_field(name), "pre", Uuid, 0.0, no_constraint).
+test("subsequence constraint fail") :-
+    function:fname(Uuid, "parseInt"),
+    subsequence_constraint(func_field(name), "tspkn", Uuid, 1.0, _).
 test(
     "regex constraint",
     [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint("de.*", func_field(name), Uuid, 0.0, no_constraint).
+    regex_constraint(func_field(name), "de.*", Uuid, 0.0, no_constraint).
 test(
     "regex constraint fail",
     [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
-    regex_constraint("d.*A", func_field(name), Uuid, 1.0, _).
+    regex_constraint(func_field(name), "d.*A", Uuid, 1.0, _).
 
 test("similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
-    similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
-    similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
+    similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
+    similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
 
 test("sub_similarity constraint", [nondet]) :-
     function:fname(Uuid, "listify"),
-    sub_similarity_constraint("produces a list", docs, Uuid, _, no_constraint),
-    sub_similarity_constraint("not similar at all", docs, Uuid, 1.0, _).
+    sub_similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
+    sub_similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
 
-test("sub_similarity constraint", [nondet]) :-
+test("sub_similarity constraint") :-
     function:fname(Uuid, "print"),
-    sub_similarity_constraint("see also", docs, Uuid, _, no_constraint),
-    sub_similarity_constraint("also see", docs, Uuid, _, no_constraint).
+    sub_similarity_constraint(func_field(docs), "see also", Uuid, _, no_constraint),
+    sub_similarity_constraint(func_field(docs), "also see", Uuid, _, no_constraint).
 
+:- end_tests('string_constraints').
+
+:- begin_tests('constraints').
+:- use_module(constraints).
 test(
     "at_most_n fails when it hits 0",
     [fail]
@@ -289,13 +298,13 @@ test("at_most_n does not decrement if failure") :-
 
 test("scale constraint") :-
     function:fname(Uuid, "parseInt"),
-    scale_constraint(substring_constraint("dsdsfdwa", func_field(name)), 5.0, Uuid, 5.0, _).
+    scale_constraint(string_constraints:substring_constraint(function:func_field(name), "dsdsfdwa"), 5.0, Uuid, 5.0, _).
 
 test("scale constraint") :-
     function:fname(Uuid, "parseInt"),
-    scale_constraint(substring_constraint("dsdsfdwa", func_field(name)), 0.3, Uuid, 0.3, _).
+    scale_constraint(string_constraints:substring_constraint(function:func_field(name), "dsdsfdwa"), 0.3, Uuid, 0.3, _).
 
-:- end_tests('func_constraints').
+:- end_tests('constraints').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
