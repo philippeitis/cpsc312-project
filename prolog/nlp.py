@@ -67,7 +67,8 @@ class Sentence:
     def vector_chunks(self, size: int):
         """Yields the word vectors for a sliding window of tokens with the given size."""
         if size > len(self.doc):
-            return self.doc.vector
+            yield self.doc.vector
+            return
 
         head_iter = iter(self.doc)
         body_iter = iter(self.doc)
