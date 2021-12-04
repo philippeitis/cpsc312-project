@@ -29,4 +29,11 @@ function searchAndDisplay() {
         }
         document.getElementById("functions").innerHTML = output;
     }
+
+}
+
+function clearResults() {
+    document.getElementById("function_msg").innerHTML = "";
+    document.getElementById("functions").innerHTML = "";
+
 }
