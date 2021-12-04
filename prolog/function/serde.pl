@@ -11,7 +11,12 @@
 add_impls(JSONIn, List, JSONOut) :-
     is_list(List),
     JSONOut = JSONIn.put(impls, List).
-add_impls(_, List, _) :- \+is_list(List).
+add_impls(JSON, List, JSON) :- \+is_list(List).
+
+add_uuid(JSONIn, Uuid, JSONOut) :-
+    \+var(Uuid),
+    JSONOut = JSONIn.put(uuid, Uuid).
+add_uuid(JSON, Uuid, JSON) :- var(Uuid).
 
 atomize_uuid(Uuid, Uuid) :-
     var(Uuid), !.
@@ -41,13 +46,13 @@ jsonify_type(
     var(JSON),
     atomize_uuid(Uuid, Uuida),
     jsonify_generics(Generics, JGenerics),
-    JSONNoImpls = _{
-        uuid:Uuida,
+    JSONNoUuidImpls = _{
         name:Name,
         generics:JGenerics,
         docs:Docs
     },
-    add_impls(JSONNoImpls, Impls, JSON), !.
+    add_impls(JSONNoUuidImpls, Impls, JSONNoUuid),
+    add_uuid(JSONNoUuid, Uuida, JSON), !.
 
 jsonify_type(
     Type,
@@ -70,7 +75,7 @@ jsonify_types(Types, JTypes) :-
 jsonify_traits(Traits, JTraits) :-
     maplist(jsonify_trait, Traits, JTraits).
 
-jsonify_func(
+jsonify_fn(
         function(Uuid, Name, Generics, Inputs, Outputs, Docs),
         JSON
     ) :-
@@ -79,16 +84,16 @@ jsonify_func(
     jsonify_generics(Generics, JGenerics),
     jsonify_types(Inputs, JInputs),
     jsonify_types(Outputs, JOutputs),
-    JSON = _{
-        uuid:Uuida,
+    JSONNoUuid = _{
         name:Name,
         generics:JGenerics,
         inputs:JInputs,
         outputs:JOutputs,
         docs:Docs
-    }, !.
+    },
+    add_uuid(JSONNoUuid, Uuida, JSON), !.
 
-jsonify_func(Func, JSON) :-
+jsonify_fn(Func, JSON) :-
     var(Func),
     atomize_uuid(Uuida, JSON.get(uuid, _)),
     jsonify_generics(Generics, JSON.get(generics)),
@@ -97,7 +102,7 @@ jsonify_func(Func, JSON) :-
     Func = function(Uuida, JSON.get(name), Generics, Inputs, Outputs, JSON.get(docs, "")), !.
 
 jsonify_funcs(Funcs, JFuncs) :-
-    maplist(jsonify_func, Funcs, JFuncs).
+    maplist(jsonify_fn, Funcs, JFuncs).
 
 %% write_json_metadata(+Stream, +Functions, +Types, +Traits)
 %% Writes the provided functions into the stream in JSON format.
