@@ -51,7 +51,9 @@ function saveResults() {
 
     select_functions.forEach(function (el) {
         if (el.checked) {
-            saved_functions.appendChild(el.parentElement.cloneNode(true));
+            if(saved_functions.querySelectorAll("div[data-uuid=\"" + el.parentElement.getAttribute("data-uuid") +"\"]").length===0) {
+                saved_functions.appendChild(el.parentElement.cloneNode(true));
+            }
         }
     });
 }
