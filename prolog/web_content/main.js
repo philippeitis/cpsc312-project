@@ -24,8 +24,11 @@ function searchAndDisplay() {
         document.getElementById("function_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
         for (let i = 0; i < json["functions"].length; i++) {
-            output += "<h3>" + json["functions"][i]["name"] + "</h3>"
-            output += "<p>" + json["functions"][i]["docs"] + "</p>"
+            output += "<div uuid=\"" + json["functions"][i]["uuid"] +"\">";
+            output += "<input type=checkbox>"
+            output += "<h3>" + json["functions"][i]["name"] + "</h3>";
+            output += "<p>" + json["functions"][i]["docs"] + "</p>";
+            output += "</div>";
         }
         document.getElementById("functions").innerHTML = output;
     }
