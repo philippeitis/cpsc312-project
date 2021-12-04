@@ -161,7 +161,8 @@ fn_endpoint(get, Request) :-
 
 fn_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
-    jsonify_funcs([function(Uuid, Name, Generics, Inputs, Outputs, Docs)], [JsonIn]),
+    jsonify_funcs([Fn], [JsonIn]),
+    Fn = function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     add_function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     format(string(Msg), "Created func ~w", [Name]),
     reply_json_dict(_{msg: Msg, uuid:Uuid}).
@@ -210,7 +211,8 @@ type_endpoint(get, Request) :-
 
 type_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
-    jsonify_type(type(Uuid, Name, Generics, Impls, Docs), JsonIn),
+    jsonify_type(Ty, JsonIn),
+    Ty = type(Uuid, Name, Generics, Impls, Docs),
     add_type(Uuid, Name, Generics, Impls, Docs),
     format(string(Msg), "Created type ~w", [Uuid]),
     reply_json_dict(_{msg: Msg, uuid:Uuid}), !.
