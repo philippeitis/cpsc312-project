@@ -24,8 +24,8 @@ function searchAndDisplay() {
         document.getElementById("function_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
         for (let i = 0; i < json["functions"].length; i++) {
-            output += "<div uuid=\"" + json["functions"][i]["uuid"] +"\">";
-            output += "<input type=checkbox>"
+            output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">";
+            output += "<input type=checkbox\">";
             output += "<h3>" + json["functions"][i]["name"] + "</h3>";
             output += "<p>" + json["functions"][i]["docs"] + "</p>";
             output += "</div>";
@@ -39,4 +39,19 @@ function clearResults() {
     document.getElementById("function_msg").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
 
+}
+
+function saveResults() {
+    var functions = document.getElementById("functions");
+    var select_functions = functions.querySelectorAll('input[type=checkbox]');
+    var saved_functions = document.getElementById("saved_functions");
+    if (saved_functions.innerHTML === "") {
+        saved_functions.innerHTML = "<h2>Saved Functions</h2>";
+    }
+
+    select_functions.forEach(function (el) {
+        if (el.checked) {
+            saved_functions.appendChild(el.parentElement.cloneNode(true));
+        }
+    });
 }
