@@ -14,10 +14,10 @@
       <center><img src="LogoHeader.png" width="69%"></center>
       <br><br>
       <h2>Function Search</h2>
-      <form action="/func" id="search_form" method="GET" target="this-page">
-        <label for="name">Function name:</label>
+      <form action="/func" id="search_form" method="GET" target="this-page" class="form-inline">
+        <label for="name" class="col-sm-2 col-form-label">Function name:</label>
         <input type="text" id="name" name="name"><br><br>
-        <label for="name_cmp">Name comparison method:</label>
+        <label for="name_cmp" class="col-sm-2 col-form-label">Name comparison method:</label>
         <select name="name_cmp" id="name_cmp">
           <option value="eq">Exact</option>
           <option value="re">Regex</option>
@@ -29,11 +29,11 @@
           <option value="subsim">NLP Chunk-wise Similarity</option>
         </select>
         <br><br>
-        <label for="docs">Find in doc:</label>
+        <label for="docs" class="col-sm-2 col-form-label">Find in doc:</label>
         <input type="text" id="docs" name="docs"><br><br>
-        <label for="doc_cmp">Doc comparison method:</label>
+        <label for="doc_cmp" class="col-sm-2 col-form-label">Doc comparison method:</label>
         <select name="doc_cmp" id="doc_cmp">
-          <option value="eq">Exact</option>
+        <option value="eq">Exact</option>
           <option value="re">Regex</option>
           <option value="lev">Levenshtein distance (total)</option>
           <option value="fsubstr">Levenshtein distance (partial)</option>
@@ -43,25 +43,25 @@
           <option value="subsim" selected>NLP Chunk-wise Similarity</option>
         </select>
         <br><br>
-        <label for="inputs">Input Type(s)</label>
+        <label for="inputs" class="col-sm-2 col-form-label">Input Type(s)</label>
         <input type="text" id="inputs" name="inputs"><br><br>
-        <label for="outputs">Output Type(s)</label>
+        <label for="outputs" class="col-sm-2 col-form-label">Output Type(s)</label>
         <input type="text" id="outputs" name="outputs"><br><br>
-      
+
         <button type="button" class="btn btn-outline-secondary" onClick="searchAndDisplay()">Submit</button>
         <button type="button" class="btn btn-outline-danger" onclick="clearResults()">Reset</button>
         <button type="button" class="btn btn-outline-info" onClick="saveResults()">Save</button>
       </form>
       <br>
-      <form id="add_function_form">
+      <form id="add_function_form" class="form-inline">
         <h2><br>Add Function to Knowledgebase</h2>
-        <label for="name0">Function name:</label>
+        <label for="name0" class="col-sm-2 col-form-label">Function name:</label>
         <input type="text" id="name0" name="name"><br><br>
-        <label for="inputs0">Input type:</label>
+        <label for="inputs0" class="col-sm-2 col-form-label">Input type:</label>
         <input type="text" id="inputs0" name="inputs"><br><br>
-        <label for="outputs0">Output type:</label>
+        <label for="outputs0" class="col-sm-2 col-form-label">Output type:</label>
         <input type="text" id="outputs0" name="outputs"><br><br>
-        <label for="docs0">Documentation:</label>
+        <label for="docs0" class="col-sm-2 col-form-label">Documentation:</label>
         <input type="text" id="docs0" name="docs"><br><br>
         <button type="button" class="btn btn-outline-success" onClick="toJsonAndPush()">Confirm</button>
       </form>
