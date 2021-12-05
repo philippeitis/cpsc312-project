@@ -315,7 +315,7 @@ test("subsequence constraint fail") :-
     subsequence_constraint(func_field(name), "tspkn", Uuid, 1.0, _).
 test(
     "regex constraint",
-    [condition(prolog_version_eight)]
+    [condition(prolog_version_eight), nondet]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(func_field(name), "de.*", Uuid, 0.0, no_constraint).
@@ -336,7 +336,7 @@ test("sub_similarity constraint", [nondet]) :-
     sub_similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
     sub_similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
 
-test("sub_similarity constraint") :-
+test("sub_similarity constraint", [nondet]) :-
     function:fname(Uuid, "print"),
     sub_similarity_constraint(func_field(docs), "see also", Uuid, _, no_constraint),
     sub_similarity_constraint(func_field(docs), "also see", Uuid, _, no_constraint).
