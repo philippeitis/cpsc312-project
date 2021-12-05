@@ -40,8 +40,8 @@ type_field(uuid, Ty, Ty) :- type(Ty, _, _, _, _).
 
 uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
 fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).
-inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
 generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
+inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
 outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
 docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
 
