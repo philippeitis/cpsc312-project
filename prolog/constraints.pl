@@ -8,7 +8,7 @@
 :- meta_predicate scale_constraint(3, +, +, +, -).
 :- meta_predicate and_constraint(3, 3, +, +, -).
 
-%% Function Constraint Common API
+%% Constraint Common API
 % Args*, Cost, NewConstraint
 
 %% no_constraint(?, -Cost, -NewConstraint)

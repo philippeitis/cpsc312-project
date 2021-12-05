@@ -183,24 +183,28 @@ test("storage roundtrip succeeds", [nondet]) :-
 :- use_module(constraints).
 
 test("dfs works") :-
-    aggregate_all(
-        count,
-        func_path_no_cycles(dfs, ["int"], ["int"], _Path),
-        64
-    ).
+    setof(
+        Path,
+        func_path_no_cycles(dfs, ["int"], ["int"], Path),
+        Paths
+    ),
+    length(Paths, 652).
 
 test("bfs works") :-
-    aggregate_all(
-        count,
-        func_path_no_cycles(bfs, ["int"], ["int"], _Path),
-        64
-    ).
+    setof(
+        Path,
+        func_path_no_cycles(bfs, ["int"], ["int"], Path),
+        Paths
+    ),
+    length(Paths, 652).
+
 test("bestfs works") :-
-    aggregate_all(
-        count,
-        func_path_no_cycles(bestfs, ["int"], ["int"], _Path),
-        64
-    ).
+    setof(
+        Path,
+        func_path_no_cycles(dfs, ["int"], ["int"], Path),
+        Paths
+    ),
+    length(Paths, 652).
 
 test("No paths for types which do not exist", [fail]) :-
     func_path_no_cycles(
@@ -209,15 +213,70 @@ test("No paths for types which do not exist", [fail]) :-
         ["also not a real type"],
     _).
 
-test("Regex matches all", [fail]) :-
+test("Regex matches all") :-
     find_items(
-        regex_constraint(function:func_field(name), ".*"),
+        string_constraints:regex_constraint(function:func_field(name), ".*"),
         Funcs
     ),
-    length(Funcs, 8).
+    length(Funcs, 20).
+
+test("Regex with empty and matches all") :-
+    find_items(
+        constraints:and_constraint(
+            string_constraints:regex_constraint(function:func_field(name), ".*"),
+            no_constraint
+        ),
+        Funcs
+    ),
+    length(Funcs, 20).
+
+test("Regex with empty input constraint matches all") :-
+    find_items(
+        constraints:and_constraint(
+            string_constraints:regex_constraint(function:func_field(name), ".*"),
+            func_constraints:input_constraint([])
+        ),
+        Funcs
+    ),
+    length(Funcs, 17).
+
+test("Regex with empty input constraint matches all except generic") :-
+    find_items(
+        constraints:and_constraint(
+            string_constraints:regex_constraint(function:func_field(name), ".*"),
+            func_constraints:input_constraint([])
+        ),
+        Funcs
+    ),
+    length(Funcs, 17).
+
+test("And constraint order irrelevant") :-
+    find_items(
+        constraints:and_constraint(
+            func_constraints:input_constraint([]),
+            string_constraints:regex_constraint(function:func_field(name), ".*")
+        ),
+        Funcs
+    ),
+    length(Funcs, 17).
+
+test("And constraint nested") :-
+    find_items(
+        constraints:and_constraint(
+            func_constraints:input_constraint([]),
+            and_constraint(
+                func_constraints:output_constraint([]),
+                and_constraint(
+                    string_constraints:regex_constraint(function:func_field(name), ".*"),
+                    no_constraint
+                )
+            )
+        ),
+        Funcs
+    ),
+    length(Funcs, 17).
 
 :- end_tests('search').
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('func_constraints').

@@ -159,7 +159,8 @@ fn_interp_valid(Func, Interp) :-
 % Produces true if ConcreteTypes is equivalent to GenericTypes with the given interpretation
 subst(Interp, gen(Name), ConcreteType) :-
     member((Name, ConcreteType), Interp), !.
-subst(Interp, type(Name, SubTypes), type(_, Name, ConcreteTypes, _, _)) :-
+subst(Interp, type(Name, SubTypes), type(Name, ConcreteTypes)) :-
+    type(_, Name, ConcreteTypes, _, _),
     maplist(subst(Interp), SubTypes, ConcreteTypes), !.
 subst(_, ConcreteType, ConcreteType) :- !.
 

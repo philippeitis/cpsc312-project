@@ -17,9 +17,9 @@
 no_constraints_left(and_constraint(Lhs, Rhs)) :-
     no_constraints_left(Lhs),
     no_constraints_left(Rhs).
-no_constraints_left(no_constraint) :- !.
-no_constraints_left(input_constraint(_)) :- !.
-no_constraints_left(at_most_n_constraint(_, _)) :- !.
+no_constraints_left(no_constraint).
+no_constraints_left(input_constraint(_)).
+no_constraints_left(at_most_n_constraint(_, _)).
 
 %% and_constraint(+Constraints, +Path, +Func)
 % Evaluates all of the provided path-level constraints on the path.

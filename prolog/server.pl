@@ -14,8 +14,8 @@
 :- use_module(function).
 :- use_module(function/parse).
 :- use_module(function/serde).
-:- use_module(constraints).
-:- use_module(string_constraints).
+:- use_module(constraints, [and_constraint/5, no_constraint/3]).
+:- use_module(string_constraints, [add_string_constraint/5]).
 :- use_module(func_constraints).
 
 :- use_module(search).
@@ -112,28 +112,13 @@ parse_func_search_request(Request, Constraint) :-
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs),
-    add_string_constraint(func_field(name), Name, NameCmp, no_constraint, C0),
-    add_string_constraint(func_field(docs), Docs, DocCmp, C0, C1),
-    add_string_constraint(func_field(uuid), Uuid, UuidCmp, C1, C2),
-    Constraint = and_constraint(
-        input_constraint(Inputs),
-        and_constraint(output_constraint(Outputs), C2)
+    add_string_constraint(function:func_field(name), Name, NameCmp, no_constraint, C0),
+    add_string_constraint(function:func_field(docs), Docs, DocCmp, C0, C1),
+    add_string_constraint(function:func_field(uuid), Uuid, UuidCmp, C1, C2),
+    Constraint = constraints:and_constraint(
+        func_constraints:input_constraint(Inputs),
+        constraints:and_constraint(func_constraints:output_constraint(Outputs), C2)
     ).
-
-%% Parses parameters for insertion of function
-% Requires function signature to be defined
-parse_func_request_insert(Request, FuncName, Inputs, Outputs, Docs) :-
-    http_parameters(Request,
-        [
-            name(FuncName, [string]),
-            no_inputs(NoInputs, [boolean, default(false)]),
-            no_outputs(NoOutputs, [boolean, default(false)]),
-            inputs(Inputs0, [list(string)]),
-            outputs(Outputs0, [list(string)]),
-            docs(Docs, [string, default("")])
-        ]),
-    nonempty_list(Inputs0, NoInputs, Inputs),
-    nonempty_list(Outputs0, NoOutputs, Outputs).
 
 attempt_fn_deletion(Uuid) :-
     fname(Uuid, _),
