@@ -1,9 +1,39 @@
+function urlParam(key, value) {
+    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+}
+
 function searchAndDisplay() {
     const xmlhttp = new XMLHttpRequest();
     const form = document
         .getElementById("search_form");
-    const url = form.action + "?" + serialize(form);
+
+    const oldFormData = new FormData(form);
+    const formData = [];
+
+    for (var pair of oldFormData.entries()) {
+        if (pair[0] === "inputs" || pair[0] === "outputs") {
+            console.log("inputs", pair[1].split(","));
+            for (var item of pair[1].split(",")) {
+                if (!item.trim()) {
+                    continue;
+                }
+                formData.push(urlParam(pair[0], item.trim()));
+            }
+        } else {
+            if (!pair[1]) {
+                continue;
+            }
+            formData.push(urlParam(pair[0], pair[1]));
+        }
+    }
+
+    for (var pair of formData.entries()) {
+        console.log(pair[0]+ ', >' + pair[1] + "<"); 
+    }
+
+    const url = form.action + "?" + formData.join("&");
     console.log(url);
+
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
             const json = JSON.parse(this.responseText);
