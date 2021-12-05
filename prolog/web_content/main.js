@@ -114,7 +114,7 @@ function toJsonAndPush() {
     xmlhttp.send(JSON.stringify(dict));
 
     document.getElementById("name0").value = "";
-    document.getElementById("inputs").value = "";
-    document.getElementById("outputs").value = "";
+    document.getElementById("inputs0").value = "";
+    document.getElementById("outputs0").value = "";
     document.getElementById("docs0").value = "";
 }
