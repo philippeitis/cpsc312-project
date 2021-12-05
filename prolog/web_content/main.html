@@ -9,58 +9,61 @@
         }
     </style>
     <script src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/form-serialize/serialize-0.2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="./main.js"></script>
 </head>
 <body>
-
-<iframe name="this-page" id="this-page" style="display: none;"></iframe>
-
-<div class="container">
-<div class="centered">
-<h1>Function Search</h1>
-<form action="/func" id="search_form" method="GET" target="this-page">
-  <label for="name">Function name:</label>
-  <input type="text" id="name" name="name"><br><br>
-  <label for="name_cmp">Name comparison method:</label>
-  <select name="name_cmp" id="name_cmp">
-    <option value="eq">Exact</option>
-    <option value="re">Regex</option>
-    <option value="lev" selected>Levenshtein distance (total)</option>
-    <option value="fsubstr">Levenshtein distance (partial)</option>
-    <option value="substr">Substring match</option>
-    <option value="subseq">Subsequence match</option>
-    <option value="sim">NLP Sentence-wise Similarity</option>
-    <option value="subsim">NLP Chunk-wise Similarity</option>
-  </select>
-  <br><br>
-  <label for="docs">Find in doc:</label>
-  <input type="text" id="docs" name="docs"><br><br>
-  <label for="doc_cmp">Doc comparison method:</label>
-  <select name="doc_cmp" id="doc_cmp">
-    <option value="eq">Exact</option>
-    <option value="re">Regex</option>
-    <option value="lev">Levenshtein distance (total)</option>
-    <option value="fsubstr">Levenshtein distance (partial)</option>
-    <option value="substr">Substring match</option>
-    <option value="subseq">Subsequence match</option>
-    <option value="sim">NLP Sentence-wise Similarity</option>
-    <option value="subsim" selected>NLP Chunk-wise Similarity</option>
-  </select>
-  <br><br>
-  <input type="button" value="submit" onClick="searchAndDisplay()" />
-  <input type="reset" value="Reset"
-         style="background-color: red;
-                        color: white"
-         onClick="clearResults()"
-             />
-  <input type = "button" value="save" onClick="saveResults()" />
-</form>
-
-
-<div id="function_msg"></div>
-<div id="functions"></div>
-<div id="saved_functions"></div>
-</div>
-</div>
+  <iframe name="this-page" id="this-page" style="display: none;"></iframe>
+  <div class="position-absolute top-0 start-50 translate-middle-x">
+    <div class="position-relative">
+      <br>
+      <center><img src="LogoHeader.png" width="69%"></center>
+    </div>
+  </div>
+  <div class="position-absolute top-50 start-50 translate-middle">
+    <div class="position-relative">
+      <h2>Function Search</h2>
+      <form action="/func" id="search_form" method="GET" target="this-page">
+        <label for="name">Function name:</label>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="name_cmp">Name comparison method:</label>
+        <select name="name_cmp" id="name_cmp">
+          <option value="eq">Exact</option>
+          <option value="re">Regex</option>
+          <option value="lev" selected>Levenshtein distance (total)</option>
+          <option value="fsubstr">Levenshtein distance (partial)</option>
+          <option value="substr">Substring match</option>
+          <option value="subseq">Subsequence match</option>
+          <option value="sim">NLP Sentence-wise Similarity</option>
+          <option value="subsim">NLP Chunk-wise Similarity</option>
+        </select>
+        <br><br>
+        <label for="docs">Find in doc:</label>
+        <input type="text" id="docs" name="docs"><br><br>
+        <label for="doc_cmp">Doc comparison method:</label>
+        <select name="doc_cmp" id="doc_cmp">
+          <option value="eq">Exact</option>
+          <option value="re">Regex</option>
+          <option value="lev">Levenshtein distance (total)</option>
+          <option value="fsubstr">Levenshtein distance (partial)</option>
+          <option value="substr">Substring match</option>
+          <option value="subseq">Subsequence match</option>
+          <option value="sim">NLP Sentence-wise Similarity</option>
+          <option value="subsim" selected>NLP Chunk-wise Similarity</option>
+        </select>
+        <br><br>
+        <input type="button" value="submit" onClick="searchAndDisplay()" />
+        <input type="reset" value="Reset"
+              style="background-color: red;
+                              color: white"
+              onClick="clearResults()"
+                  />
+        <input type = "button" value="save" onClick="saveResults()" />
+      </form>
+      <div id="function_msg"></div>
+      <div id="functions"></div>
+      <div id="saved_functions"></div>
+    </div>
+  </div>
 </body>
 </html>
