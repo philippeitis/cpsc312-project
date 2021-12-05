@@ -58,6 +58,7 @@ function onClickDelete(uuid) {
             if (this.status === 200) {
                 console.log("Deleted");
             } else if (this.status === 405) {
+                console.log("Deleting parent!");
                 const json = JSON.parse(this.responseText);
                 onClickDelete(json["parent_uuid"]);
             }
