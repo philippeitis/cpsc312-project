@@ -98,7 +98,7 @@ function toJsonAndPush() {
     console.log("Called");
     var formData = new FormData(document.getElementById("add_function_form"));
     var dict = { generics: [] };
-    for (var pair of formData.entries()){
+    for (var pair of formData.entries()) {
         if (pair[0] === "inputs0" || pair[0] === "outputs0") {
             console.log("Inputs0", pair[1].split(","))
             dict[pair[0]] = pair[1].split(",");
