@@ -24,21 +24,34 @@ function searchAndDisplay() {
         document.getElementById("function_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
         for (let i = 0; i < json["functions"].length; i++) {
-            output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">";
+            output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">"
+            // function header
+            output += "<table><thead><tr><td><h3>";
+            output += json["functions"][i]["name"] + "</h3></td><td>";
             output += "<input type=checkbox>";
-            output += "<h3>" + json["functions"][i]["name"] + "</h3>";
+            output += "<td>&nbsp; &nbsp; <input type=\"image\" src=\"trashbin.png\" style=\"width:16px;height:16px;\" onclick=onClickDelete(\"" + json["functions"][i]["uuid"] + "\") /></td>";
+            output += "</td></tr></thead></table>";
+
+            // function paragraph
             output += "<p>" + json["functions"][i]["docs"] + "</p>";
             output += "</div>";
         }
         document.getElementById("functions").innerHTML = output;
     }
+}
 
+function onClickDelete(uuid) {
+    // Remove from HTML
+    var elements = document.querySelectorAll("div[data-uuid=\"" + uuid + "\"]");
+    console.log(uuid);
+    Array.prototype.forEach.call(elements, function(node) {
+        node.parentNode.removeChild(node);
+    });
 }
 
 function clearResults() {
     document.getElementById("function_msg").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
-
 }
 
 function saveResults() {
@@ -51,7 +64,7 @@ function saveResults() {
 
     select_functions.forEach(function (el) {
         if (el.checked) {
-            if(saved_functions.querySelectorAll("div[data-uuid=\"" + el.parentElement.getAttribute("data-uuid") +"\"]").length===0) {
+            if(saved_functions.querySelectorAll("div[data-uuid=\"" + el.parentElement.getAttribute("data-uuid") + "\"]").length===0) {
                 saved_functions.appendChild(el.parentElement.cloneNode(true));
             }
         }
