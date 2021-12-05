@@ -32,7 +32,6 @@ jsonify_generic(generic(Name, Bounds), _{name:Name, bounds:Bounds}) :-
     is_list(Bounds), !.
 jsonify_generic(generic(Name, _), _{name:Name}).
 
-jsonify_type(unbound, _{is_unbound: true}) :- !.
 jsonify_type(Generic, JsonGeneric) :-
     jsonify_generic(Generic, JsonGeneric), !.
 jsonify_type(Type, Type) :- string(Type), !.

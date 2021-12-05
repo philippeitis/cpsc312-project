@@ -188,7 +188,7 @@ test("dfs works") :-
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 162).
+    length(Paths, 64).
 
 test("bfs works") :-
     setof(
@@ -196,7 +196,7 @@ test("bfs works") :-
         func_path_no_cycles(bfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 162).
+    length(Paths, 64).
 
 test("bestfs works") :-
     setof(
@@ -204,7 +204,7 @@ test("bestfs works") :-
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 162).
+    length(Paths, 64).
 
 test("No paths for types which do not exist", [fail]) :-
     func_path_no_cycles(
