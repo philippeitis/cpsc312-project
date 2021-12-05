@@ -76,14 +76,14 @@ function saveResults() {
     var functions = document.getElementById("functions");
     var select_functions = functions.querySelectorAll('input[type=checkbox]');
     var saved_functions = document.getElementById("saved_functions");
-    if (saved_functions.innerHTML === "") {
+    if (!saved_functions.innerHTML) {
         saved_functions.innerHTML = "<h2>Saved Functions</h2>";
     }
 
     select_functions.forEach(function (el) {
         if (el.checked) {
             if(saved_functions.querySelectorAll("div[data-uuid=\"" + el.parentElement.getAttribute("data-uuid") + "\"]").length===0) {
-                saved_functions.appendChild(el.parentElement.cloneNode(true));
+                saved_functions.appendChild(el.parentElement.parentElement.cloneNode(true));
             }
         }
     });
