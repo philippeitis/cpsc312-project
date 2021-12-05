@@ -47,6 +47,24 @@ function onClickDelete(uuid) {
     Array.prototype.forEach.call(elements, function(node) {
         node.parentNode.removeChild(node);
     });
+
+    const xmlhttp = new XMLHttpRequest();
+    const url = "/func?uuid=" + uuid;
+    console.log(url);
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+
+            if (this.status === 200) {
+                console.log("Deleted");
+            } else if (this.status === 405) {
+                const json = JSON.parse(this.responseText);
+                onClickDelete(json["parent_uuid"]);
+            }
+        }
+    };
+
+    xmlhttp.open("DELETE", url, true);
+    xmlhttp.send();
 }
 
 function clearResults() {
