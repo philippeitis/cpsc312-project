@@ -17,12 +17,8 @@
   <div class="position-absolute top-0 start-50 translate-middle-x">
     <div class="position-relative">
       <br>
-      <center><img src="LogoHeader.png" width="450px"></center>
-    </div>
-  </div>
-  <div class="position-absolute top-0 start-50 translate-middle-x">
-    <div class="position-relative">
-      <br><br><br><br><br><br><br>
+      <center><img src="LogoHeader.png" width="69%"></center>
+      <br><br>
       <h2>Function Search</h2>
       <form action="/func" id="search_form" method="GET" target="this-page">
         <label for="name">Function name:</label>
@@ -53,26 +49,22 @@
           <option value="subsim" selected>NLP Chunk-wise Similarity</option>
         </select>
         <br><br>
-        <input type="button" value="submit" onClick="searchAndDisplay()" />
-        <input type="reset" value="Reset"
-              style="background-color: red;
-                              color: white"
-              onClick="clearResults()"
-                  />
-        <input type = "button" value="save" onClick="saveResults()" />
+        <button type="button" class="btn btn-outline-secondary" onClick="searchAndDisplay()">Submit</button>
+        <button type="button" class="btn btn-outline-danger" onclick="clearResults()">Reset</button>
+        <button type="button" class="btn btn-outline-info" onClick="saveResults()">Save</button>
       </form>
+      <br>
       <form id="add_function_form">
-        <h5><br>Add Function to Knowledgebase</h5>
-
+        <h2><br>Add Function to Knowledgebase</h2>
         <label for="name0">Function name:</label>
-        <input type="text" id="name0" name="name"><br>
+        <input type="text" id="name0" name="name"><br><br>
         <label for="inputs">Input type:</label>
-        <input type="text" id="inputs" name="inputs"><br>
+        <input type="text" id="inputs" name="inputs"><br><br>
         <label for="outputs">Output type:</label>
-        <input type="text" id="outputs" name="outputs"><br>
+        <input type="text" id="outputs" name="outputs"><br><br>
         <label for="docs0">Documentation:</label>
-        <input type="text" id="docs0" name="docs"><br>
-        <input type="button" value ="confirm" onClick="toJsonAndPush()">
+        <input type="text" id="docs0" name="docs"><br><br>
+        <button type="button" class="btn btn-outline-success" onClick="toJsonAndPush()">Confirm</button>
       </form>
       <div id="function_msg"></div>
       <div id="functions"></div>
