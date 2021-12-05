@@ -16,7 +16,6 @@ function searchAndDisplay() {
             }
         }
     };
-    document.getElementById("name").value = "";
 
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
@@ -93,13 +92,13 @@ function saveResults() {
 }
 
 function toJsonAndPush() {
-
-//    extract all names
+    //    extract all names
     console.log("Called");
-    var formData = new FormData(document.getElementById("add_function_form"));
+    const form = document.getElementById("add_function_form");
+    const formData = new FormData(form);
     var dict = { generics: [] };
     for (var pair of formData.entries()) {
-        if (pair[0] === "inputs0" || pair[0] === "outputs0") {
+        if (pair[0] === "inputs" || pair[0] === "outputs") {
             console.log("Inputs0", pair[1].split(","))
             dict[pair[0]] = pair[1].split(",");
         } else {
@@ -113,8 +112,5 @@ function toJsonAndPush() {
     console.log(JSON.stringify(dict));
     xmlhttp.send(JSON.stringify(dict));
 
-    document.getElementById("name0").value = "";
-    document.getElementById("inputs0").value = "";
-    document.getElementById("outputs0").value = "";
-    document.getElementById("docs0").value = "";
+    form.reset();
 }
