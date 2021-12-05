@@ -16,6 +16,7 @@ function searchAndDisplay() {
             }
         }
     };
+    document.getElementById("name").value = "";
 
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
@@ -37,6 +38,7 @@ function searchAndDisplay() {
             output += "</div>";
         }
         document.getElementById("functions").innerHTML = output;
+        
     }
 }
 
@@ -111,4 +113,8 @@ function toJsonAndPush() {
     console.log(JSON.stringify(dict));
     xmlhttp.send(JSON.stringify(dict));
 
+    document.getElementById("name0").value = "";
+    document.getElementById("inputs").value = "";
+    document.getElementById("outputs").value = "";
+    document.getElementById("docs0").value = "";
 }
