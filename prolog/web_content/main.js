@@ -10,7 +10,7 @@ function searchAndDisplay() {
     const oldFormData = new FormData(form);
     const formData = [];
 
-    for (var pair of oldFormData.entries()) {
+    for (const pair of oldFormData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
             console.log("inputs", pair[1].split(","));
             for (var item of pair[1].split(",")) {
@@ -27,7 +27,7 @@ function searchAndDisplay() {
         }
     }
 
-    for (var pair of formData.entries()) {
+    for (const pair of formData.entries()) {
         console.log(pair[0]+ ', >' + pair[1] + "<"); 
     }
 
@@ -73,7 +73,7 @@ function searchAndDisplay() {
 
 function onClickDelete(uuid) {
     // Remove from HTML
-    var elements = document.querySelectorAll("div[data-uuid=\"" + uuid + "\"]");
+    const elements = document.querySelectorAll("div[data-uuid=\"" + uuid + "\"]");
     console.log(uuid);
     Array.prototype.forEach.call(elements, function(node) {
         node.parentNode.removeChild(node);
@@ -106,9 +106,9 @@ function clearResults() {
 }
 
 function saveResults() {
-    var functions = document.getElementById("functions");
-    var select_functions = functions.querySelectorAll('input[type=checkbox]');
-    var saved_functions = document.getElementById("saved_functions");
+    const functions = document.getElementById("functions");
+    const select_functions = functions.querySelectorAll('input[type=checkbox]');
+    const saved_functions = document.getElementById("saved_functions");
     if (!saved_functions.innerHTML) {
         saved_functions.innerHTML = "<h2>Saved Functions</h2>";
     }
@@ -127,8 +127,8 @@ function toJsonAndPush() {
     console.log("Called");
     const form = document.getElementById("add_function_form");
     const formData = new FormData(form);
-    var dict = { generics: [] };
-    for (var pair of formData.entries()) {
+    const dict = { generics: [] };
+    for (const pair of formData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
             console.log("Inputs0", pair[1].split(","))
             dict[pair[0]] = pair[1].split(",");
