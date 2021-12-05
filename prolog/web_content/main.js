@@ -70,6 +70,7 @@ function onClickDelete(uuid) {
 function clearResults() {
     document.getElementById("function_msg").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
+
 }
 
 function saveResults() {
@@ -87,4 +88,27 @@ function saveResults() {
             }
         }
     });
+}
+
+function toJsonAndPush() {
+
+//    extract all names
+    console.log("Called");
+    var formData = new FormData(document.getElementById("add_function_form"));
+    var dict = { generics: [] };
+    for (var pair of formData.entries()){
+        if (pair[0] === "inputs" || pair[0] === "outputs") {
+            console.log("Inputs", pair[1].split(","))
+            dict[pair[0]] = pair[1].split(",");
+        } else {
+            dict[pair[0]] = pair[1];
+        }
+    }
+
+    const xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", "/func",true);
+    xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    console.log(JSON.stringify(dict));
+    xmlhttp.send(JSON.stringify(dict));
+
 }
