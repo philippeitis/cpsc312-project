@@ -188,7 +188,7 @@ test("dfs works") :-
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 652).
+    length(Paths, 162).
 
 test("bfs works") :-
     setof(
@@ -196,7 +196,7 @@ test("bfs works") :-
         func_path_no_cycles(bfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 652).
+    length(Paths, 162).
 
 test("bestfs works") :-
     setof(
@@ -204,7 +204,7 @@ test("bestfs works") :-
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
     ),
-    length(Paths, 652).
+    length(Paths, 162).
 
 test("No paths for types which do not exist", [fail]) :-
     func_path_no_cycles(
@@ -218,7 +218,7 @@ test("Regex matches all") :-
         string_constraints:regex_constraint(function:func_field(name), ".*"),
         Funcs
     ),
-    length(Funcs, 20).
+    length(Funcs, 17).
 
 test("Regex with empty and matches all") :-
     find_items(
@@ -228,7 +228,7 @@ test("Regex with empty and matches all") :-
         ),
         Funcs
     ),
-    length(Funcs, 20).
+    length(Funcs, 17).
 
 test("Regex with empty input constraint matches all") :-
     find_items(
@@ -238,7 +238,7 @@ test("Regex with empty input constraint matches all") :-
         ),
         Funcs
     ),
-    length(Funcs, 17).
+    length(Funcs, 14).
 
 test("Regex with empty input constraint matches all except generic") :-
     find_items(
@@ -248,7 +248,7 @@ test("Regex with empty input constraint matches all except generic") :-
         ),
         Funcs
     ),
-    length(Funcs, 17).
+    length(Funcs, 14).
 
 test("And constraint order irrelevant") :-
     find_items(
@@ -258,7 +258,7 @@ test("And constraint order irrelevant") :-
         ),
         Funcs
     ),
-    length(Funcs, 17).
+    length(Funcs, 14).
 
 test("And constraint nested") :-
     find_items(
@@ -274,7 +274,7 @@ test("And constraint nested") :-
         ),
         Funcs
     ),
-    length(Funcs, 17).
+    length(Funcs, 14).
 
 :- end_tests('search').
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

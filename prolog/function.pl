@@ -145,7 +145,7 @@ is_generic(generic(_, _)).
 %% Produces true if the key unifies with the generic name and Type satisfies the generic's constraints.
 test_interp((Name, Type), generic(Name, GImpls)) :-
     type_is_compat_with_generic(Type, generic(Name, GImpls)).
-test_interp((Name, unbound), generic(Name, _)).
+% test_interp((Name, unbound), generic(Name, _)).
 
 %% fn_interp_valid(Func, Interp:list)
 % Unifies Interp with an interpration of Func's generics which satisfy all

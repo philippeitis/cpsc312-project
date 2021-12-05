@@ -86,7 +86,7 @@ regex_constraint(Getter, Regex, Func, Cost, NewConstraint) :-
 similarity_core(Needle, Source, Cost) :-
     similarity(Source, Needle, Similarity),
     Similarity > 0.8,
-    Cost is 1.0 - Similarity, !.
+    Cost is 1.0 - Similarity.
 similarity_constraint(Getter, Sequence, Func, Cost, NewConstraint) :-
     wrap_core(similarity_core(Sequence), Getter, Func, Cost, NewConstraint).
 
