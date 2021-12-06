@@ -1,3 +1,12 @@
+let oldHash = window.location.hash.slice(1);
+
+document.addEventListener('DOMContentLoaded', init, false);
+
+function init() {
+    console.log("Loaded");
+    window.addEventListener("hashchange", highlightLinked, false);
+}
+
 function urlParam(key, value) {
     return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
 }
@@ -5,16 +14,14 @@ function urlParam(key, value) {
 function renderFunctions(json) {
     let output = "";
     for (let i = 0; i < json["functions"].length; i++) {
-        output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">"
-        // function header
-        output += "<table><thead><tr><td><h3>";
-        output += json["functions"][i]["name"] + "</h3></td><td>";
-        output += "<input type=checkbox>";
-        output += "<td>&nbsp; &nbsp; <input type=\"image\" src=\"trashbin.png\" style=\"width:16px;height:16px;\" onclick=onClickDelete(\"" + json["functions"][i]["uuid"] + "\") /></td>";
-        output += "</td></tr></thead></table>";
-
-        // function paragraph
-        output += "<p>" + json["functions"][i]["docs"] + "</p>";
+        const fn = json["functions"][i];
+        let style = "padding: 24px 24px 24px 24px;";
+        if (oldHash === fn.uuid) {
+            style += "background-color: #FFFF9F;"
+        }
+        output += `<div id="${fn.uuid}" data-uuid="${fn["uuid"]}" style="${style}">`
+        output += `<h3>${fn.name}</h3>`
+        output += `<p>${fn.docs}</p>`;
         output += "</div>";
     }
     document.getElementById("functions").innerHTML = output;
@@ -82,8 +89,9 @@ function searchAndDisplay() {
         msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
         for (let i = 0; i < json["paths"].length; i++) {
-            output += "<p>" + json["paths"][i].map((x) => (uuidMap.get(x).name))
-                .join(" -> ") + "<\p><br>";
+            output += "<p>" + json["paths"][i].map((uuid) => (
+                `<a href="#${uuid}" class="link-dark">${uuidMap.get(uuid).name}</a>`
+            )).join(" -> ") + "<\p><br>";
         }
         document.getElementById("paths").innerHTML = output;
         renderFunctions(json);
@@ -105,4 +113,24 @@ function updatePathLen(updated) {
     } else {
         pathLenSlider.value = pathLenText.value;
     }
+}
+
+function highlightLinked() {
+    const highlighted = document.getElementById(window.location.hash.slice(1));
+
+    console.log(window.location.hash);
+
+    if (oldHash) {
+        const oldHighlighted = document.getElementById(oldHash);
+        if (oldHighlighted) {
+            oldHighlighted.style.backgroundColor = "#FFFFFF"
+        }
+    }
+
+    if (highlighted) {
+        highlighted.style.backgroundColor = "#FFFF9F";
+    }
+
+    oldHash = window.location.hash.slice(1);
+    console.log("HI!")
 }
