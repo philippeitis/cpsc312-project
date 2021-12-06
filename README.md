@@ -105,7 +105,7 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L14)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
   - We can compose a complex constraint combining five other constraints, negating some constraints and 
-- [Dictionaries](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L32) [LINK](/prolog/function/serde.pl)
+- Dictionaries [for option parsing](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L32), [JSON serialization/deserialization](/prolog/function/serde.pl)
   - Useful for JSON representation, which allows persistence and also serving / reading from a REST API - this is what is used in our web interface!
   - Can be used for collections intended for lookup (eg. a set of options)
 - Modules (all pl files except test files and main are modules)
