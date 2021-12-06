@@ -134,8 +134,8 @@ A guide to your new learning (which can also be part of your guide to the MVP if
   - allows attaching attributes to objects without modifying said objects.
 - [Custom Operators (sorta)](/prolog/function_op.pl)
   - One issue that we haave with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog's term infrastructures, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
-  - Custom operators make it easy to define almost field accessors, and makes refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no pattern matching
-  - Unfortunately, this feature is not supported before Prolog 8.3, and our approach also makes use of unsupported elements of SWIPL, which means that we do not actively use this functionality (as nice as it would be)
+  - Custom operators make it easy to define approximations which behave as field accessors, and makes refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no pattern matching
+  - Unfortunately, this feature is not supported before SWIPL 8.3, and is not fully supported in SWIPL - for instance, this notation can't be used as a metapredicate, and it is also using unofficial language mechanisms to allow the `X ~ field_name` syntax, which means that we do not actively use this functionality (as nice as it would be - datatypes in Prolog would be super useful)
 
 ## RUBRIC:
 https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
