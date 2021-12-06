@@ -99,13 +99,13 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Explanation of how the project benefits from the application of your new learning.
 
 ### Prolog features
-- Partial function application [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L160)
+- [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L160)
   - This makes it easy to pass relevant parameters to constraint functions, while still providing a consistent API between all constraints
   - There is no need to use bespoke structures to store the function and parameters, which greatly simplifies the API
-- Metapredicates [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L14)
+- [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L14)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
   - We can compose a complex constraint combining five other constraints, negating some constraints and 
-- Dictionaries [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L32) [LINK](/prolog/function/serde.pl)
+- [Dictionaries](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L32) [LINK](/prolog/function/serde.pl)
   - Useful for JSON representation, which allows persistence and also serving / reading from a REST API - this is what is used in our web interface!
   - Can be used for collections intended for lookup (eg. a set of options)
 - Modules (all pl files except test files and main are modules)
@@ -113,20 +113,20 @@ A guide to your new learning (which can also be part of your guide to the MVP if
   - serialization/deserialization
   - various types of constraints
   - a server/web interface
-- findall/foreach/forall/setof/findnsols functions [LINK](/prolog/search.pl), and throughout the source code
+- [findall/foreach/forall/setof/findnsols](/prolog/search.pl)
   - These allow defining simple path and search predicates which simply check that one path or item is valid, and then we can aggregate as [many solutions as needed](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L183)
-- DCG for parsing [LINK](/prolog/function/parse.pl)
+- [DCG for parsing](/prolog/function/parse.pl)
   - DCGs make it possible to define parsers for each of the individual elements of a type declaration or function signature, and then easily combine these parsers to parse a complex and interesting function or type
-- Conditional compilation with if [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/string_constraints.pl#L69)
+- [Conditional compilation with if](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/string_constraints.pl#L69)
   - This allows enabling/disabling features for specific versions of Prolog to provide minimum functionality
   - Eg. The CS servers are using an outdated version of Prolog, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows everything else to work.
-- Tabling [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/sequence_ops.pl#L12)
+- [Tabling](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/sequence_ops.pl#L12)
   - allows making expensive operations (eg. computing Levenshtein distance) cheaper without polluting global namespace and without manually implementing necessary garbage collection
   - Eg. 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but 0s for the second time.
-- Dynamic values [LINK](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/function.pl#L25)
+- [Dynamic values](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/function.pl#L25)
   - allow easy access to relevant functions when performing search, without passing additional parameters with a list of all visible functions/traits/types
   - allows attaching attributes to objects without modifying said objects.
-- Custom Operators (sorta) [LINK](/prolog/function_op.pl)
+- [Custom Operators (sorta)](/prolog/function_op.pl)
   - One issue that we haave with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog's term infrastructures, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
   - Custom operators make it easy to define almost field accessors, and makes refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no pattern matching
   - Unfortunately, this feature is not supported before Prolog 8.3, and our approach also makes use of unsupported elements of SWIPL, which means that we do not actively use this functionality (as nice as it would be)
