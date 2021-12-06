@@ -2,6 +2,24 @@ function urlParam(key, value) {
     return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
 }
 
+function renderFunctions(json) {
+    let output = "";
+    for (let i = 0; i < json["functions"].length; i++) {
+        output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">"
+        // function header
+        output += "<table><thead><tr><td><h3>";
+        output += json["functions"][i]["name"] + "</h3></td><td>";
+        output += "<input type=checkbox>";
+        output += "<td>&nbsp; &nbsp; <input type=\"image\" src=\"trashbin.png\" style=\"width:16px;height:16px;\" onclick=onClickDelete(\"" + json["functions"][i]["uuid"] + "\") /></td>";
+        output += "</td></tr></thead></table>";
+
+        // function paragraph
+        output += "<p>" + json["functions"][i]["docs"] + "</p>";
+        output += "</div>";
+    }
+    document.getElementById("functions").innerHTML = output;
+}
+
 function searchAndDisplay() {
     const form = document
         .getElementById("path_form");
@@ -41,7 +59,7 @@ function searchAndDisplay() {
         if (this.readyState === 4) {
             const json = JSON.parse(this.responseText);
             if (this.status === 200) {
-                renderFunction(json);
+                renderPath(json);
             }
             if (this.status === 404) {
                 document.getElementById("path_msg").innerHTML = "<h2 style='color:red'>" + json["msg"] + "</h2>";
@@ -53,25 +71,30 @@ function searchAndDisplay() {
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 
-    function renderFunction(json) {
+    function renderPath(json) {
         const uuidMap = new Map();
-        json["funcs"].forEach(function (x) {
+        json["functions"].forEach(function (x) {
             uuidMap.set(x["uuid"], x);
         });
         console.log(uuidMap);
-        document.getElementById("path_msg").innerHTML = "<h2>" + json["msg"] + "</h2>";
+        const msg = document.getElementById("path_msg");
+
+        msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
         for (let i = 0; i < json["paths"].length; i++) {
             output += "<p>" + json["paths"][i].map((x) => (uuidMap.get(x).name))
                 .join(" -> ") + "<\p><br>";
         }
         document.getElementById("paths").innerHTML = output;
+        renderFunctions(json);
+        msg.scrollIntoView();
     }
 }
 
 function clearResults() {
     document.getElementById("path_msg").innerHTML = "";
     document.getElementById("paths").innerHTML = "";
+    document.getElementById("functions").innerHTML = "";
 }
 
 function updatePathLen(updated) {
