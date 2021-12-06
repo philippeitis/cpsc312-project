@@ -1,3 +1,4 @@
+// Code for dealing with item highlighting
 let oldHash = window.location.hash.slice(1);
 
 document.addEventListener('DOMContentLoaded', init, false);
@@ -11,9 +12,9 @@ function urlParam(key, value) {
 }
 
 function renderFunctions(json) {
+    // Renders the function, including name and documentation, into the page
     let output = "";
-    for (let i = 0; i < json["functions"].length; i++) {
-        const fn = json["functions"][i];
+    for (const fn of json["functions"]) {
         let style = "padding: 24px 24px 24px 24px;";
         if (oldHash === fn.uuid) {
             style += "background-color: #FFFF9F;"
@@ -26,7 +27,29 @@ function renderFunctions(json) {
     document.getElementById("functions").innerHTML = output;
 }
 
-function searchAndDisplay() {
+function renderPath(json) {
+    // Renders the paths in JSON format to the page.
+    const uuidMap = new Map();
+    json["functions"].forEach(function (x) {
+        uuidMap.set(x["uuid"], x);
+    });
+    const msg = document.getElementById("path_msg");
+
+    msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
+    let output = "";
+    for (const path of json["paths"]) {
+        output += "<p>" + path.map((uuid) => (
+            `<a href="#${uuid}" class="link-dark">${uuidMap.get(uuid).name}</a>`
+        )).join(" -> ") + "<\p><br>";
+    }
+    document.getElementById("paths").innerHTML = output;
+    renderFunctions(json);
+    msg.scrollIntoView();
+}
+
+function mainFormToURL() {
+    // Grabs the items from the main form, and correctly formats them for
+    // use server-side.
     const form = document
         .getElementById("path_form");
 
@@ -51,8 +74,13 @@ function searchAndDisplay() {
             formData.push(urlParam(pair[0], pair[1]));
         }
     }
+    return form.action + "?" + formData.join("&");
+}
 
-    const url = form.action + "?" + formData.join("&");
+function searchAndDisplay() {
+    // When form is submitted, handles process of fetching all information
+    // and displaying it.
+    const url = mainFormToURL();
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -69,34 +97,17 @@ function searchAndDisplay() {
 
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
-
-    function renderPath(json) {
-        const uuidMap = new Map();
-        json["functions"].forEach(function (x) {
-            uuidMap.set(x["uuid"], x);
-        });
-        const msg = document.getElementById("path_msg");
-
-        msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
-        let output = "";
-        for (const path of json["paths"]) {
-            output += "<p>" + path.map((uuid) => (
-                `<a href="#${uuid}" class="link-dark">${uuidMap.get(uuid).name}</a>`
-            )).join(" -> ") + "<\p><br>";
-        }
-        document.getElementById("paths").innerHTML = output;
-        renderFunctions(json);
-        msg.scrollIntoView();
-    }
 }
 
 function clearResults() {
+    // Clears all areas where results are displayed
     document.getElementById("path_msg").innerHTML = "";
     document.getElementById("paths").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
 }
 
 function updatePathLen(updated) {
+    // Connects slider to text so that changing one changes the other
     const pathLenSlider = document.getElementById("path_length");
     const pathLenText = document.getElementById("path_length_t");
     if (updated === "slider") {
@@ -107,8 +118,11 @@ function updatePathLen(updated) {
 }
 
 function highlightLinked() {
+    // When user clicks on a link, they will be sent to a function and it
+    // will be highlighted.
     const highlighted = document.getElementById(window.location.hash.slice(1));
 
+    // Remove old highlights
     if (oldHash) {
         const oldHighlighted = document.getElementById(oldHash);
         if (oldHighlighted) {

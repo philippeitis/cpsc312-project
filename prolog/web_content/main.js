@@ -3,6 +3,8 @@ function urlParam(key, value) {
 }
 
 function renderFunction(json) {
+    // Renders the function's name and documentation, as well as buttons
+    // to delete and save said function.
     const msg = document.getElementById("function_msg");
     msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
     let output = "";
@@ -10,7 +12,7 @@ function renderFunction(json) {
         output += `<div data-uuid="${fn.uuid}"\>`;
         // function header
         output += `<table><thead><tr><td><h3>${fn.name}</h3></td><td>`;
-        output += `<td>&nbsp; &nbsp; <input type="checkbox" style="width: 16px; height: 16px"> </td>`;
+        output += `<td>&nbsp; &nbsp; <input type="checkbox" style="width: 16px; height: 16px" data-uuid="${fn.uuid}"> </td>`;
         output += `<td>&nbsp; &nbsp; <input type="image" src="trash.svg" style="width:16px;height:16px;" onclick=onClickDelete("${fn.uuid}")></td>`;
         output += "</td></tr></thead></table>";
         // function paragraph
@@ -21,7 +23,9 @@ function renderFunction(json) {
     msg.scrollIntoView();
 }
 
-function searchAndDisplay() {
+function mainFormToURL() {
+    // Grabs the items from the main form, and correctly formats them for
+    // use server-side.
     const form = document
         .getElementById("search_form");
 
@@ -44,8 +48,13 @@ function searchAndDisplay() {
         }
     }
 
-    const url = form.action + "?" + formData.join("&");
+    return form.action + "?" + formData.join("&");
+}
 
+function searchAndDisplay() {
+    // When form is submitted, handles process of fetching all information
+    // and displaying it.
+    const url = mainFormToURL();
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -68,14 +77,17 @@ function searchAndDisplay() {
 }
 
 function removeUuidFromScreen(uuid) {
-    const elements = document.querySelectorAll("div[data-uuid=\"" + uuid + "\"]");
+    // Deletes all instances of a particular UUID
+    const elements = document.querySelectorAll(`div[data-uuid="${uuid}"]`);
     Array.prototype.forEach.call(elements, function(node) {
-        node.parentNode.removeChild(node);
+        node.remove();
     });
 }
 
 function onClickDelete(uuid) {
-    // Remove from HTML
+    // Remove the provided UUID from the screen and from the server. If the
+    // uuid belongs to a specialized function, its parent will be deleted,
+    // and all children on the page will be removed.
     removeUuidFromScreen(uuid);
     const xmlhttp = new XMLHttpRequest();
     const url = "/func?uuid=" + uuid;
@@ -95,35 +107,44 @@ function onClickDelete(uuid) {
 }
 
 function clearResults() {
+    // Clears all areas where results are displayed.
     document.getElementById("function_msg").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
 }
 
 function saveResults() {
+    // Saves the user's results to a secondary div, without adding duplicate copies of any particular
+    // result.
     const functions = document.getElementById("functions");
-    const select_functions = functions.querySelectorAll('input[type=checkbox]');
-    const saved_functions = document.getElementById("saved_functions");
-    if (!saved_functions.innerHTML) {
-        saved_functions.innerHTML = "<h2>Saved Functions</h2>";
+    const selectedFunctions = functions.querySelectorAll('input[type=checkbox]');
+    const savedFunctions = document.getElementById("saved_functions");
+    if (!savedFunctions.innerHTML) {
+        savedFunctions.innerHTML = "<h2>Saved Functions</h2>";
     }
 
-    select_functions.forEach(function (el) {
-        if (el.checked) {
-            if(saved_functions.querySelectorAll("div[data-uuid=\"" + el.parentElement.getAttribute("data-uuid") + "\"]").length===0) {
-                saved_functions.appendChild(el.parentElement.parentElement.cloneNode(true));
-            }
-        }
-    });
+    Array.from(selectedFunctions)
+        .filter((el) => el.checked)
+        .map((el) => `div[data-uuid="${el.getAttribute("data-uuid")}"]`)
+        .filter((selector) => savedFunctions.querySelectorAll(selector).length === 0)
+        .forEach((selector) => {
+            const child = document.querySelector(selector)
+                .cloneNode(true);
+            child.querySelectorAll('input[type=checkbox]').forEach(
+                (el) => el.remove()
+            );
+            savedFunctions.appendChild(child);
+        });
 }
 
 function toJsonAndPush() {
-    //    extract all names
+    // Extracts the items from the Function Add form, formats them as JSON,
+    // and sends a post request to the server.
     const form = document.getElementById("add_function_form");
     const formData = new FormData(form);
     const dict = { generics: [] };
     for (const pair of formData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
-            dict[pair[0]] = pair[1].split(",");
+            dict[pair[0]] = pair[1].split(",").map((s) => s.trim()).filter((s) => s.length);
         } else {
             dict[pair[0]] = pair[1];
         }
