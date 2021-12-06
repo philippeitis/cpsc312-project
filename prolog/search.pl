@@ -1,5 +1,6 @@
 :- module(search, [
     func_path/4,
+    func_path_init/4,
     func_path_no_cycles/4,
     find_item/3,
     find_items/2,

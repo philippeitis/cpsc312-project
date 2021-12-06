@@ -3,7 +3,6 @@ function urlParam(key, value) {
 }
 
 function searchAndDisplay() {
-    const xmlhttp = new XMLHttpRequest();
     const form = document
         .getElementById("search_form");
 
@@ -13,7 +12,7 @@ function searchAndDisplay() {
     for (const pair of oldFormData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
             console.log("inputs", pair[1].split(","));
-            for (var item of pair[1].split(",")) {
+            for (const item of pair[1].split(",")) {
                 if (!item.trim()) {
                     continue;
                 }
@@ -34,6 +33,7 @@ function searchAndDisplay() {
     const url = form.action + "?" + formData.join("&");
     console.log(url);
 
+    const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
             const json = JSON.parse(this.responseText);
@@ -102,7 +102,6 @@ function onClickDelete(uuid) {
 function clearResults() {
     document.getElementById("function_msg").innerHTML = "";
     document.getElementById("functions").innerHTML = "";
-
 }
 
 function saveResults() {
