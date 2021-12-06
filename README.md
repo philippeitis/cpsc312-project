@@ -81,7 +81,7 @@ By going to http://localhost:4999/main.html, you can interact with the web-based
 3. Deleting functions, by clicking the trash can
 4. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
 
-You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths using the `Path Search` form (and pressing submit), or navigate back to the main page by pressing `Function Search`. This will display a list of paths - you can then click on individual function names to see their full description.
+You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths using the `Path Search` form (and pressing submit), or navigate back to the main page by pressing `Function Search`. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions.
 
 By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which provides schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
 
