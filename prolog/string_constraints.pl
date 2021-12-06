@@ -32,13 +32,24 @@
 wrapper(Constraint, Getter, Item, Cost, NewConstraint) :-
     wrap_core(Constraint, Getter, Item, Cost, NewConstraint).
 
-wrap_core(Constraint, Getter, Item, Cost, no_constraint) :-
+wrap_core(Constraint, Getter, Item, Cost, NewConstraint) :-
     call(Getter, Item, Value),
-    call(Constraint, Value, Cost).
-
-wrap_core(Constraint, Getter, Item, 1.0, wrapper(Constraint, Getter)) :-
-    call(Getter, Item, Value),
-    \+call(Constraint, Value, _).
+    (
+        %% We do it like this to:
+        %% avoid having two cases of this function, which can lead
+        %% to backtracking over string constraints - this is bad,
+        %% because these can be expensive
+        %% and it introduces duplicates into the paths we generate.
+        (call(Constraint, Value, Cost0)) ->
+            (
+                Cost = Cost0,
+                NewConstraint = no_constraint
+            ) ;
+            (
+                Cost = 1.0,
+                NewConstraint = wrapper(Constraint, Getter)
+            )
+    ).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% String comparison methods

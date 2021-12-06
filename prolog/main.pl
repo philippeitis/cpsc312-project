@@ -179,7 +179,7 @@ execute_command(String) :-
     parse_types(Rest, InputTypes, OutputTypes, OptionStr),
     parse_options(OptionStr, Options),
     number_string(N, Options.get(limit, "5")),
-    atom_string(Strategy, Options.get(strategy, "bestfs")),
+    atom_string(Strategy, Options.get(strategy, bestfs)),
     findnsols(
         N,
         Path,

@@ -183,7 +183,7 @@ test("storage roundtrip succeeds", [nondet]) :-
 :- use_module(constraints).
 
 test("dfs works") :-
-    setof(
+    findall(
         Path,
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
@@ -191,7 +191,7 @@ test("dfs works") :-
     length(Paths, 64).
 
 test("bfs works") :-
-    setof(
+    findall(
         Path,
         func_path_no_cycles(bfs, ["int"], ["int"], Path),
         Paths
@@ -199,7 +199,7 @@ test("bfs works") :-
     length(Paths, 64).
 
 test("bestfs works") :-
-    setof(
+    findall(
         Path,
         func_path_no_cycles(dfs, ["int"], ["int"], Path),
         Paths
@@ -301,13 +301,13 @@ test("input constraint fails when input does not match", [fail]) :-
 % at any point, and we simply check that there are no constraints left
 % when the path is complete. However, input constraints will fail if
 % the input does not match, as this would allow an invalid path.
-test("substring constraint succeeds", [nondet]) :-
+test("substring constraint succeeds") :-
     function:fname(Uuid, "parseInt"),
     substring_constraint(func_field(name), "parse", Uuid, 0.0, no_constraint).
 test("substring constraint fails") :-
     function:fname(Uuid, "parseInt"),
     substring_constraint(func_field(name), "dsdsfdwa", Uuid, 1.0, _).
-test("subsequence constraint", [nondet]) :-
+test("subsequence constraint") :-
     function:fname(Uuid, "parseInt"),
     subsequence_constraint(func_field(name), "pre", Uuid, 0.0, no_constraint).
 test("subsequence constraint fail") :-
@@ -315,7 +315,7 @@ test("subsequence constraint fail") :-
     subsequence_constraint(func_field(name), "tspkn", Uuid, 1.0, _).
 test(
     "regex constraint",
-    [condition(prolog_version_eight), nondet]
+    [condition(prolog_version_eight)]
     ) :-
     function:fname(Uuid, "decrement"),
     regex_constraint(func_field(name), "de.*", Uuid, 0.0, no_constraint).
@@ -336,7 +336,7 @@ test("sub_similarity constraint", [nondet]) :-
     sub_similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
     sub_similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
 
-test("sub_similarity constraint", [nondet]) :-
+test("sub_similarity constraint ignores order") :-
     function:fname(Uuid, "print"),
     sub_similarity_constraint(func_field(docs), "see also", Uuid, _, no_constraint),
     sub_similarity_constraint(func_field(docs), "also see", Uuid, _, no_constraint).
