@@ -332,11 +332,10 @@ find_and_fmt_paths(Strategy, FnConstraint, PathConstraint) :-
     format(string(Msg), "Found ~w paths (~w functions)", [PLen, FLen]),
     reply_json_dict(_{msg:Msg, paths: Paths, functions:JsonFuncs}), !.
 
-find_and_fmt_paths(_) :-
+find_and_fmt_paths(_, _, _) :-
     format('Status: 404~n'), % Not found
     format('Content-type: application/json~n~n'),
     json_write_dict(current_output, _{msg:"Paths matching query not found"}), !.
-
 
 path_endpoint(Request) :-
     format(user_output, "~w~n", [[Request]]),
