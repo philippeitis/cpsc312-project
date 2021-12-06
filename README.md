@@ -85,6 +85,9 @@ The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=sect
 #### Python Dependencies
 This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language processing library. spaCy is automatically installed into a virtual environment if necessary by all build targets. This will also download a ~50MB natural language model. 
 
+### Website Dependencies
+The webpages use [Bootstrap](https://getbootstrap.com/) for CSS styling and SVG icons, and the favicon was generated using [redketchup](https://redketchup.io/favicon-generator).
+
 [USAGE.md](USAGE.md) goes into further detail about how to use FastFunc, and provides specific examples of different tasks to help direct your evaluation.
 
 ### Go into more details about how the MVP works...
