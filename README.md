@@ -65,7 +65,7 @@ Below, we present two options for running the code. To ensure that all dependenc
 | Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
 | Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && make FASTFUNC_SERVER_PORT=PORT launch-server` |
 
-Launching the server will output the following text:
+Launching the server will output the following text (though it will be slightly different between using the Docker / OS command):
 ```console
 ...
 Started server at http://localhost:4999/
@@ -75,9 +75,17 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which allows searching for functions, adding new functions, and deleting functions as necessary, and provides a significantly more discoverable interface compared to the command line.
+By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features:
+1. Searching for functions using using the `Function Search` form
+2. Bookmarking selected functions by selecting them and pressing `Save`
+3. Deleting functions, by clicking the trash can
+4. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
 
-By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which provides schemas for all of the endpoints the server provides and allows user interaction. This should look like [this image](./resources/openapi.png).
+You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths using the `Path Search` form (and pressing submit), or navigate back to the main page by pressing `Function Search`. This will display a list of paths - you can then click on individual function names to see their full description.
+
+By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which provides schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
+
+[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation.
 
 #### Prolog Dependencies
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
@@ -85,10 +93,8 @@ The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=sect
 #### Python Dependencies
 This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language processing library. spaCy is automatically installed into a virtual environment if necessary by all build targets. This will also download a ~50MB natural language model. 
 
-### Website Dependencies
+#### Website Dependencies
 The webpages use [Bootstrap](https://getbootstrap.com/) for CSS styling and SVG icons, and the favicon was generated using [redketchup](https://redketchup.io/favicon-generator).
-
-[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc, and provides specific examples of different tasks to help direct your evaluation.
 
 ### Go into more details about how the MVP works...
 
