@@ -3,7 +3,6 @@ let oldHash = window.location.hash.slice(1);
 document.addEventListener('DOMContentLoaded', init, false);
 
 function init() {
-    console.log("Loaded");
     window.addEventListener("hashchange", highlightLinked, false);
 }
 
@@ -39,7 +38,6 @@ function searchAndDisplay() {
             continue;
         }
         if (pair[0] === "inputs" || pair[0] === "outputs") {
-            console.log("inputs", pair[1].split(","));
             for (const item of pair[1].split(",")) {
                 if (!item.trim()) {
                     continue;
@@ -54,13 +52,7 @@ function searchAndDisplay() {
         }
     }
 
-    for (const pair of formData.entries()) {
-        console.log(pair[0]+ ', >' + pair[1] + "<"); 
-    }
-
     const url = form.action + "?" + formData.join("&");
-    console.log(url);
-
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
@@ -83,13 +75,12 @@ function searchAndDisplay() {
         json["functions"].forEach(function (x) {
             uuidMap.set(x["uuid"], x);
         });
-        console.log(uuidMap);
         const msg = document.getElementById("path_msg");
 
         msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
         let output = "";
-        for (let i = 0; i < json["paths"].length; i++) {
-            output += "<p>" + json["paths"][i].map((uuid) => (
+        for (const path of json["paths"]) {
+            output += "<p>" + path.map((uuid) => (
                 `<a href="#${uuid}" class="link-dark">${uuidMap.get(uuid).name}</a>`
             )).join(" -> ") + "<\p><br>";
         }
@@ -118,8 +109,6 @@ function updatePathLen(updated) {
 function highlightLinked() {
     const highlighted = document.getElementById(window.location.hash.slice(1));
 
-    console.log(window.location.hash);
-
     if (oldHash) {
         const oldHighlighted = document.getElementById(oldHash);
         if (oldHighlighted) {
@@ -132,5 +121,4 @@ function highlightLinked() {
     }
 
     oldHash = window.location.hash.slice(1);
-    console.log("HI!")
 }

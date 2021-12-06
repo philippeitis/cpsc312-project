@@ -30,7 +30,6 @@ function searchAndDisplay() {
 
     for (const pair of oldFormData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
-            console.log("inputs", pair[1].split(","));
             for (const item of pair[1].split(",")) {
                 if (!item.trim()) {
                     continue;
@@ -45,12 +44,7 @@ function searchAndDisplay() {
         }
     }
 
-    for (const pair of formData.entries()) {
-        console.log(pair[0]+ ', >' + pair[1] + "<"); 
-    }
-
     const url = form.action + "?" + formData.join("&");
-    console.log(url);
 
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
@@ -82,19 +76,15 @@ function removeUuidFromScreen(uuid) {
 
 function onClickDelete(uuid) {
     // Remove from HTML
-    console.log(uuid);
     removeUuidFromScreen(uuid);
     const xmlhttp = new XMLHttpRequest();
     const url = "/func?uuid=" + uuid;
-    console.log(url);
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
             const json = JSON.parse(this.responseText);
             if (this.status === 200) {
                 json["uuids"].forEach(removeUuidFromScreen);
-                console.log("Deleted");
             } else if (this.status === 405) {
-                console.log("Deleting parent!");
                 onClickDelete(json["parent_uuid"]);
             }
         }
@@ -128,13 +118,11 @@ function saveResults() {
 
 function toJsonAndPush() {
     //    extract all names
-    console.log("Called");
     const form = document.getElementById("add_function_form");
     const formData = new FormData(form);
     const dict = { generics: [] };
     for (const pair of formData.entries()) {
         if (pair[0] === "inputs" || pair[0] === "outputs") {
-            console.log("Inputs0", pair[1].split(","))
             dict[pair[0]] = pair[1].split(",");
         } else {
             dict[pair[0]] = pair[1];
@@ -144,8 +132,6 @@ function toJsonAndPush() {
     const xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", "/func",true);
     xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    console.log(JSON.stringify(dict));
     xmlhttp.send(JSON.stringify(dict));
-
     form.reset();
 }
