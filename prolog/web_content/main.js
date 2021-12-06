@@ -7,16 +7,15 @@ function renderFunction(json) {
     msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
     let output = "";
     for (let i = 0; i < json["functions"].length; i++) {
-        output += "<div data-uuid=\"" + json["functions"][i]["uuid"] +"\">"
+        const fn = json["functions"][i];
+        output += `<div data-uuid="${fn.uuid}"\>`;
         // function header
-        output += "<table><thead><tr><td><h3>";
-        output += json["functions"][i]["name"] + "</h3></td><td>";
-        output += "<input type=checkbox>";
-        output += "<td>&nbsp; &nbsp; <input type=\"image\" src=\"trashbin.png\" style=\"width:16px;height:16px;\" onclick=onClickDelete(\"" + json["functions"][i]["uuid"] + "\") /></td>";
+        output += `<table><thead><tr><td><h3>${fn.name}</h3></td><td>`;
+        output += `<td>&nbsp; &nbsp; <input type="checkbox" style="width: 16px; height: 16px"> </td>`;
+        output += `<td>&nbsp; &nbsp; <input type="image" src="trash.svg" style="width:16px;height:16px;" onclick=onClickDelete("${fn.uuid}")></td>`;
         output += "</td></tr></thead></table>";
-
         // function paragraph
-        output += "<p>" + json["functions"][i]["docs"] + "</p>";
+        output += `<p>${fn.docs}</p>`;
         output += "</div>";
     }
     document.getElementById("functions").innerHTML = output;
