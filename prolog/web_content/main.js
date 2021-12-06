@@ -6,8 +6,7 @@ function renderFunction(json) {
     const msg = document.getElementById("function_msg");
     msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
     let output = "";
-    for (let i = 0; i < json["functions"].length; i++) {
-        const fn = json["functions"][i];
+    for (const fn of json["functions"]) {
         output += `<div data-uuid="${fn.uuid}"\>`;
         // function header
         output += `<table><thead><tr><td><h3>${fn.name}</h3></td><td>`;
@@ -61,8 +60,11 @@ function searchAndDisplay() {
                 renderFunction(json);
             }
             if (this.status === 404) {
-                document.getElementById("function_msg").innerHTML = "<h2 style='color:red'>" + json["msg"] + "</h2>";
+                const msg = document.getElementById("function_msg");
+                msg.innerHTML = "<h2 style='color:red'>" + json["msg"] + "</h2>";
                 document.getElementById("functions").innerHTML = "";
+                msg.scrollIntoView();
+
             }
         }
     };
