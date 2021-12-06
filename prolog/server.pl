@@ -127,7 +127,6 @@ parse_func_search_request(Request, Constraint) :-
     ).
 
 attempt_fn_deletion(Uuid) :-
-    fname(Uuid, _),
     specialized(Parent, Uuid),
     format('Status: 405~n'), % HTTP not allowed
     format('Content-type: application/json~n~n'),
@@ -141,7 +140,16 @@ attempt_fn_deletion(Uuid) :-
 attempt_fn_deletion(Uuid) :-
     fname(Uuid, _),
     retractall(function(Uuid, _, _, _, _, _)),
-    reply_json_dict(_{msg: "Removed", uuid:Uuid}), !.
+    findall(
+        Child,
+        (
+            specialized(Uuid, Child),
+            retractall(specialized(Uuid, Child)),
+            retractall(function(Child, _, _, _, _, _))
+        ),
+        Children
+    ),
+    reply_json_dict(_{msg: "Removed", uuids:[Uuid|Children]}), !.
 
 attempt_fn_deletion(Uuid) :-
     format('Status: 404~n'), % Not found

@@ -71,25 +71,28 @@ function searchAndDisplay() {
     xmlhttp.send();
 }
 
-function onClickDelete(uuid) {
-    // Remove from HTML
+function removeUuidFromScreen(uuid) {
     const elements = document.querySelectorAll("div[data-uuid=\"" + uuid + "\"]");
-    console.log(uuid);
     Array.prototype.forEach.call(elements, function(node) {
         node.parentNode.removeChild(node);
     });
+}
 
+function onClickDelete(uuid) {
+    // Remove from HTML
+    console.log(uuid);
+    removeUuidFromScreen(uuid);
     const xmlhttp = new XMLHttpRequest();
     const url = "/func?uuid=" + uuid;
     console.log(url);
     xmlhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
-
+            const json = JSON.parse(this.responseText);
             if (this.status === 200) {
+                json["uuids"].forEach(removeUuidFromScreen);
                 console.log("Deleted");
             } else if (this.status === 405) {
                 console.log("Deleting parent!");
-                const json = JSON.parse(this.responseText);
                 onClickDelete(json["parent_uuid"]);
             }
         }

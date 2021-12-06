@@ -108,10 +108,10 @@ test(
     ]}),
     % Delete all copies of parseInt55.
     assertion(
-        delete_fn(Port, Uuid1, _{msg: "Removed", uuid:Uuid1})
+        delete_fn(Port, Uuid1, _{msg: "Removed", uuids:[Uuid1]})
     ),
     assertion(
-        delete_fn(Port, Uuid2, _{msg: "Removed", uuid:Uuid2})
+        delete_fn(Port, Uuid2, _{msg: "Removed", uuids:[Uuid2]})
     ),
     % Check that we did in fact delete parseInt55 - this should be 404
     % If not, we don't throw an exception and read fail.
