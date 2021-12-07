@@ -25,7 +25,7 @@
 
 %% TODO: Type and trait search as well
 %% -> eg. what types have this documentation or implement these traits
-%% TODO: Allow not specifying input / output types (eg. what functions take this / return this)
+%% TODO: Allow not specifying input / output types (eg. what functions take this xor return this)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Function level search
