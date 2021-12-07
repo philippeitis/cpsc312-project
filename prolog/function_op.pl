@@ -29,15 +29,19 @@
 ~(function(_, _, _, _, Outputs, _), outputs, Outputs).
 ~(function(_, _, _, _, _, Docs), docs, Docs).
 
+:- Uuid = function('01234', _, _, _, _, _) ~ uuid.
+
 %% ?~(+Key, +Value, -Func)
 % Find a function which satisfies the key/value constraint.
 '$expand':function(?~(_,_), _).
 ?~(uuid, Value, Func) :- get_function(Value, Func).
-?~(name, Value, Func) :- fname(Uuid, Value), get_function(Uuid, Func).
-?~(generics, Value, Func) :- generics(Uuid, Value), get_function(Uuid, Func).
-?~(inputs, Value, Func) :- inputs(Uuid, Value), get_function(Uuid, Func).
-?~(outputs, Value, Func) :- outputs(Uuid, Value), get_function(Uuid, Func).
-?~(docs, Value, Func) :- docs(Uuid, Value), get_function(Uuid, Func).
+?~(name, Value, Func) :- get_function(_, Func), fname(Func, Value).
+?~(generics, Value, Func) :- get_function(_, Func), generics(Func, Value).
+?~(inputs, Value, Func) :- get_function(_, Func), inputs(Func, Value).
+?~(outputs, Value, Func) :- get_function(_, Func), outputs(Func, Value).
+?~(docs, Value, Func) :- get_function(_, Func), docs(Func, Value).
+
+:- Func = name ?~ "add".
 
 %% #~(+Key, +Value, -Func)
 % Gets the value with the given key from a function with the given UUID.
@@ -111,9 +115,13 @@ jsonify_fn(
 
 %% Unfortunately, SWIPL does not currently support functions in calls,
 % which would have been very nice to have, and would have allowed doing something like
-% call(name ?~ "add", Fn) - which would be very nice for dynamic queries.
-% Alternative:
+% call(name ?~ "add", Fn) - which would make expressing these dynamic queries rather
+% elegant.
+% Alternative 1:
 % custom_fn(Key, Value, Fn) :- func_field(Uuid, Fn, Value).
 % call(custom_fn(name, "add"), Fn).
 % Main issue with the alternative is that it's both more verbose, and obscures the intent
 % of the operation.
+% Alternative 2:
+% Prolog's record library - this isn't ideal, because it is extremely verbose, and goes against
+% the entire idea behind using this framework.
