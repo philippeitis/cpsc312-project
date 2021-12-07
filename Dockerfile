@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:latest
 
 RUN apt-get clean && apt-get update
 RUN apt-get install -y --no-install-recommends \
@@ -6,18 +6,42 @@ RUN apt-get install -y --no-install-recommends \
     build-essential \
     python3.9 \
     python3-pip \
-    python3-venv
+    python3-venv \
+    git-all \
+    cmake \
+    ninja-build \
+    zlib1g \
+    zlib1g-dev \
+    pkg-config \
+    ncurses-dev libreadline-dev libedit-dev \
+    libgoogle-perftools-dev \
+    libunwind-dev \
+    libgmp-dev \
+    libssl-dev \
+    unixodbc-dev \
+    libarchive-dev \
+    libossp-uuid-dev \
+    libxext-dev libice-dev libjpeg-dev libxinerama-dev libxft-dev \
+    libxpm-dev libxt-dev \
+    libdb-dev \
+    libpcre3-dev \
+    libyaml-dev \
+    default-jdk junit4
 
-RUN add-apt-repository ppa:swi-prolog/stable
-RUN apt-get install -y --no-install-recommends \
-        swi-prolog
+RUN git clone https://github.com/SWI-Prolog/swipl.git && cd swipl && git submodule update --init
+
+COPY ./scripts/ ./scripts/
+RUN chmod +x ./scripts/*.sh
+RUN /scripts/git-fetch-prolog.sh
+RUN /scripts/build-prolog.sh
+
+ENV PATH "$PATH:/root/bin/"
+
+COPY ./Makefile /cpsc312-project/Makefile
 
 COPY ./prolog /cpsc312-project/prolog
 RUN cd /cpsc312-project/prolog/ && make build
 
-COPY ./Makefile /cpsc312-project/Makefile
-COPY ./scripts/ ./scripts/
-RUN chmod +x ./scripts/*.sh
 
 ENV IN_DOCKER=1
 WORKDIR "/cpsc312-project/prolog"
