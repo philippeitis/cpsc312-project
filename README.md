@@ -20,20 +20,7 @@ Our team is:
 We call ourselves: Functionator.
 
 ## Video
-Your key additions will be to include and document your MVP and to include (a link to) a demo video of maximum length 3 minutes 59 seconds that demonstrates the functionality of your MVP.
-
-A link to your video (described above). We expect most people will host on YouTube, Vimeo, or the like, but if you need help deciding where to host the video, let us know (well in advance of the deadline!).
-
-Your video should include:
-
-- A title for your project
-- Your team name (as used for your project submission) and the names of your team members (identified by your preferred names)
-- A demonstration sufficient for us to mark the “Fulfills the proposal” rubric item below. At minimum:
-  - Remind us what you proposed (which will often involve mentioning pieces of functionality as you demonstrate them).
-  - Show us your MVP running and fulfilling that proposal. Use this opportunity to show off what your MVP can do!
-  - Briefly highlight key elements of your code underpinning your functionality. (But have links directly to those places in your code in your README.md file as well, since a video may not be the easiest way to review code!)
-- If you have time, also include what we need to judge the “Application of new learning” rubric item, but that is not required.
-- Optionally: Close with your team’s CPSC 312-related catchphrase visually illustrated in some fantastically cool way. (But that’s seriously optional!)
+https://www.youtube.com/watch?v=-rjJyVOpL1o
 
 ## Proposal
 The project proposal is available at [PROPOSAL.md](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/PROPOSAL.md#minimal-viable-project). Some information may be duplicated between this file and PROPOSAL.md.
