@@ -63,7 +63,7 @@ Based on all of these factors, we believe our project goes well above and beyond
 A complete index of our codebase is provided at [File Overview](./README.md#file-overview).
 
 ### Running MVP
-Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
+Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.4+, and we do not know if the CS computers would be up-to-date).
 
 | Task | Using Docker | Using Current OS |
 | :--  | :-- | :-- |
@@ -87,13 +87,9 @@ By going to http://localhost:4999/main.html, you can interact with the web-based
 3. Deleting functions, by clicking the trash can
 4. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
 
-You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths using the `Path Search` form (and pressing submit), or navigate back to the main page by pressing `Function Search`. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions.
+You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths by filling out the `Path Search` form (all arguments are optional), and then pressing submit. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions. You can also navigate back to the main page by clicking `Function Search`. 
 
-By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which provides schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
-
-[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation.
-
-Due to our primary UI existing as a web page, we have decided to include video snippets for each of the task that can be performed through our website:
+Due to our primary UI existing as a web page, we have decided to include video snippets for each of the tasks that can be performed through our website:
 
 [Adding a function to the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Add%20Function%20string_to_list.mp4)
 
@@ -105,10 +101,14 @@ Due to our primary UI existing as a web page, we have decided to include video s
 
 [Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
 
-![Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+[Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+
+By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which renders schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
+
+[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation, but this interface is largely equivalent to the web interface.
 
 #### Prolog Dependencies
-The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.4.0+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been using SWIPL 8.4 locally, and all tests pass.
 
 #### Python Dependencies
 This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language processing library. spaCy is automatically installed into a virtual environment if necessary by all build targets. This will also download a ~50MB natural language model. 
@@ -122,7 +122,7 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Direct links into parts of the code where the new learning was employed
 - Explanation of how the project benefits from the application of your new learning.
 
-In this section, we go over the Prolog features that we have learned to use, and provide an overview of all of the files that comprise our application, and the purpose they serve. 
+In this section, we go over the Prolog features that we have learned to use. Further down, we provide an overview of all of the files that comprise our application and the purpose they serve. 
 
 ### Prolog features
 - [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L177)
@@ -160,7 +160,7 @@ In this section, we go over the Prolog features that we have learned to use, and
   - This is also nicer than the alternative of used a function for each field, since these functions will either collide with the global namespace (for example, our functions have uuids, which overlaps with the uuid function), or have prefixes, which doesn't particularly scale (eg. we have traits and types, which one gets the t prefix?) or will be overly verbose, as in SWIPL's record's library
   - Unfortunately, this feature is not supported before SWIPL 8.3, and is not fully supported in SWIPL - for instance, this notation can't be called using `call`, and it also uses unofficial language mechanisms to allow the `X ~ field_name` syntax, which means that we do not actively use this functionality (as nice as it would be - though datatypes in Prolog would be even better)
 
-## File Overview
+### File Overview
 - [compat.pl](prolog/compat.pl) - This file is used to check if the currently running version of Prolog includes the necessary libraries for specific functionality to be available.
 - [constraints.pl](prolog/constraints.pl): This file contains all generic constraints, which can be used for types or functions, and allow combinging constraints, scaling their costs, and even checking that a particular item is, or is not in a particular list. Constraints are used both for rejecting candidate items and paths, and for scoring them, allowing us to order search results by their relevance.
 - [string_constraints.pl](prolog/string_constraints.pl): This file contains various string-based constraints, which are all generic over a getter. It also has functionality for adding string constraints from user input - this is used both in the server and in the terminal interface to ensure that both interfaces have a consistent experience.
