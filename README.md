@@ -60,6 +60,8 @@ In addition, our project makes significant use of many of Prolog's advanced feat
 
 Based on all of these factors, we believe our project goes well above and beyond the expectations for the MVP, and in many senses, approaches the goals laid out for our product pitch.
 
+A complete index of our codebase is provided at [File Overview](./README.md#file-overview).
+
 ### Running MVP
 Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
 
@@ -124,32 +126,34 @@ In this section, we go over the Prolog features that we have learned to use, and
 
 ### Prolog features
 - [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L177)
-  - This makes it easy to pass relevant parameters to constraint functions, while still providing a consistent API between all constraints
-  - There is no need to use bespoke structures to store the function and parameters, which greatly simplifies the API
+  - This makes it easy to parameterize constraint functions, while still providing a consistent API for all constraint functions, which makes it easy to mix and match constraints, and combine them in interesting ways with minimal effort.
+  - There is no need to use a specific term to store the function and parameters, which greatly simplifies the API and reduces the possibility of bugs
 - [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L22)
-  - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
-  - We can compose a complex constraint combining five other constraints, negating some constraints and 
+  - This makes defining complex, multifactored constraints much simpler, and simplifies the process of allowing users to compose their own constraints
+  - for example, they can require that a particular constraint is satisfied five times, or that two or more constraints must all succeed, or modify the cost of a particular constraint to make it more important in best-first search
 - Dictionaries [for option parsing](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L32), [JSON serialization/deserialization](/prolog/function/serde.pl)
-  - Useful for JSON representation, which allows persistence and also serving / reading from a REST API - this is what is used in our web interface!
-  - Can be used for collections intended for lookup (eg. a set of options)
+  - These are very useful for creating JSON representations of data - this makes it very simply to read/write specific predicates from a file (persistence), and at the same time, can be used to serve data over a REST API - this is what is used in our web interface!
+  - Can be used for collections of options, which makes it easy to specify parameters through the command line, and add new ones as needed
 - Modules (all pl files except test files and main are modules)
-  - This makes it easier to manage a complex Prolog project with many features, such as:
+  - This makes it easier to manage a complex Prolog project with many features, since you can export only the parts of a module which should be shared, or even restrict yourself to only importing one or two functions to make it abundantly clear where a particular predicate comes from.
+  - Features which were easier to add thanks to this system:
   - serialization/deserialization
   - various types of constraints
   - a server/web interface
 - [findall/foreach/forall/setof/findnsols](/prolog/search.pl)
   - These allow defining simple path and search predicates which simply check that one path or item is valid, and then we can aggregate as [many solutions as needed](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L183)
 - [DCG for parsing](/prolog/function/parse.pl)
-  - DCGs make it possible to define parsers for each of the individual elements of a type declaration or function signature, and then easily combine these parsers to parse a complex and interesting function or type
+  - DCGs make it easy to define parsers for each of the individual elements of a type declaration or function signature, and then easily combine these parsers to parse a complex and interesting function or type
 - [Conditional compilation with if](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/string_constraints.pl#L79)
-  - This allows enabling/disabling features for specific versions of Prolog to provide minimum functionality
-  - Eg. The CS servers are using an outdated version of Prolog, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows everything else to work.
+  - This allows enabling/disabling features for specific versions of Prolog to provide some minimum level of functionality where possible
+  - Eg. When we submitted the initial Prolog proposal, the CS servers were using an outdated version of SWIPL, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows most functionality to be used, and lets us test just the components which are supported
 - [Tabling](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/sequence_ops.pl#L11)
-  - allows making expensive operations (eg. computing Levenshtein distance) cheaper without polluting global namespace and without manually implementing necessary garbage collection
-  - Eg. 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but 0s for the second time.
+  - Tabling makes repeated expensive operations (eg. computing Levenshtein distance) cheaper without polluting the global namespace, and without manually implementing the garbage collection which would be required, which is very helpful
+  - Eg. It takes 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but the second time, it takes 0s
 - [Dynamic values](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/function.pl#L25)
-  - Simplifies the process of maintaining a shared knowledge base, without passing additional parameters with a list of all visible functions/traits/types
-  - Allows attaching attributes to objects without modifying said objects.
+  - This simplifies the process of maintaining and updating a shared knowledge base, and makes passing additional parameters with a list of all visible functions/traits/types optional
+  - It also allows attaching attributes to objects without modifying said objects - for example, we can mark a function as specialized in the global database by using it's unique UUID, but attaching this to the function definition would require updating the definitions in multiple places
+  - It can further be used to implement singletons - for example, to avoid creating a new instance of our NLP thread each time we call it (which takes several seconds to load, and would cause search requests to take ~100x longer), we store the information in the global database, and access it through a mutex (to avoid race-conditions due to the multithreaded HTTP server)
 - [Custom Operators (sorta)](/prolog/function_op.pl)
   - One issue that we have with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog terms, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
   - Custom operators make it easy to define approximations to field accessors, and would make refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no complicated pattern matching
