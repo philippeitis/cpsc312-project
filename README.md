@@ -121,13 +121,13 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Explanation of how the project benefits from the application of your new learning.
 
 ### Prolog features
-- [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L160)
+- [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L177)
   - This makes it easy to pass relevant parameters to constraint functions, while still providing a consistent API between all constraints
   - There is no need to use bespoke structures to store the function and parameters, which greatly simplifies the API
-- [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/search.pl#L14)
+- [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L22)
   - Makes defining complex, multifactored constraints much simpler, and simplifies process of allowing users to compose their own constraints
   - We can compose a complex constraint combining five other constraints, negating some constraints and 
-- Dictionaries [for option parsing](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L32), [JSON serialization/deserialization](/prolog/function/serde.pl)
+- Dictionaries [for option parsing](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L32), [JSON serialization/deserialization](/prolog/function/serde.pl)
   - Useful for JSON representation, which allows persistence and also serving / reading from a REST API - this is what is used in our web interface!
   - Can be used for collections intended for lookup (eg. a set of options)
 - Modules (all pl files except test files and main are modules)
@@ -136,22 +136,41 @@ A guide to your new learning (which can also be part of your guide to the MVP if
   - various types of constraints
   - a server/web interface
 - [findall/foreach/forall/setof/findnsols](/prolog/search.pl)
-  - These allow defining simple path and search predicates which simply check that one path or item is valid, and then we can aggregate as [many solutions as needed](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/main.pl#L183)
+  - These allow defining simple path and search predicates which simply check that one path or item is valid, and then we can aggregate as [many solutions as needed](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L183)
 - [DCG for parsing](/prolog/function/parse.pl)
   - DCGs make it possible to define parsers for each of the individual elements of a type declaration or function signature, and then easily combine these parsers to parse a complex and interesting function or type
-- [Conditional compilation with if](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/string_constraints.pl#L69)
+- [Conditional compilation with if](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/string_constraints.pl#L79)
   - This allows enabling/disabling features for specific versions of Prolog to provide minimum functionality
   - Eg. The CS servers are using an outdated version of Prolog, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows everything else to work.
-- [Tabling](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/sequence_ops.pl#L12)
+- [Tabling](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/sequence_ops.pl#L11)
   - allows making expensive operations (eg. computing Levenshtein distance) cheaper without polluting global namespace and without manually implementing necessary garbage collection
   - Eg. 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but 0s for the second time.
 - [Dynamic values](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/function.pl#L25)
-  - allow easy access to relevant functions when performing search, without passing additional parameters with a list of all visible functions/traits/types
-  - allows attaching attributes to objects without modifying said objects.
+  - Simplifies the process of maintaining a shared knowledge base, without passing additional parameters with a list of all visible functions/traits/types
+  - Allows attaching attributes to objects without modifying said objects.
 - [Custom Operators (sorta)](/prolog/function_op.pl)
-  - One issue that we haave with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog's term infrastructures, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
+  - One issue that we have with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog's term infrastructures, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
   - Custom operators make it easy to define approximations which behave as field accessors, and makes refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no pattern matching
   - Unfortunately, this feature is not supported before SWIPL 8.3, and is not fully supported in SWIPL - for instance, this notation can't be used as a metapredicate, and it is also using unofficial language mechanisms to allow the `X ~ field_name` syntax, which means that we do not actively use this functionality (as nice as it would be - datatypes in Prolog would be super useful)
+
+## File Overview
+- [compat.pl](prolog/compat.pl) - This file is used to check if the currently running version of Prolog includes the necessary libraries for specific functionality to be available.
+- [constraints.pl](prolog/constraints.pl): This file contains all generic constraints, which can be used for types or functions, and allow combinging constraints, scaling their costs, and even checking that a particular item is, or is not in a particular list. Constraints are used both for rejecting candidate items and paths, and for scoring them, allowing us to order search results by their relevance.
+- [string_constraints.pl](prolog/string_constraints.pl): This file contains various string-based constraints, which are all generic over a getter. It also has functionality for adding string constraints from user input - this is used both in the server and in the terminal interface to ensure that both interfaces have a consistent experience.
+- [func_constraints.pl](prolog/func_constraints.pl), [path_constraints.pl](prolog/path_constraints.pl): These files contain function and path constraints.
+- [function.pl](prolog/function.pl): This file contains a set of sample function definitions, and a primitive type system with generic functions and a limited implementation of typeclasses.
+- [function/serde.pl](prolog/function/serde.pl): functionality for serializing/deserializing functions from/to JSON.
+- [function/parse.pl](prolog/function/parse.pl): functionality for parsing Haskell-style function signatures, trait declarations (eg. typeclasses) and types with optional generics.
+- [main.pl](prolog/main.pl): This file provides a REPL, where users can enter commands and view output. It also provides functionality for finding misspelled commands using Levenshtein distance, and allows users to easily list commands and find instructions for how particular commands are used.
+- [nlp.py](prolog/nlp.py), [nlp.pl](prolog/nlp/pl): These two files allow users to take advantage of natural language processing to perform more flexible searches for their functions.
+- [search.pl](prolog/search.pl): This file provides `func_path`, `func_path_no_cycles`, `find_item`, and `find_items`. These functions allow finding individual items using the constraint architecture - for example, functions and types, and generating chains of items (in this case, functions) which satisfy a series of constraints. All of these functions accept constraints to filter functions and paths.
+- [server.pl](prolog/server.pl): This file provides a basic REST API, where users can define, find, and delete functions and types, and also search for function paths. Responses are currently served in JSON format, and an OpenAPI specification is served through the /openapi endpoint. Please note that this requires a recent version of SWIPL, as the http library in 7.6.4 does not provide an HTTP server. 
+- [sequence_ops.pl](prolog/sequence_ops.pl): This file provides functions for common sequence operations, including subsequence detection, substring matching, Levenshtien distance, joining lists of strings, and checking for subsets.
+- [storage.pl](prolog/storage.pl): This file provides a storage interface, which can load and store functions from disk - this is currently done in JSON format to be consistent with the server interface.
+- [server_test.pl](prolog/server_test.pl): A small client, written in Prolog, which sends a series of requests to the REST API implemented in [server.pl](prolog/server.pl) and tests for correct responses.
+- [test.pl](prolog/test.pl): Tests for core functionality related to generating paths, defining functions, serializing and deserializing them to/from JSON, and constraints.
+- [main.html](prolog/web_content/main.html), [path.html](prolog/web_content/path.html): These two pages serve as the front end for our application, and allow users to find, add, and delete functions, and find paths, respectively.
+- [main.js](prolog/web_content/main.js), [path.js](prolog/web_content/path.js): These Javascript files power the web-based user interface, and are mostly responsible for sending HTTP requests and rendering the output to screen.
 
 ## RUBRIC:
 https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
