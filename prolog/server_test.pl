@@ -13,7 +13,7 @@
 
 %% Checks that posting parseInt55 works correctly
 post_fn_ok(Port) :-
-    jsonify_funcs([function(_, "parseInt55", [], ["str"], ["int"], "Hello world!")], [JsonFn]),
+    jsonify_fns([function(_, "parseInt55", [], ["str"], ["int"], "Hello world!")], [JsonFn]),
     atom_json_dict(Fn, JsonFn, [as(atom)]),
     http_post([
             protocol(http),

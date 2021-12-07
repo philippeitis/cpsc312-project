@@ -32,18 +32,18 @@ func_field(name, Func, Field) :- fname(Func, Field).
 func_field(docs, Func, Field) :- docs(Func, Field).
 func_field(inputs, Func, Field) :- inputs(Func, Field).
 func_field(outputs, Func, Field) :- outputs(Func, Field).
-func_field(uuid, Func, Func) :- function(Func, _, _, _, _, _).
+func_field(uuid, Func, Field) :- uuid(Func, Field).
 
 type_field(name, Ty, Field) :- type(Ty, Field, _, _, _).
 type_field(docs, Ty, Field) :- type(Ty, _, _, _, Field).
 type_field(uuid, Ty, Ty) :- type(Ty, _, _, _, _).
 
-uuid(Uuid, Uuid) :- function(Uuid, _, _, _, _, _).
-fname(Uuid, Name) :- function(Uuid, Name, _, _, _, _).
-generics(Uuid, Generics) :- function(Uuid, _, Generics, _, _, _).
-inputs(Uuid, Inputs) :- function(Uuid , _, _, Inputs, _, _).
-outputs(Uuid, Outputs) :- function(Uuid, _, _, _, Outputs, _).
-docs(Uuid, Documentation) :- function(Uuid, _, _, _, _, Documentation).
+uuid(function(Uuid, _, _, _, _, _), Uuid).
+fname(function(_, Name, _, _, _, _), Name).
+generics(function(_, _, Generics, _, _, _), Generics).
+inputs(function(_, _, _, Inputs, _, _), Inputs).
+outputs(function(_, _, _, _, Outputs, _), Outputs).
+docs(function(_, _, _, _, _, Docs), Docs).
 
 %% Update or add new types and functions
 update_type(Uuid, Name, NewGenerics, NewImpls) :-
@@ -61,6 +61,11 @@ update_type(Uuid, Name, NewGenerics, NewImpls, Docs) :-
     sort(NewGenerics, Generics),
     add_type(Uuid, Name, Generics, Impls, Docs).
 
+add_type(Uuid, Name, Generics, Impls, Docs) :-
+    init_uuid(Uuid),
+    assertz(type(Uuid, Name, Generics, Impls, Docs)).
+
+%% Updates the named trait if it exists, otherwise creates a new one.
 update_trait(Name, NewBounds) :-
     trait(Name, OldBounds),
     append(OldBounds, NewBounds, Bounds),
@@ -73,6 +78,7 @@ update_trait(Name, NewBounds) :-
     sort(NewBounds, Bounds),
     assertz(trait(Name, Bounds)), !.
 
+%% Adds the generic traits belonging to this function to the global scope.
 add_fn_generic_traits([]) :- !.
 add_fn_generic_traits([generic(_, Bounds)|Rest]) :-
     is_list(Bounds),
@@ -84,6 +90,7 @@ add_fn_generic_traits([generic(_, Bounds)|Rest]) :-
 add_fn_generic_traits([_|Rest]) :-
     add_fn_generic_traits(Rest), !.
 
+%% Initialize the uuid if it has not already been initialized
 init_uuid(Uuid) :- \+var(Uuid), !.
 
 init_uuid(Uuid) :-
@@ -94,12 +101,9 @@ add_function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs) :-
     add_fn_generic_traits(Generics),
     assertz(function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs)).
 
+%% Helper function for getting an existing function.
 get_function(Uuid, function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs)) :-
     function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs).
-
-add_type(Uuid, Name, Generics, Impls, Docs) :-
-    init_uuid(Uuid),
-    assertz(type(Uuid, Name, Generics, Impls, Docs)).
 
 get_type(Uuid, type(Uuid, Name, Generics, Impls, Docs)) :-
     type(Uuid, Name, Generics, Impls, Docs).
@@ -136,22 +140,24 @@ ez_function(Name, Inputs, Outputs, Docs) :-
 
 %% Type processing
 %% Produces true if the given type satisfies the constraints of the given generic.
+%% If the generic is not instantiated, this means that any type fits.
 type_is_compat_with_generic(Name, generic(_, GImpls)) :-
+    var(GImpls),
+    type(_, Name, _, _, _).
+type_is_compat_with_generic(Name, generic(_, GImpls)) :-
+    \+var(GImpls),
     type(_, Name, _, Impls, _),
     list_subset(GImpls, Impls).
-
-is_generic(generic(_, _)).
 
 %% Produces true if the key unifies with the generic name and Type satisfies the generic's constraints.
 test_interp((Name, Type), generic(Name, GImpls)) :-
     type_is_compat_with_generic(Type, generic(Name, GImpls)).
 % test_interp((Name, unbound), generic(Name, _)).
 
-%% fn_interp_valid(Func, Interp:list)
+%% gen_interp(Generics:list, Interp:list)
 % Unifies Interp with an interpration of Func's generics which satisfy all
 % type constraints.
-fn_interp_valid(Func, Interp) :-
-    generics(Func, Generics),
+gen_interp(Generics, Interp) :-
     maplist(test_interp, Interp, Generics),
     sort(Interp, Interp).
 
@@ -168,12 +174,10 @@ subst(_, ConcreteType, ConcreteType) :- !.
 % Specializes Func with the given interpretation of the generics, and adds
 % the specialized function to the knowledge base. Uuid is unified with the
 % uuid of the newly specialized function.
-specialize(Func, Interp, Uuid) :-
-    function(Func, Name, Generics, Inputs, Outputs, Docs),
-    \+(Generics=[]),
-    fn_interp_valid(Func, Interp),
+specialize(function(FUuid, Name, Generics, Inputs, Outputs, Docs), Interp, function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs)) :-
+    Generics\=[],
+    gen_interp(Generics, Interp),
     maplist(subst(Interp), Inputs, SpecInputs),
     maplist(subst(Interp), Outputs, SpecOutputs),
-    \+function(_, Name, [], SpecInputs, SpecOutputs, Docs),
-    add_function(Uuid, Name, [], SpecInputs, SpecOutputs, Docs),
-    assertz(specialized(Func, Uuid)).
+    uuid(Uuid),
+    assertz(specialized(FUuid, Uuid)).

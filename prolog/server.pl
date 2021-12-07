@@ -83,9 +83,8 @@ render_param(Param, Param) :- !.
 
 %% Finds a single function with the constraints and prints it.
 find_and_fmt_func(Constraint) :-
-    find_items(Constraint, [Uuid|Uuids]),
-    maplist(get_function, [Uuid|Uuids], Funcs),
-    jsonify_funcs(Funcs, JsonFuncs),
+    find_items(Constraint, [Fn|Fns]),
+    jsonify_fns([Fn|Fns], JsonFuncs),
     reply_json_dict(_{msg:"Found functions", functions: JsonFuncs}), !.
 
 find_and_fmt_func(_) :-
@@ -99,8 +98,7 @@ nonempty_list([], false, _) :- !.
 nonempty_list(NonEmpty, _, NonEmpty) :- !.
 
 %% Parses parameters for search requests.
-% Can be partially specified.
-
+% Can be partially specified
 parse_func_search_request(Request, Constraint) :-
     Choices = [re, eq, lev, substr, subseq, fsubstr, sim, subsim],
     http_parameters(Request,
@@ -118,14 +116,20 @@ parse_func_search_request(Request, Constraint) :-
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs),
-    add_string_constraint(function:func_field(name), Name, NameCmp, no_constraint, C0),
+    fn_member_constraint(Fns),
+    add_string_constraint(function:func_field(name), Name, NameCmp, Fns, C0),
     add_string_constraint(function:func_field(docs), Docs, DocCmp, C0, C1),
     add_string_constraint(function:func_field(uuid), Uuid, UuidCmp, C1, C2),
     Constraint = constraints:and_constraint(
-        func_constraints:input_constraint(Inputs),
-        constraints:and_constraint(func_constraints:output_constraint(Outputs), C2)
+        C2,
+        constraints:and_constraint(
+            func_constraints:input_constraint(Inputs),
+            func_constraints:output_constraint(Outputs)
+        )
     ).
 
+%% Gets and deletes the function - if it is specialized, errors and informs
+%% the client to delete the parent uuid if they'd like.
 attempt_fn_deletion(Uuid) :-
     specialized(Parent, Uuid),
     format('Status: 405~n'), % HTTP not allowed
@@ -138,8 +142,8 @@ attempt_fn_deletion(Uuid) :-
     ), !.
 
 attempt_fn_deletion(Uuid) :-
-    fname(Uuid, _),
-    retractall(function(Uuid, _, _, _, _, _)),
+    get_function(Uuid, Fn),
+    retractall(Fn),
     findall(
         Child,
         (
@@ -168,7 +172,7 @@ fn_endpoint(get, Request) :-
 
 fn_endpoint(post, Request) :-
     http_read_json(Request, JsonIn, [json_object(dict)]),
-    jsonify_funcs([Fn], [JsonIn]),
+    jsonify_fns([Fn], [JsonIn]),
     Fn = function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     add_function(Uuid, Name, Generics, Inputs, Outputs, Docs),
     format(string(Msg), "Created func ~w", [Name]),
@@ -278,10 +282,17 @@ openapi(_) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Path endpoint
 
-add_cycle_constraint(false, List, List).
-add_cycle_constraint(true, List, [path_constraints:cycle_constraint|List]).
+add_cycle_constraint(true, Constraint, Constraint).
+add_cycle_constraint(
+    false,
+    Constraint,
+    constraints:and_constraint(
+        constraints:cycle_constraint(function:uuid, []),
+        Constraint
+    )
+).
 
-parse_path_search_request(Request, Strategy, FnConstraint, PathConstraint) :-
+parse_path_search_request(Request, Strategy, FnConstraint, path_constraints:output_constraint(Outputs)) :-
     Choices = [re, eq, lev, substr, subseq, fsubstr, sim, subsim],
     http_parameters(Request,
         [
@@ -303,34 +314,55 @@ parse_path_search_request(Request, Strategy, FnConstraint, PathConstraint) :-
         ]),
     nonempty_list(Inputs0, NoInputs, Inputs),
     nonempty_list(Outputs0, NoOutputs, Outputs),
-    add_string_constraint(function:func_field(name), Name, NameCmp, no_constraint, C0),
+    fn_member_constraint(Fns),
+    % String cmp methods
+    add_string_constraint(function:func_field(name), Name, NameCmp, Fns, C0),
     add_string_constraint(function:func_field(docs), Docs, DocCmp, C0, C1),
     add_string_constraint(function:func_field(uuid), Uuid, UuidCmp, C1, C2),
-    FnConstraint = constraints:and_constraint(
-        func_constraints:input_constraint(Inputs),
-        C2
-    ),
-    add_cycle_constraint(Cycles, [
-        path_constraints:output_constraint(Outputs),
-        path_constraints:length_constraint(Length)
-    ], PathConstraints),
-    PathConstraint = path_constraints:and_constraint(PathConstraints).
+    % Cycles + inputs
+    add_cycle_constraint(Cycles, func_constraints:input_constraint(Inputs), C3),
+    FnConstraint = constraints:and_constraint(C2, 
+        constraints:and_constraint(
+            C3,
+            % Path length
+            constraints:at_most_n_constraint(Length, no_constraint)
+        )
+    ).
 
+%% Helpers for extracting a list of unique UUIDS
+add_fn(Fn, Assoc, Out) :-
+    uuid(Fn, Uuid),
+    put_assoc(Uuid, Assoc, Fn, Out).
+
+unique_fns(Paths, UniqueFns) :-
+    empty_assoc(Assoc),
+    foldl(foldl(add_fn), Paths, Assoc, Final),
+    assoc_to_values(Final, UniqueFns).
+
+path_to_uuids(Path, Uuids) :-
+    maplist(function:uuid, Path, Uuids).
+paths_to_uuids(Paths, Uuids) :-
+    maplist(path_to_uuids, Paths, Uuids).
+
+%% Produces JSON data which contains a list of paths of function UUIDs, and the
+%% actual functions, as well as a message.
 find_and_fmt_paths(Strategy, FnConstraint, PathConstraint) :-
-    setof(
-        Path,
-        func_path_init(Strategy, FnConstraint, PathConstraint, Path),
-        Paths
-    ),
-    flatten(Paths, AllFnUuids),
-    sort(AllFnUuids, FnUuids),
-    maplist(get_function, FnUuids, Funcs),
-    jsonify_funcs(Funcs, JsonFuncs),
+    time((
+        findall(
+            Path,
+            func_path_init(Strategy, FnConstraint, PathConstraint, Path),
+            FnPaths
+        ),
+        unique_fns(FnPaths, Fns),
+        paths_to_uuids(FnPaths, PathsU),
+        list_to_set(PathsU, Paths)
+    )),
     length(Paths, PLen),
-    length(Funcs, FLen),
     PLen >= 1,
+    jsonify_fns(Fns, JsonFns),
+    length(Fns, FLen),
     format(string(Msg), "Found ~w paths (~w functions)", [PLen, FLen]),
-    reply_json_dict(_{msg:Msg, paths: Paths, functions:JsonFuncs}), !.
+    reply_json_dict(_{msg:Msg, paths: Paths, functions:JsonFns}), !.
 
 find_and_fmt_paths(_, _, _) :-
     format('Status: 404~n'), % Not found
@@ -338,7 +370,6 @@ find_and_fmt_paths(_, _, _) :-
     json_write_dict(current_output, _{msg:"Paths matching query not found"}), !.
 
 path_endpoint(Request) :-
-    format(user_output, "~w~n", [[Request]]),
     parse_path_search_request(Request, Strategy, FnConstraint, PathConstraint), 
     find_and_fmt_paths(Strategy, FnConstraint, PathConstraint).
 

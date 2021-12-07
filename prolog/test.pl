@@ -52,21 +52,20 @@ test("list_subset not a subset", [fail]) :-
 :- begin_tests('function').
 :- use_module(function).
 
-define_helper(Expr, Uuid) :-
-    add_function(Uuid, "example-fn", _, ["type1"], ["type2"], "documentation"),
-    Expr,
-    retract(function(Uuid, _, _, _, _, _)).
+example_fn(function('0123', "example-fn", [], ["type1"], ["type2"], "documentation")).
 
-test("name getter", [nondet]) :-
-    define_helper(fname(Uuid, "example-fn"), Uuid).
-test("doc getter", [nondet]) :-
-    define_helper(docs(Uuid, "documentation"), Uuid).
-test("input getter", [nondet]) :-
-    define_helper(inputs(Uuid, ["type1"]), Uuid).
-test("output getter", [nondet]) :-
-    define_helper(outputs(Uuid, ["type2"]), Uuid).
-test("output getter fails", [nondet]) :-
-    define_helper(not(outputs("example-a", ["type2"])), _).
+test("name getter") :-
+    example_fn(Fn),
+    fname(Fn, "example-fn").
+test("doc getter") :-
+    example_fn(Fn),
+    docs(Fn, "documentation").
+test("input getter") :-
+    example_fn(Fn),
+    inputs(Fn, ["type1"]).
+test("output getter") :-
+    example_fn(Fn),
+    outputs(Fn, ["type2"]).
 
 :- end_tests('function').
 
@@ -136,8 +135,8 @@ test("jsonify trait roundtrip suceeds") :-
 
 test("jsonify function roundtrip suceeds") :-
     find_all_functions(Functions),
-    serde:jsonify_funcs(Functions, JFunctions),
-    serde:jsonify_funcs(NewFunctions, JFunctions),
+    serde:jsonify_fns(Functions, JFunctions),
+    serde:jsonify_fns(NewFunctions, JFunctions),
     assertion(Functions=NewFunctions).
 
 :- end_tests('function/serde').
@@ -180,6 +179,7 @@ test("storage roundtrip succeeds", [nondet]) :-
 :- begin_tests('search').
 :- use_module(search).
 :- use_module(string_constraints).
+:- use_module(func_constraints).
 :- use_module(constraints).
 
 test("dfs works") :-
@@ -214,61 +214,85 @@ test("No paths for types which do not exist", [fail]) :-
     _).
 
 test("Regex matches all") :-
-    find_items(
-        string_constraints:regex_constraint(function:func_field(name), ".*"),
-        Funcs
-    ),
-    length(Funcs, 17).
-
-test("Regex with empty and matches all") :-
+    func_constraints:fn_member_constraint(Constraint),
     find_items(
         constraints:and_constraint(
-            string_constraints:regex_constraint(function:func_field(name), ".*"),
-            no_constraint
-        ),
-        Funcs
-    ),
-    length(Funcs, 17).
-
-test("Regex with empty input constraint matches all") :-
-    find_items(
-        constraints:and_constraint(
-            string_constraints:regex_constraint(function:func_field(name), ".*"),
-            func_constraints:input_constraint([])
-        ),
-        Funcs
-    ),
-    length(Funcs, 14).
-
-test("Regex with empty input constraint matches all except generic") :-
-    find_items(
-        constraints:and_constraint(
-            string_constraints:regex_constraint(function:func_field(name), ".*"),
-            func_constraints:input_constraint([])
-        ),
-        Funcs
-    ),
-    length(Funcs, 14).
-
-test("And constraint order irrelevant") :-
-    find_items(
-        constraints:and_constraint(
-            func_constraints:input_constraint([]),
+            Constraint,
             string_constraints:regex_constraint(function:func_field(name), ".*")
         ),
         Funcs
     ),
     length(Funcs, 14).
 
-test("And constraint nested") :-
+test("Regex with empty and matches all") :-
+    func_constraints:fn_member_constraint(Constraint),
     find_items(
         constraints:and_constraint(
-            func_constraints:input_constraint([]),
-            and_constraint(
-                func_constraints:output_constraint([]),
+            Constraint,
+            constraints:and_constraint(
+                string_constraints:regex_constraint(function:func_field(name), ".*"),
+                no_constraint
+            )
+        ),
+        Funcs
+    ),
+    length(Funcs, 14).
+
+test("Regex with empty input constraint matches all") :-
+    func_constraints:fn_member_constraint(Constraint),
+    find_items(
+        constraints:and_constraint(
+            Constraint,
+            constraints:and_constraint(
+                string_constraints:regex_constraint(function:func_field(name), ".*"),
+                func_constraints:input_constraint([])
+            )
+        ),
+        Funcs
+    ),
+    length(Funcs, 14).
+
+test("Regex with empty input constraint matches all except generic") :-
+    func_constraints:fn_member_constraint(Constraint),
+    find_items(
+        constraints:and_constraint(
+            Constraint,
+            constraints:and_constraint(
+                string_constraints:regex_constraint(function:func_field(name), ".*"),
+                func_constraints:input_constraint([])
+            )
+        ),
+        Funcs
+    ),
+    length(Funcs, 14).
+
+test("And constraint order irrelevant") :-
+    func_constraints:fn_member_constraint(Constraint),
+    find_items(
+        constraints:and_constraint(
+            Constraint,
+            constraints:and_constraint(
+                func_constraints:input_constraint([]),
+                string_constraints:regex_constraint(function:func_field(name), ".*")
+            )
+        ),
+        Funcs
+    ),
+    length(Funcs, 14).
+
+test("And constraint nested") :-
+    func_constraints:fn_member_constraint(Constraint),
+    find_items(
+        constraints:and_constraint(
+            Constraint,
+            constraints:and_constraint(
+                func_constraints:input_constraint([]),
                 and_constraint(
-                    string_constraints:regex_constraint(function:func_field(name), ".*"),
-                    no_constraint
+                    func_constraints:output_constraint([]),
+                    and_constraint(
+                        string_constraints:regex_constraint(function:func_field(name), ".*"),
+                        no_constraint
+                    )
                 )
             )
         ),
@@ -302,49 +326,61 @@ test("input constraint fails when input does not match", [fail]) :-
 % when the path is complete. However, input constraints will fail if
 % the input does not match, as this would allow an invalid path.
 test("substring constraint succeeds") :-
-    function:fname(Uuid, "parseInt"),
-    substring_constraint(func_field(name), "parse", Uuid, 0.0, no_constraint).
+    function:get_function(_, Func),
+    function:fname(Func, "parseInt"), !,
+    substring_constraint(func_field(name), "parse", Func, 0.0, no_constraint).
 test("substring constraint fails") :-
-    function:fname(Uuid, "parseInt"),
-    substring_constraint(func_field(name), "dsdsfdwa", Uuid, 1.0, _).
+    function:get_function(_, Func),
+    function:fname(Func, "parseInt"), !,
+    substring_constraint(func_field(name), "dsdsfdwa", Func, 1.0, _).
 test("subsequence constraint") :-
-    function:fname(Uuid, "parseInt"),
-    subsequence_constraint(func_field(name), "pre", Uuid, 0.0, no_constraint).
+    function:get_function(_, Func),
+    function:fname(Func, "parseInt"), !,
+    subsequence_constraint(func_field(name), "pre", Func, 0.0, no_constraint).
 test("subsequence constraint fail") :-
-    function:fname(Uuid, "parseInt"),
-    subsequence_constraint(func_field(name), "tspkn", Uuid, 1.0, _).
+    function:get_function(_, Func),
+    function:fname(Func, "parseInt"), !,
+    subsequence_constraint(func_field(name), "tspkn", Func, 1.0, _).
 test(
     "regex constraint",
     [condition(prolog_version_eight)]
     ) :-
-    function:fname(Uuid, "decrement"),
-    regex_constraint(func_field(name), "de.*", Uuid, 0.0, no_constraint).
+    function:get_function(_, Func),
+    function:fname(Func, "decrement"), !,
+    regex_constraint(func_field(name), "de.*", Func, 0.0, no_constraint).
 test(
     "regex constraint fail",
     [condition(prolog_version_eight)]
     ) :-
-    function:fname(Uuid, "decrement"),
-    regex_constraint(func_field(name), "d.*A", Uuid, 1.0, _).
+    function:get_function(_, Func),
+    function:fname(Func, "decrement"), !,
+    regex_constraint(func_field(name), "d.*A", Func, 1.0, _).
 
 test("similarity constraint", [nondet]) :-
-    function:fname(Uuid, "listify"),
-    similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
-    similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
+    function:get_function(_, Func),
+    function:fname(Func, "listify"), !,
+    similarity_constraint(func_field(docs), "produces a list", Func, _, no_constraint),
+    similarity_constraint(func_field(docs), "not similar at all", Func, 1.0, _).
 
 test("sub_similarity constraint", [nondet]) :-
-    function:fname(Uuid, "listify"),
-    sub_similarity_constraint(func_field(docs), "produces a list", Uuid, _, no_constraint),
-    sub_similarity_constraint(func_field(docs), "not similar at all", Uuid, 1.0, _).
+    function:get_function(_, Func),
+    function:fname(Func, "listify"), !,
+    sub_similarity_constraint(func_field(docs), "produces a list", Func, _, no_constraint),
+    sub_similarity_constraint(func_field(docs), "not similar at all", Func, 1.0, _).
 
 test("sub_similarity constraint ignores order") :-
-    function:fname(Uuid, "print"),
-    sub_similarity_constraint(func_field(docs), "see also", Uuid, _, no_constraint),
-    sub_similarity_constraint(func_field(docs), "also see", Uuid, _, no_constraint).
+    function:get_function(_, Func),
+    function:fname(Func, "print"), !,
+    sub_similarity_constraint(func_field(docs), "see also", Func, _, no_constraint),
+    sub_similarity_constraint(func_field(docs), "also see", Func, _, no_constraint).
 
 :- end_tests('string_constraints').
 
 :- begin_tests('constraints').
 :- use_module(constraints).
+
+identity(X, X).
+
 test(
     "at_most_n fails when it hits 0",
     [fail]
@@ -363,28 +399,17 @@ test("scale constraint") :-
     function:fname(Uuid, "parseInt"),
     scale_constraint(string_constraints:substring_constraint(function:func_field(name), "dsdsfdwa"), 0.3, Uuid, 0.3, _).
 
+test("cycle_constraint does not allow cycles", [fail]) :-
+    cycle_constraint(identity, [a, b, c, d], d, _, _).
+test("cycle_constraint allows non-cycle") :-
+    cycle_constraint(identity, [a, b, c, d], e, _, _).
+
 :- end_tests('constraints').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- begin_tests('path_constraints').
 :- use_module(path_constraints).
-test("cycle_constraint does not allow cycles", [fail]) :-
-    cycle_constraint([a, b, c, d], d).
-test("cycle_constraint allows none") :-
-    cycle_constraint([a, b, c, d], none).
-test("cycle_constraint allows non-cycle") :-
-    cycle_constraint([a, b, c, d], e).
-
-test("length_constraint fails on overly long path", [fail]) :-
-    length_constraint(3, [a, b, c], d).
-test("length_constraint is fine when path is short") :-
-    length_constraint(4, [a, b, c], d).
-
-test("length_constraint does not allow excessively long path at end", [fail]) :-
-    length_constraint(3, [a, b, c, d], none).
-test("length_constraint is fine testing end") :-
-    length_constraint(3, [a, b, c], none).
 
 :- end_tests('path_constraints').
 

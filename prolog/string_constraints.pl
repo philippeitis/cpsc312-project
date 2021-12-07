@@ -35,19 +35,18 @@ wrapper(Constraint, Getter, Item, Cost, NewConstraint) :-
 wrap_core(Constraint, Getter, Item, Cost, NewConstraint) :-
     call(Getter, Item, Value),
     (
-        %% We do it like this to:
-        %% avoid having two cases of this function, which can lead
-        %% to backtracking over string constraints - this is bad,
-        %% because these can be expensive
-        %% and it introduces duplicates into the paths we generate.
-        (call(Constraint, Value, Cost0)) ->
+        %% We do it like this to avoid having two cases of this function,
+        %% - due to backtracking, we might also include the opposite case,
+        %% and we explicitly don't want to evaluate these functions twice (eg. using \+),
+        %% as this is expensive (eg. NLP parsing, Levenshtein for large strings).
+        call(Constraint, Value, Cost0) ->
             (
                 Cost = Cost0,
                 NewConstraint = no_constraint
             ) ;
             (
                 Cost = 1.0,
-                NewConstraint = wrapper(Constraint, Getter)
+                NewConstraint = string_constraints:wrapper(Constraint, Getter)
             )
     ).
 
@@ -152,5 +151,5 @@ string_constraint(Getter, String, Subseq, string_constraints:fuzzy_substr_constr
 %% add_string_constraint(+Field, +String, +Method, +OldConstraints, -NewConstraints).
 %% none is used to denote constraints which are not provided
 add_string_constraint(_, none, _, Constraint, Constraint) :- !.
-add_string_constraint(Getter, String, Method, Rhs, and_constraint(Constraint, Rhs)) :-
+add_string_constraint(Getter, String, Method, Rhs, and_constraint(Rhs, Constraint)) :-
     string_constraint(Getter, String, Method, Constraint), !.
