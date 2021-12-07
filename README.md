@@ -54,7 +54,11 @@ This represents the core functionality our product aims to provide:
 3. Sorting search results using interesting scoring algorithms - our composable constraint interface allows users to mix and match constraints as needed, tracking any relevant state, and even adjusting the weights of particular constraints to prioritize certain features in their search.
 4. Processing of natural language descriptions - we provide Levenshtein distance, for both complete strings and for fuzzy substring matching, similarity computed via natural language processing, and regular expressions, which gives users many choices for finding the items in the code base that they are looking for.
 
-We believe that our project addresses an important need in the software development space, which is an easy to use, powerful, and very flexible search engine, for functions and types which can be used for any programming language, using a variety of interfaces. Such a tool can greatly simplify the process of exploring documentation, as you can use both type signatures and phrases to find relevant functions quickly. In addition, our project makes significant use of many of Prolog's advanced features, as we describe in the `Guide to New Learning section`, to provide flexible search functionality, and three distinct interfaces. It is also very polished - each user interface is designed to be discoverable - the web interface is very stylistic and usage is apparent, the REST API includes an OpenAPI schema which would help language implementors integrate our software, and our command line interface can seamlessly correct typos in user commands and provide explanations for how commands are used. We believe our project goes well above and beyond the expectations for the MVP, and in many senses, approaches the goals laid out in our product pitch.
+We believe that our project addresses an important need in the software development space, which is an easy to use, powerful, and very flexible search engine, for functions and types, which can be used for any programming language, using a variety of interfaces. Such a tool can greatly simplify the process of exploring documentation, as you can use both type signatures and phrases to find relevant functions quickly.
+
+In addition, our project makes significant use of many of Prolog's advanced features, as described in the `Guide to New Learning` section, to provide flexible search functionality, and three distinct interfaces. It is also very polished - the code base is thoroughly documentated, and effort has been put into optimizing the software (eg. [Levenshtein distance was implemented using the O(nm) dynamic programming method](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/c8ff49a34bb6d57684651ee2f5ef457f79e8a5ef/prolog/sequence_ops.pl#L87)). Additionally, we have built each user interface to be discoverable - the web interface is very stylistic and usage is apparent, the REST API includes an OpenAPI schema displayed through RapiDoc, which would help language implementors integrate our software, and our command line interface can seamlessly correct typos in user commands and provide explanations for how commands are used. 
+
+Based on all of these factors, we believe our project goes well above and beyond the expectations for the MVP, and in many senses, approaches the goals laid out for our product pitch.
 
 ### Running MVP
 Below, we present two options for running the code. To ensure that all dependencies are up to date and that your experience matches ours, use the commands in the `Using Docker` column - these commands use Docker to ensure a consistent and complete experience. The commands in `Using Current OS` are equivalent, but you may find that the REST API and regex capabilities of our code are not functional (this is because they require SWIPL 8.2+, but the department computers currently only have SWIPL 7.6.4).
@@ -87,6 +91,20 @@ By going to http://localhost:4999/openapi, you can interact with the OpenAPI spe
 
 [USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation.
 
+Due to our primary UI existing as a web page, we have decided to include video snippets for each of the task that can be performed through our website:
+
+[Adding a function to the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Add%20Function%20string_to_list.mp4)
+
+[Deleting a function from the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Delete%20function%20member.mp4)
+
+[Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Function%20Name%20Print%20-%20Levenshtein.mp4)
+
+[Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Doc%20Inte%20-Substring.mp4)
+
+[Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
+
+[Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+
 #### Prolog Dependencies
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
 
@@ -95,8 +113,6 @@ This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language
 
 #### Website Dependencies
 The webpages use [Bootstrap](https://getbootstrap.com/) for CSS styling and SVG icons, and the favicon was generated using [redketchup](https://redketchup.io/favicon-generator).
-
-### Go into more details about how the MVP works...
 
 ## Guide to New Learning
 A guide to your new learning (which can also be part of your guide to the MVP if you prefer, but make clear that that’s what you’re doing!), including:
