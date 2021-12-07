@@ -172,8 +172,8 @@ In this section, we go over the Prolog features that we have learned to use, and
 - [storage.pl](prolog/storage.pl): This file provides a storage interface, which can load and store functions from disk - this is currently done in JSON format to be consistent with the server interface.
 - [server_test.pl](prolog/server_test.pl): A small client, written in Prolog, which sends a series of requests to the REST API implemented in [server.pl](prolog/server.pl) and tests for correct responses.
 - [test.pl](prolog/test.pl): Tests for core functionality related to generating paths, defining functions, serializing and deserializing them to/from JSON, and constraints.
-- [main.html](prolog/web_content/main.html), [path.html](prolog/web_content/path.html): These two pages serve as the front end for our application, and allow users to find, add, and delete functions, and find paths, respectively.
-- [main.js](prolog/web_content/main.js), [path.js](prolog/web_content/path.js): These Javascript files power the web-based user interface, and are mostly responsible for sending HTTP requests and rendering the output to screen.
+- [web_content/main.html](prolog/web_content/main.html), [web_content/path.html](prolog/web_content/path.html): These two pages serve as the front end for our application, and allow users to find, add, and delete functions, and find paths, respectively.
+- [web_content/main.js](prolog/web_content/main.js), [web_content/path.js](prolog/web_content/path.js): These Javascript files power the web-based user interface, and are mostly responsible for sending HTTP requests and rendering the output to screen.
 
 ## RUBRIC:
 https://steven-wolfman.github.io/cpsc-312-website/project.html#final-project-rubric
