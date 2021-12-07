@@ -120,6 +120,8 @@ A guide to your new learning (which can also be part of your guide to the MVP if
 - Direct links into parts of the code where the new learning was employed
 - Explanation of how the project benefits from the application of your new learning.
 
+In this section, we go over the Prolog features that we have learned to use, and provide an overview of all of the files that comprise our application, and the purpose they serve. 
+
 ### Prolog features
 - [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L177)
   - This makes it easy to pass relevant parameters to constraint functions, while still providing a consistent API between all constraints
