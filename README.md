@@ -103,7 +103,7 @@ Due to our primary UI existing as a web page, we have decided to include video s
 
 [Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
 
-[Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+![Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
 
 #### Prolog Dependencies
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been tested on the department computers using SWIPL 7.6.4, and using SWIPL 8.4 locally, and all tests pass.
