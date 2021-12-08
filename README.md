@@ -68,56 +68,43 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features:
+By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features (we also include short clips to demonstrate the usage):
 1. Searching for functions using using the `Function Search` form
+  - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Function%20Name%20Print%20-%20Levenshtein.mp4)
+  - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Doc%20Inte%20-Substring.mp4)
 2. Bookmarking selected functions by selecting them and pressing `Save`
-3. Deleting functions, by clicking the trash can
-4. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
+  - [Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
+4. Deleting functions, by clicking the trash can
+  - [Deleting a function from the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Delete%20function%20member.mp4)
+6. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
+  - [Adding a function to the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Add%20Function%20string_to_list.mp4)
 
-You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths by filling out the `Path Search` form (all arguments are optional), and then pressing submit. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions. You can also navigate back to the main page by clicking `Function Search`. 
-
-Due to our primary UI existing as a web page, we have decided to include video snippets for each of the tasks that can be performed through our website:
-
-[Adding a function to the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Add%20Function%20string_to_list.mp4)
-
-[Deleting a function from the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Delete%20function%20member.mp4)
-
-[Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Function%20Name%20Print%20-%20Levenshtein.mp4)
-
-[Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Doc%20Inte%20-Substring.mp4)
-
-[Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
-
-[Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths by filling out the `Path Search` form (all arguments are optional), and then pressing submit. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions. You can also navigate back to the main page by clicking `Function Search`.
+  - [Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
 
 By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which renders schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
 
-[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation, but this interface is largely equivalent to the web interface.
+[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation. However, this interface is largely equivalent to the web interface, with the exception of being able to use function signature syntax to form searches.
 
 #### Prolog Dependencies
-The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.4.0+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been using SWIPL 8.4 locally, and all tests pass.
+The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.4.0+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been using SWIPL 8.4.0, both in Docker and on the system itself, and all tests pass.
 
 #### Python Dependencies
 This project uses Python 3.6+ and [spaCy](https://spacy.io/), a natural language processing library. spaCy is automatically installed into a virtual environment if necessary by all build targets. This will also download a ~50MB natural language model. 
 
 #### Website Dependencies
-The webpages use [Bootstrap](https://getbootstrap.com/) for CSS styling and SVG icons, and the favicon was generated using [redketchup](https://redketchup.io/favicon-generator).
+The project uses [Bootstrap](https://getbootstrap.com/) to style the web interface with CSS and SVG icons. The favicon was generated using [redketchup](https://redketchup.io/favicon-generator).
 
 ## Guide to New Learning
-A guide to your new learning (which can also be part of your guide to the MVP if you prefer, but make clear that that’s what you’re doing!), including:
-- Highlighting how the new learning is essential for your project/MVP,
-- Direct links into parts of the code where the new learning was employed
-- Explanation of how the project benefits from the application of your new learning.
-
 In this section, we go over the Prolog features that we have learned to use. Further down, we provide an overview of all of the files that comprise our application and the purpose they serve. 
 
 ### Prolog features
 - [Partial function application](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L177)
-  - This makes it easy to parameterize constraint functions, while still providing a consistent API for all constraint functions, which makes it easy to mix and match constraints, and combine them in interesting ways with minimal effort.
+  - This makes it easy to parameterize constraints, while still providing a consistent API for all constraint functions, which makes it easy to mix and match constraints, and combine them in interesting ways with minimal effort.
   - There is no need to use a specific term to store the function and parameters, which greatly simplifies the API and reduces the possibility of bugs
 - [Metapredicates](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/search.pl#L22)
   - This makes defining complex, multifactored constraints much simpler, and simplifies the process of allowing users to compose their own constraints
-  - for example, they can require that a particular constraint is satisfied five times, or that two or more constraints must all succeed, or modify the cost of a particular constraint to make it more important in best-first search
+  - For example, they can require that a particular constraint is satisfied five times, or that two or more constraints must all succeed, or modify the cost of a particular constraint to make it more important when sorting items and paths
 - Dictionaries [for option parsing](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L32), [JSON serialization/deserialization](/prolog/function/serde.pl)
   - These are very useful for creating JSON representations of data - this makes it very simply to read/write specific predicates from a file (persistence), and at the same time, can be used to serve data over a REST API - this is what is used in our web interface!
   - Can be used for collections of options, which makes it easy to specify parameters through the command line, and add new ones as needed
@@ -131,16 +118,18 @@ In this section, we go over the Prolog features that we have learned to use. Fur
   - These allow defining simple path and search predicates which simply check that one path or item is valid, and then we can aggregate as [many solutions as needed](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/main.pl#L183)
 - [DCG for parsing](/prolog/function/parse.pl)
   - DCGs make it easy to define parsers for each of the individual elements of a type declaration or function signature, and then easily combine these parsers to parse a complex and interesting function or type
+  - They also make it easy to define parsers for escape sequences, which we use to allow users to [include phrases when using the command line interface](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/3cdf08a997e2120cdeba59caf1bdab064548cb0c/prolog/main.pl#L32)
 - [Conditional compilation with if](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/string_constraints.pl#L79)
   - This allows enabling/disabling features for specific versions of Prolog to provide some minimum level of functionality where possible
   - Eg. When we submitted the initial Prolog proposal, the CS servers were using an outdated version of SWIPL, which does not include the PCRE library and HTTP server, but our computers do. Using conditional compilation allows most functionality to be used, and lets us test just the components which are supported
 - [Tabling](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/980a926a60d622513ae3170f4d1ec298dc2e0204/prolog/sequence_ops.pl#L11)
-  - Tabling makes repeated expensive operations (eg. computing Levenshtein distance) cheaper without polluting the global namespace, and without manually implementing the garbage collection which would be required, which is very helpful
+  - Tabling makes repeated expensive operations (eg. computing Levenshtein distance) cheaper without polluting the global knowledge base (and namespace, as we'd need to define a function), and without manually implementing the garbage collection which would be required
   - Eg. It takes 0.3s to compute Levenshtein distance the first time for 100 pairs of strings 50 characters long, but the second time, it takes 0s
+  - This is especially important when considering that in general, path generation has `O(b^d)` steps - calculating a particular constraint `O(b^d)` times is generally significantly more expensive than using `O(b)` space and `O(b^d)` lookups 
 - [Dynamic values](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/8dfb86de7d795e5b02e430ef196415529c8df8fb/prolog/function.pl#L25)
   - This simplifies the process of maintaining and updating a shared knowledge base, and makes passing additional parameters with a list of all visible functions/traits/types optional
-  - It also allows attaching attributes to objects without modifying said objects - for example, we can mark a function as specialized in the global database by using it's unique UUID, but attaching this to the function definition would require updating the definitions in multiple places
-  - It can further be used to implement singletons - for example, to avoid creating a new instance of our NLP thread each time we call it (which takes several seconds to load, and would cause search requests to take ~100x longer), we store the handles to this thread in the global knowledge base, and access it through a mutex whenever we need to use it (to avoid race-conditions due to the multithreaded HTTP server)
+  - It also allows attaching attributes to objects without modifying said objects - for example, we can mark a function as specialized in the global database by using its unique UUID, but attaching this to the function definition would require updating the function definition in multiple places
+  - It can further be used to implement singletons - for example, to avoid creating a new instance of our NLP process each time we call it (which takes several seconds to load, and would cause search requests to take ~100x longer), we store the handles to this thread in the global knowledge base, and access it through a mutex whenever we need to use it (to avoid race-conditions due to the multithreaded HTTP server)
 - [Custom Operators (sorta)](/prolog/function_op.pl)
   - One issue that we have with Prolog is that there are no data types with compile-time checks to ensure the correctness / positions of field names. This makes it inconvenient to refactor definitions using Prolog terms, such as our dynamic function definition, to add new fields, and without thorough testing (which we fortunately have), it would be very easy to introduce new bugs
   - Custom operators make it easy to define approximations to field accessors, and would make refactoring very easy - we could easily add new fields with this approach, or reorder then, or even remove them - this would could be a very simple CTRL+F, with no complicated pattern matching
