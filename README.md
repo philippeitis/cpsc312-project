@@ -55,7 +55,7 @@ Below, we present two options for running the code. To ensure that all dependenc
 | Task | Using Docker | Using Current OS |
 | :--  | :-- | :-- |
 | Run tests | `make docker-test` | `make prolog-eval` or `cd prolog && make test` |
-| Enter swipl repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
+| Enter SWIPL test repl for Prolog backend | `make docker-repl` | `cd prolog && make test-repl` |
 | Launch server listening on `PORT` (default value is 4999) | `make FASTFUNC_SERVER_PORT=PORT docker-server` | `cd prolog && make FASTFUNC_SERVER_PORT=PORT launch-server` |
 
 Launching the server will output the following text (though it will be slightly different between using the Docker / OS command):
@@ -68,7 +68,7 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features (we also include short clips to demonstrate usage):
+By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features (we also include short clips to demonstrate usage - you will need to click through to the raw files):
 1. Searching for functions using using the `Function Search` form
   - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Function%20Name%20Print%20-%20Levenshtein.mp4)
   - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Doc%20Inte%20-Substring.mp4)
