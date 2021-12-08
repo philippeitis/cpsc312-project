@@ -1,5 +1,5 @@
-# CLI Overview
-This program provides a REPL, which can be initialized by running `swipl main.pl`:
+# Overview
+This project provides a REPL, which can be initialized by running `swipl main.pl`:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
 >>> 
@@ -29,7 +29,7 @@ Defines a function from user input.
 Example: define fnName :: [arg1, arg2] -> [output1, output2] | doc
 ```
 
-## CLI Examples
+## Examples
 
 In this section, we go over the most important commands in the FastFunc CLI interface, which cover the core elements our POC hopes to demonstrate. This includes defining functions, searching for them, and being able to use generic types and functions.
 
@@ -89,7 +89,6 @@ add -> listify -> sum
 ```
 Paths may be duplicated, or appear to be duplicated, which is largely due to the specializations of a generic function, but all paths will be valid
 
-## More CLI Examples
 If you misspell a command, the CLI will offer to correct it and run the corrected version:
 ```console
 user:~/cpsc312-project/prolog$ swipl main.pl
