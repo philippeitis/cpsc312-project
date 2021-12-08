@@ -68,23 +68,26 @@ docker run -it -p 4999:5000 fast-func-server
 >>> 
 ```
 
-By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features (we also include short clips to demonstrate the usage):
+By going to http://localhost:4999/main.html, you can interact with the web-based FastFunc UI, which is more discoverable compared to the command line interface, and makes it much easier to see everything in action. This interface provides the following features (we also include short clips to demonstrate usage):
 1. Searching for functions using using the `Function Search` form
   - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Function%20Name%20Print%20-%20Levenshtein.mp4)
   - [Using string comparison methods to search documentation](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Doc%20Inte%20-Substring.mp4)
+  - As seen in these two clips, all arguments are optional, and you can fill out as many as you would like to further constrain the search
 2. Bookmarking selected functions by selecting them and pressing `Save`
   - [Saving a function for further reference](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Input%20int%20-%20Save%20Function.mp4)
-4. Deleting functions, by clicking the trash can
+3. Deleting functions, by clicking the trash can
   - [Deleting a function from the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Delete%20function%20member.mp4)
-6. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
+4. Adding new functions by using the `Add Function to Knowledgebase` form and pressing `Confirm`
   - [Adding a function to the database](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Add%20Function%20string_to_list.mp4)
-
-You will also find that `Path Search` is linked, which will take you to http://localhost:4999/path.html. On this page, you can search for paths by filling out the `Path Search` form (all arguments are optional), and then pressing submit. This will display a list of paths, and for each individual path, you can then click on individual function names to navigate to their descriptions. You can also navigate back to the main page by clicking `Function Search`.
-  - [Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+5. Searching for paths, by going to `Path Search` from the main page, filling out the form, and then clicking submit
+    - [Finding a series of functions which take a particular input, and produce some output](https://github.students.cs.ubc.ca/ph1l1pp3/cpsc312-project/blob/master/resources/Path%20Search%20Int%20to%20Bool.mp4)
+    - This page is served at http://localhost:4999/path.html
+    - You can also navigate back to `Function Search` to go to the main page
+    - As in the clip, you can fill out as many of the arguments as you would like
 
 By going to http://localhost:4999/openapi, you can interact with the OpenAPI specification with [RapiDoc](https://mrin9.github.io/RapiDoc/), which renders schemas for all of the endpoints the server provides and allows user interaction. This would be used by IDE / language developers to quickly explore the API. The page should look like [this image](./resources/openapi.png).
 
-[USAGE.md](USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation. However, this interface is largely equivalent to the web interface, with the exception of being able to use function signature syntax to form searches.
+[CLI_USAGE.md](CLI_USAGE.md) goes into further detail about how to use FastFunc through the command line interface, providing specific examples of different tasks to help direct your evaluation. However, this interface is largely equivalent to the web interface, with the exception of being able to use function signature syntax to form searches.
 
 #### Prolog Dependencies
 The project uses the [http](https://www.swi-prolog.org/pldoc/doc_for?object=section(%27packages/http.html%27)), [pcre](https://www.swi-prolog.org/pldoc/man?section=pcre), and [dcg](https://www.swi-prolog.org/pldoc/doc/_SWI_/library/dcg/basics.pl) libraries. If it is run with SWIPL 8.4.0+, all functionality will be available. If not, then the `pcre` library will not be imported, and only the JSON capabilities of the `http` library will be used. This has been using SWIPL 8.4.0, both in Docker and on the system itself, and all tests pass.
