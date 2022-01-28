@@ -52,6 +52,12 @@
     [method(get)]
 ).
 
+:- http_handler(
+    root(main),
+    main_endpoint,
+    [method(get)]
+).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Starting and stopping server
 suppress_start_msg :- 
@@ -68,7 +74,7 @@ server(Port) :-	\+suppress_start_msg,
     ansi_format([bold, fg(blue)], 'http://localhost:~w/openapi', [Port]),
     ansi_format([fg(blue)], ' to interact with the OpenAPI specification~n', []),
     ansi_format([fg(blue)], 'Go to ', []),
-    ansi_format([bold, fg(blue)], 'http://localhost:~w/main.html', [Port]),
+    ansi_format([bold, fg(blue)], 'http://localhost:~w/main', [Port]),
     ansi_format([fg(blue)], ' to interact with the application~n', []).
 
 shutdown(Port) :- http_stop_server(Port, []).
@@ -373,3 +379,89 @@ path_endpoint(Request) :-
     parse_path_search_request(Request, Strategy, FnConstraint, PathConstraint), 
     find_and_fmt_paths(Strategy, FnConstraint, PathConstraint).
 
+
+%%
+:- use_module(library(st/st_render)).
+:- use_module(function/parse).
+
+pluralize(1, Unplural, _, Unplural).
+pluralize(N, _, Plural, Plural) :- N \= 1.
+
+%% Turns the function into JSON, plus signature.
+fn_json(
+    fn(Fn),
+    JSON
+) :-
+    jsonify_fn(
+        Fn,
+        JSONA
+    ),
+    format_signature(Fn, Signature),
+    JSONB = JSONA.put(signature, Signature),
+    JSON = JSONB.put(generic, 0).
+
+fn_json(
+    gfn(Fn, Signatures),
+    JSON
+) :-
+    jsonify_fn(
+        Fn,
+        JSONA
+    ),
+    format_signature(Fn, Signature),
+    JSONB = JSONA.put(signature, Signature),
+    JSONC = JSONB.put(generic, 1),
+    JSON = JSONC.put(specializations, Signatures).
+
+%% 
+get_all_specializations(_, [], [], _) :- !.
+get_all_specializations(SUuid, [Fn|Rest], [Signature|SigRest], Rem) :-
+    func_field(uuid, Fn, Uuid),
+    specialized(SUuid, Uuid), !,
+    format_signature(Fn, Signature), !,
+    get_all_specializations(SUuid, Rest, SigRest, Rem), !.
+get_all_specializations(SUuid, [Fn|Rest], [], [Fn|Rest]) :-
+    func_field(uuid, Fn, Uuid),
+    \+specialized(SUuid, Uuid), !.
+
+most_general_fns([], []).
+
+most_general_fns([Fn|RestFn], [fn(Fn)|Rest]) :-
+    func_field(uuid, Fn, Uuid),
+    \+specialized(_, Uuid),
+    most_general_fns(RestFn, Rest).
+
+most_general_fns([Fn|RestFn], [gfn(SFn, Signatures)|Rest]) :-
+    func_field(uuid, Fn, Uuid),
+    specialized(SUuid, Uuid),
+    get_function(SUuid, SFn),
+    get_all_specializations(SUuid, [Fn|RestFn], Signatures, Rem),
+    most_general_fns(Rem, Rest).
+
+main_page(JSON) :-
+    current_output(Out),
+    format('Status: 200~n'),
+    format('Content-type: text/html~n~n'),
+    st_render_file('web_content/main_template', JSON, Out, []).
+
+find_and_fmt_func_template(Constraint) :-
+    find_items(Constraint, [Fn|Fns]),
+    most_general_fns([Fn|Fns], GenFns), !,
+    maplist(fn_json, GenFns, JsonFns),
+    length(GenFns, N),
+    pluralize(N, "function", "functions", Pl),
+    format(string(Msg), "<h2>Found ~w ~w</h2>", [N, Pl]),
+    main_page(_{
+        msg: Msg,
+        functions: JsonFns
+    }), !.
+
+find_and_fmt_func_template(_) :-
+    main_page(_{
+        msg: "<h2 style=\"color:red\">Functions matching query not found</h2>",
+        functions: []
+    }).
+
+main_endpoint(Request) :-
+    parse_func_search_request(Request, Constraint),
+    find_and_fmt_func_template(Constraint).

@@ -1,26 +1,20 @@
-function urlParam(key, value) {
-    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+function initPage() {
+    // Initialize form
+    const params = (new URL(window.location.href)).searchParams;
+    params.forEach((val, key) => {
+      if (key !== "inputs" && key !== "outputs") {
+        document.getElementById(key).value = val
+      }
+    });
+    document.getElementById("inputs").value = params.getAll("inputs").join(", ");
+    document.getElementById("outputs").value = params.getAll("outputs").join(", ");
+
+    document.getElementById("function_msg").scrollIntoView();
+    document.getElementById("search_form").addEventListener("submit", searchAndDisplay)
 }
 
-function renderFunction(json) {
-    // Renders the function's name and documentation, as well as buttons
-    // to delete and save said function.
-    const msg = document.getElementById("function_msg");
-    msg.innerHTML = "<h2>" + json["msg"] + "</h2>";
-    let output = "";
-    for (const fn of json["functions"]) {
-        output += `<div data-uuid="${fn.uuid}"\>`;
-        // function header
-        output += `<table><thead><tr><td><h3>${fn.name}</h3></td><td>`;
-        output += `<td>&nbsp; &nbsp; <input type="checkbox" style="width: 16px; height: 16px" data-uuid="${fn.uuid}"> </td>`;
-        output += `<td>&nbsp; &nbsp; <input type="image" src="trash.svg" style="width:16px;height:16px;" onclick=onClickDelete("${fn.uuid}")></td>`;
-        output += "</td></tr></thead></table>";
-        // function paragraph
-        output += `<p>${fn.docs}</p>`;
-        output += "</div>";
-    }
-    document.getElementById("functions").innerHTML = output;
-    msg.scrollIntoView();
+function urlParam(key, value) {
+    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
 }
 
 function mainFormToURL() {
@@ -51,29 +45,15 @@ function mainFormToURL() {
     return form.action + "?" + formData.join("&");
 }
 
-function searchAndDisplay() {
+function searchAndDisplay(event) {
     // When form is submitted, handles process of fetching all information
     // and displaying it.
-    const url = mainFormToURL();
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState === 4) {
-            const json = JSON.parse(this.responseText);
-            if (this.status === 200) {
-                renderFunction(json);
-            }
-            if (this.status === 404) {
-                const msg = document.getElementById("function_msg");
-                msg.innerHTML = "<h2 style='color:red'>" + json["msg"] + "</h2>";
-                document.getElementById("functions").innerHTML = "";
-                msg.scrollIntoView();
+    const form = document.getElementById("search_form");
+    event.preventDefault();
+    event.stopPropagation();
 
-            }
-        }
-    };
-
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
+    window.location.replace(mainFormToURL());
+    return false;
 }
 
 function removeUuidFromScreen(uuid) {

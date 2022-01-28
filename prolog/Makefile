@@ -1,7 +1,9 @@
 FASTFUNC_SERVER_PORT = 4999
 .PHONY: build
 build:
-	swipl main.pl --quit setup
+	mkdir -p bin
+	cd util-rs && cargo +nightly build --release && cp ./target/release/libutils_rs.so ../bin/libutils_rs.so
+#	swipl main.pl --quit setup
 .PHONY: test
 test:
 	make build

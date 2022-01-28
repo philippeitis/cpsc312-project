@@ -198,6 +198,9 @@ execute_command(String) :-
 :- if(prolog_version_eight).
 execute_command(String) :-
     split_left(String, " ", 1, ["launch", PortStr]),
+    split_left(String, " ", 1, Splits),
+    format("~w~n", [String]),
+    format("!!~w~n", [Splits]),
     number_string(Port, PortStr),
     catch(
         server(Port),

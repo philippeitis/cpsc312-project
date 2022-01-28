@@ -12,10 +12,12 @@
 
 test("split_left base case") :-
     split_left("Hello world !", " ", 0, ["Hello world !"]).
+
+test("split_left split string start") :-
+    split_left("      Hello   world !", " ", 1, ["Hello", "world !"]).
+
 test("split_left split once") :-
     split_left("Hello   world !", " ", 1, ["Hello", "world !"]).
-test("split_left split once multiple sep") :-
-    split_left("Hello  : world :!", ": ", 1, ["Hello", "world :!"]).
 test("split_left split many times") :-
     split_left("Hello    world  ! a a   a", " ", 999, ["Hello", "world", "!", "a", "a", "a"]).
 

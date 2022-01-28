@@ -2,6 +2,7 @@
     write_json_metadata/4,
     read_json_metadata/4,
     jsonify_fns/2,
+    jsonify_fn/2,
     jsonify_type/2,
     jsonify_types/2
 ]).

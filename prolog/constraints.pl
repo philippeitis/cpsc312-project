@@ -37,7 +37,7 @@ no_constraint(_, 0.0, no_constraint).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Meta Constraints: These apply operations to other constraints
 
-%% and_constraint(+Lhs, +Rhs, -Func, -CostOut, -NewConstraints)
+%! and_constraint(+Lhs, +Rhs, -Func, -CostOut, -NewConstraints)
 % Tests if Func satisfies all constraints, producing a cost for this function,
 % CostOut, and a set of constraints which follow Constraints, NewConstraints.
 and_constraint(Lhs, Rhs, Fn, Cost, and_constraint(NewConstraint0, NewConstraint1)) :-
@@ -45,7 +45,7 @@ and_constraint(Lhs, Rhs, Fn, Cost, and_constraint(NewConstraint0, NewConstraint1
     call(Rhs, Fn, Cost1, NewConstraint1),
     Cost is Cost0 + Cost1.
 
-%% at_most_n_constraint(+N, +Constraint, -Func, -Cost, -NewConstraint)
+%! at_most_n_constraint(+N, +Constraint, -Func, -Cost, -NewConstraint)
 % Evaluates at most N+1 times (if base case is reached, )
 at_most_n_constraint(N, Constraint, Func, Cost, at_most_n_constraint(NSub, Constraint)) :-
     call(Constraint, Func, Cost, _), !,

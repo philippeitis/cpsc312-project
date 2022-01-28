@@ -94,7 +94,7 @@ add_fn_generic_traits([_|Rest]) :-
 init_uuid(Uuid) :- \+var(Uuid), !.
 
 init_uuid(Uuid) :-
-    var(Uuid), uuid(Uuid), !.
+    var(Uuid), uuid(Uuids), atom_concat('u', Uuids, Uuid), !.
 
 add_function(Uuid, Name, Generics, InputTypes, OutputTypes, Docs) :-
     init_uuid(Uuid),

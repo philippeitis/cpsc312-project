@@ -126,7 +126,7 @@ match_sub_sim(Sim) :- member(Sim, ["subsim", subsim]).
 
 match_fuzzy_substr(Substr) :- member(Substr, ["fsubstr", fsubstr]).
 
-%% Get the constraint for the field and method
+%! Get the constraint for the field and method
 string_constraint(Getter, String, Eq, string_constraints:equality_constraint(Getter, String)) :-
     match_eq(Eq), !.
 string_constraint(Getter, String, Lev, string_constraints:levenshtein_constraint(Getter, String, MaxDis)) :-

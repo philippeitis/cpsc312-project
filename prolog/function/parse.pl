@@ -4,11 +4,12 @@
     parse_types/4,
     parse_trait/2,
     parse_type/2,
-    format_func/2,
-    format_skeleton/6
+    format_skeleton/6,
+    format_signature/2
 ]).
 :- use_module(function).
 :- use_module(library(dcg/basics)).
+:- use_module(sequence_ops).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subst_generics_into(
@@ -149,13 +150,51 @@ parse_signature(String, Name, Generics, Inputs, Outputs, Docs) :-
     subst_generics(Generics, UInputs, Inputs),
     subst_generics(Generics, UOutputs, Outputs), !.
 
-%% Formats the function with the given name
-format_func(String, Uuid) :-
-    function(Uuid, Name, Generics, Inputs, Outputs, Docs),
-    format_skeleton(String, Name, Generics, Inputs, Outputs, Docs).
-
 %% Formats the function skeleton.
 format_skeleton(String, Name, [], Inputs, Outputs, Docs) :-
     format(string(String), '~w :: ~w -> ~w | ~w', [Name, Inputs, Outputs, Docs]).
 format_skeleton(String, Name, Generics, Inputs, Outputs, Docs) :-
     format(string(String), '~w<~w> :: ~w -> ~w | ~w', [Name, Generics, Inputs, Outputs, Docs]).
+
+format_generic(generic(Name, Bounds), String) :-
+    \+is_list(Bounds),
+    format(string(String), "~w", Name), !.
+
+format_generic(generic(Name, Bounds), String) :-
+    is_list(Bounds),
+    join(Bounds, " + ", SubStr),
+    format(string(String), "~w: ~w", [Name, SubStr]), !.
+
+format_generic(G, String) :-
+    format(string(String), "~w", [G]), !.
+
+format_generics([], "") :- !.
+format_generics(Generics, String) :-
+    maplist(format_generic, Generics, GenericSubs),
+    join(GenericSubs, ", ", GenericContents),
+    format(string(String), "<~w>", GenericContents).
+
+format_type(type(Name, SubTypes), String) :-
+    is_list(SubTypes),
+    SubTypes = [_|_],
+    maplist(format_type, SubTypes, SubTys),
+    join(SubTys, ", ", Tys),
+    format(string(String), "~w<~w>", [Name, Tys]), !.
+
+format_type(type(Name, _), String) :-
+    format(string(String), "~w", [Name]).
+
+format_type(gen(Ty), String) :-
+    format(string(String), "~w", Ty).
+
+
+format_type(Ty, String) :-
+    format(string(String), "~w", Ty).
+
+format_signature(function(_, _, Generics, Inputs, Outputs, _), String) :-
+    format_generics(Generics, GenString),
+    maplist(format_type, Inputs, Inputsf),
+    join(Inputsf, ", ", Inputsff),
+    maplist(format_type, Outputs, Outputsf),
+    join(Outputsf, ", ", Outputsff),
+    format(string(String), '~w :: [~w] -> [~w]', [GenString, Inputsff, Outputsff]).

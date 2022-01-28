@@ -4,8 +4,7 @@
     func_path_no_cycles/4,
     find_item/3,
     find_items/2,
-    func_search/7,
-    fn_member_constraint/1
+    func_search/7
 ]).
 :- use_module(function).
 :- use_module(constraints, [
@@ -106,16 +105,6 @@ func_path_bfs([(FnConstraint, Path)|Candidates], PathConstraint, NextPath) :-
     %% No need to turn these into sets, always unique.
     append(Candidates, NewPaths, NewCand),
     func_path_bfs(NewCand, PathConstraint, NextPath).
-
-%% cmp_constraint_list(?Order, @L1, @L2)
-% Determine Cmp between L1 and L2 cost/constraint/list triples.
-cmp_candidate(Cmp, (CostA, _, _), (CostB, _, _)) :-
-    compare(Cmp, CostA, CostB).
-
-cmp_or_continue(=, Cmp, L1, L2) :- 
-    compare(Cmp, L1, L2).
-cmp_or_continue(>, >, _, _).
-cmp_or_continue(<, <, _, _).
 
 func_path_best_fs([(_, FnConstraint, Visited)|_], PathConstraint, Path) :-
     % If no constraints left, add path to paths
