@@ -243,10 +243,13 @@ execute_command("help") :-
     available_commands(), !.
 
 execute_command("setup") :-
+    pack_install(simple_template, [interactive(false)]),
     nlp:setup_tokenizer.
+
 
 execute_command(String) :-
     split_left(String, " ", 1, ["help", Command]),
+    check_installation,
     assist(Command), !.
 
 execute_command(String) :-

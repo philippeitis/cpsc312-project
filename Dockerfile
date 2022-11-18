@@ -37,6 +37,13 @@ RUN /scripts/build-prolog.sh
 
 ENV PATH "$PATH:/root/bin/"
 
+RUN apt-get install -y --no-install-recommends curl
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
+
+ENV PATH "$PATH:/root/.cargo/bin/"
+RUN apt-get install -y --no-install-recommends clang
+
 COPY ./Makefile /cpsc312-project/Makefile
 
 COPY ./prolog /cpsc312-project/prolog
